@@ -1,4 +1,4 @@
-import { KeyRound, Search, Trash2, Users } from 'lucide-react'
+import { Check, Copy, KeyRound, RefreshCw, Search, Trash2, Users } from 'lucide-react'
 import { useState } from 'react'
 import ConfirmDialog from '../ConfirmDialog.jsx'
 import ErrorAlert from '../ErrorAlert.jsx'
@@ -127,6 +127,56 @@ function ResultsPanel({ student, version }) {
   return <ResultsTable results={results} showStudent={studentId === null} />
 }
 
+function InviteCodeCard() {
+  const { data: code, error, reload } = useAsyncData(userService.getInviteCode)
+  const [current, setCurrent] = useState(null)
+  const [copied, setCopied] = useState(false)
+  const [actionError, setActionError] = useState('')
+  const shown = current ?? code
+
+  async function regenerate() {
+    setActionError('')
+    try {
+      setCurrent(await userService.regenerateInviteCode())
+    } catch (err) {
+      setActionError(getErrorMessage(err))
+    }
+  }
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(shown)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      setActionError('Не вдалося скопіювати. Виділіть код вручну.')
+    }
+  }
+
+  if (error) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
+
+  return (
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4">
+      <div>
+        <div className="text-xs font-semibold uppercase tracking-wide text-blue-800">Код запрошення для реєстрації учнів</div>
+        <div className="mt-1 font-mono text-2xl font-bold tracking-widest text-slate-900">{shown ?? '…'}</div>
+        <p className="mt-1 text-xs text-slate-600">Передайте його учням. Після зміни коду старий перестає працювати; вже створені акаунти це не зачіпає.</p>
+        {actionError && <p className="mt-1 text-xs text-red-700">{actionError}</p>}
+      </div>
+      <div className="flex gap-2">
+        <button type="button" onClick={copy} disabled={!shown} className={secondaryButtonClass}>
+          {copied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
+          {copied ? 'Скопійовано' : 'Копіювати'}
+        </button>
+        <button type="button" onClick={regenerate} className={secondaryButtonClass}>
+          <RefreshCw className="h-4 w-4" aria-hidden="true" />
+          Новий код
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function StudentsResults() {
   const [student, setStudent] = useState(null)
   const [version, setVersion] = useState(0)
@@ -151,6 +201,8 @@ export default function StudentsResults() {
   }
 
   return (
+    <>
+    <InviteCodeCard />
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
       <div className="self-start">
         <StudentList selectedId={student?.id ?? null} onSelect={setStudent} version={version} />
@@ -196,5 +248,6 @@ export default function StudentsResults() {
         />
       )}
     </div>
+    </>
   )
 }

@@ -86,6 +86,9 @@ export const resultService = {
 export const userService = {
   changePassword: (payload) => api.put('/account/password', payload),
   resetStudentPassword: (studentId, newPassword) => api.put(`/teacher/students/${studentId}/password`, { newPassword }),
+  getInviteCode: () => api.get('/teacher/invite-code').then((r) => r.data.code),
+  setInviteCode: (code) => api.put('/teacher/invite-code', { code }).then((r) => r.data.code),
+  regenerateInviteCode: () => api.post('/teacher/invite-code/regenerate').then((r) => r.data.code),
   deleteStudent: (studentId) => api.delete(`/teacher/students/${studentId}`),
 }
 

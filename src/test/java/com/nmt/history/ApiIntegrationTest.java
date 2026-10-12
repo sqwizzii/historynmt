@@ -33,6 +33,9 @@ class ApiIntegrationTest {
     @Autowired
     private ObjectMapper json;
 
+    @Autowired
+    private com.nmt.history.service.InviteCodeService inviteCodes;
+
     private ResultActions send(org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder request,
                                String token, Object body) throws Exception {
         if (token != null) {
@@ -50,7 +53,7 @@ class ApiIntegrationTest {
 
     private String registerStudent(String username) throws Exception {
         ResultActions result = send(post("/api/auth/register"), null,
-                Map.of("username", username, "firstName", "Іван", "lastName", "Петренко", "password", "secret1", "role", "TEACHER"))
+                Map.of("username", username, "firstName", "Іван", "lastName", "Петренко", "password", "secret1", "inviteCode", inviteCodes.current().toLowerCase(), "role", "TEACHER"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.role", is("STUDENT")));
         return body(result).get("token").asText();
@@ -235,5 +238,25 @@ class ApiIntegrationTest {
                 Map.of("termOrQuestion", "x", "answerOrDate", "y", "imageUrl", "javascript:alert(1)"))
                 .andExpect(status().isBadRequest());
         send(get("/api/quizlet/" + moduleId), null, null).andExpect(jsonPath("$.flashcards[0].imageUrl", is(photo)));
+    }
+
+    @Test
+    void registrationRequiresInviteCodeManagedByTeacher() throws Exception {
+        Map<String, Object> request = Map.of("username", "invitee", "firstName", "А", "lastName", "Б",
+                "password", "secret1", "inviteCode", "WRONG123");
+        send(post("/api/auth/register"), null, request).andExpect(status().isBadRequest());
+
+        String teacher = teacherToken();
+        String student = registerStudent("invite_student");
+        send(get("/api/teacher/invite-code"), student, null).andExpect(status().isForbidden());
+        send(put("/api/teacher/invite-code"), teacher, Map.of("code", "GROUP2026"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.code", is("GROUP2026")));
+        send(put("/api/teacher/invite-code"), teacher, Map.of("code", "ab")).andExpect(status().isBadRequest());
+        send(post("/api/auth/register"), null, Map.of("username", "invitee", "firstName", "А", "lastName", "Б",
+                "password", "secret1", "inviteCode", "group2026")).andExpect(status().isCreated());
+        String regenerated = body(send(post("/api/teacher/invite-code/regenerate"), teacher, null)).get("code").asText();
+        send(post("/api/auth/register"), null, Map.of("username", "invitee2", "firstName", "А", "lastName", "Б",
+                "password", "secret1", "inviteCode", "GROUP2026")).andExpect(status().isBadRequest());
+        send(get("/api/teacher/invite-code"), teacher, null).andExpect(jsonPath("$.code", is(regenerated)));
     }
 }

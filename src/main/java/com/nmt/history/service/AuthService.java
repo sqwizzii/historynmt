@@ -3,6 +3,7 @@ package com.nmt.history.service;
 import com.nmt.history.dto.JwtResponse;
 import com.nmt.history.dto.LoginRequest;
 import com.nmt.history.dto.RegisterRequest;
+import com.nmt.history.exception.BadRequestException;
 import com.nmt.history.exception.ConflictException;
 import com.nmt.history.model.Role;
 import com.nmt.history.model.User;
@@ -26,9 +27,13 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final LoginAttemptService loginAttemptService;
+    private final InviteCodeService inviteCodeService;
 
     @Transactional
     public JwtResponse register(RegisterRequest request) {
+        if (!inviteCodeService.matches(request.inviteCode())) {
+            throw new BadRequestException("Невірний код запрошення. Запитайте його у вчителя.");
+        }
         String username = request.username().trim();
 
         if (userRepository.existsByUsername(username)) {

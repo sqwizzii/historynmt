@@ -1,4 +1,4 @@
-import { Lock, User, UserRound } from 'lucide-react'
+import { KeyRound, Lock, User, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthCard from '../components/AuthCard.jsx'
@@ -8,7 +8,10 @@ import SubmitButton from '../components/SubmitButton.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { authService, getErrorMessage } from '../services/api.js'
 
-function validate({ username, firstName, lastName, password, confirmPassword }) {
+function validate({ username, firstName, lastName, password, confirmPassword, inviteCode }) {
+  if (!inviteCode.trim()) {
+    return 'Введіть код запрошення від вчителя.'
+  }
   if (username.trim().length < 3 || username.trim().length > 50) {
     return 'Логін має містити від 3 до 50 символів.'
   }
@@ -28,7 +31,7 @@ export default function Register() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const [form, setForm] = useState({ username: '', firstName: '', lastName: '', password: '', confirmPassword: '' })
+  const [form, setForm] = useState({ username: '', firstName: '', lastName: '', inviteCode: '', password: '', confirmPassword: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -48,6 +51,7 @@ export default function Register() {
         username: form.username.trim(),
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
+        inviteCode: form.inviteCode.trim(),
         password: form.password,
       })
       login(data)
@@ -75,6 +79,16 @@ export default function Register() {
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <ErrorAlert message={error} />
 
+        <FormField
+          label="Код запрошення"
+          icon={KeyRound}
+          name="inviteCode"
+          autoComplete="off"
+          placeholder="Його дає вчитель"
+          value={form.inviteCode}
+          onChange={handleChange}
+          required
+        />
         <FormField
           label="Логін"
           icon={User}
