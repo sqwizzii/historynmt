@@ -20,6 +20,9 @@ npm run dev        # http://localhost:45173
 - `src/services/api.js` - Axios з інтерцептором `Authorization: Bearer <token>` і сервіси `authService`, `testService`, `quizletService`, `resultService`.
 - `src/context/AuthContext.jsx` - стан користувача, токен і дані користувача зберігаються в `localStorage` (`token`, `user`).
 - `src/components/Header.jsx` - шапка з навігацією, користувачем/роллю та виходом.
+- `src/pages/TestRunner.jsx` (`/tests`, `/tests/:testId`) - список тестів та проходження всіх 4 типів завдань, модальне вікно з балом і шкалою НМТ 100-200.
+- `src/pages/QuizletView.jsx` (`/quizlet`, `/quizlet/:moduleId`) - модулі карток з 3D-перевертанням, навігація, прогрес, клавіші ← →.
+- `src/pages/TeacherPanel.jsx` (`/teacher`) - створення тестів і питань (з посиланням на зображення), модулів карток, таблиця результатів учнів.
 - `src/pages/Login.jsx`, `src/pages/Register.jsx` - вхід і реєстрація з вибором ролі.
 
 ## Структура бекенду
@@ -85,6 +88,7 @@ export DB_USERNAME=postgres DB_PASSWORD=postgres
 - `SINGLE_CHOICE` - рівно один `isCorrect: true`; `MULTIPLE_CHOICE` - один або більше.
 - `MATCHING` - кожен варіант це елемент лівої колонки, `matchKey` - його правильний відповідник (права колонка).
 - `CHRONOLOGY` - `orderIndex` задає правильну позицію події (унікальні значення).
+- Необов'язкове поле `imageUrl` (http/https-посилання на карту, портрет чи пам'ятку) повертається в `QuestionResponse` і показується перед текстом питання.
 
 ### Нарахування балів
 
