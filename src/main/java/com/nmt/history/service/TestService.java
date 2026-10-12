@@ -81,6 +81,7 @@ public class TestService {
         Question question = Question.builder()
                 .test(test)
                 .questionText(request.questionText().trim())
+                .imageUrl(request.imageUrl() == null || request.imageUrl().isBlank() ? null : request.imageUrl().trim())
                 .questionType(request.questionType())
                 .build();
         for (OptionRequest o : request.options()) {
@@ -204,7 +205,7 @@ public class TestService {
                 .map(o -> new OptionResponse(o.getId(), o.getOptionText()))
                 .toList();
         return new QuestionResponse(question.getId(), question.getQuestionText(),
-                question.getQuestionType(), optionResponses, matchChoices);
+                question.getImageUrl(), question.getQuestionType(), optionResponses, matchChoices);
     }
 
     private Test findTest(Long testId) {

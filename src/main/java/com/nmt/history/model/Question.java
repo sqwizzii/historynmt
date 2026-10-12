@@ -43,6 +43,9 @@ public class Question {
     @Column(name = "question_text", nullable = false, columnDefinition = "TEXT")
     private String questionText;
 
+    @Column(name = "image_url", length = 2048)
+    private String imageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "question_type", nullable = false, length = 30)
     private QuestionType questionType;
