@@ -59,7 +59,9 @@ export const testService = {
   getForEdit: (testId) => api.get(`/teacher/tests/${testId}`).then((r) => r.data),
   updateQuestion: (questionId, payload) => api.put(`/tests/questions/${questionId}`, payload).then((r) => r.data),
   removeQuestion: (questionId) => api.delete(`/tests/questions/${questionId}`),
-  submit: (testId, answers) => api.post(`/tests/${testId}/submit`, { answers }).then((r) => r.data),
+  start: (testId) => api.post(`/tests/${testId}/start`).then((r) => r.data),
+  recordLeave: (testId) => api.post(`/tests/${testId}/leave`).then((r) => r.data),
+  submit: (testId, answers, endReason = 'MANUAL') => api.post(`/tests/${testId}/submit`, { answers, endReason }).then((r) => r.data),
 }
 
 export const quizletService = {

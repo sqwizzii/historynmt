@@ -1,6 +1,6 @@
-import { ArrowLeft, ArrowRight, CheckCircle2, Clock, Flag } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle2, Clock, Flag, ShieldAlert } from 'lucide-react'
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Modal from '../Modal.jsx'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
 import QuestionCard from '../questions/QuestionCard.jsx'
@@ -8,11 +8,12 @@ import ErrorAlert from '../ErrorAlert.jsx'
 import { primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { useCountdown } from '../../hooks/useCountdown.js'
+import { useExamGuard } from '../../hooks/useExamGuard.js'
 import { getErrorMessage, testService } from '../../services/api.js'
 import { pluralize } from '../../utils/format.js'
 import ResultModal from './ResultModal.jsx'
 
-const DEFAULT_TIME_LIMIT_MINUTES = 60
+const AWAY_LIMIT_SECONDS = 15
 const WARNING_THRESHOLD_MS = 5 * 60 * 1000
 
 function isAnswered(answer) {
@@ -31,8 +32,14 @@ function formatRemaining(ms) {
 }
 
 export default function TestSession({ testId }) {
-  const { data: test, error: loadError, reload } = useAsyncData(() => testService.getById(testId), testId)
-  const [attempt, setAttempt] = useState(0)
+  const { data: session, error: loadError, reload } = useAsyncData(
+    async () => {
+      const [test, attempt] = await Promise.all([testService.getById(testId), testService.start(testId)])
+      return { test, attempt, startedAt: Date.now() }
+    },
+    testId,
+  )
+  const test = session?.test
 
   if (loadError) {
     return <ErrorState message={loadError.response?.status === 404 ? 'Тест не знайдено.' : getErrorMessage(loadError)} onRetry={reload} />
@@ -42,10 +49,10 @@ export default function TestSession({ testId }) {
     return <EmptyState title="У цьому тесті ще немає питань" text="Спробуйте обрати інший тест." />
   }
 
-  return <ActiveTest key={attempt} testId={testId} test={test} onRetry={() => setAttempt((value) => value + 1)} />
+  return <ActiveTest key={session.startedAt} testId={testId} test={test} attempt={session.attempt} onRetry={reload} />
 }
 
-function ActiveTest({ testId, test, onRetry }) {
+function ActiveTest({ testId, test, attempt, onRetry }) {
   const navigate = useNavigate()
   const questions = test.questions
   const [answers, setAnswers] = useState({})
@@ -54,12 +61,15 @@ function ActiveTest({ testId, test, onRetry }) {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [result, setResult] = useState(null)
-  const [timedOut, setTimedOut] = useState(false)
-  const [deadline] = useState(() => Date.now() + (test.timeLimitMinutes ?? DEFAULT_TIME_LIMIT_MINUTES) * 60 * 1000)
+  const [autoReason, setAutoReason] = useState(null)
+  const [leaves, setLeaves] = useState(attempt.leaveCount)
+  const [notice, setNotice] = useState('')
+  const [deadline] = useState(() => Date.now() + attempt.remainingSeconds * 1000)
+  const timedOut = autoReason !== null
 
   const answeredCount = questions.filter((q) => isAnswered(answers[q.id])).length
 
-  async function submit() {
+  async function submit(reason = autoReason ?? 'MANUAL') {
     if (submitting) return
     setSubmitting(true)
     setSubmitError('')
@@ -67,7 +77,7 @@ function ActiveTest({ testId, test, onRetry }) {
       .filter((q) => isAnswered(answers[q.id]))
       .map((q) => ({ questionId: q.id, ...answers[q.id] }))
     try {
-      const data = await testService.submit(testId, payload)
+      const data = await testService.submit(testId, payload, reason)
       setConfirming(false)
       setResult(data)
     } catch (err) {
@@ -78,8 +88,23 @@ function ActiveTest({ testId, test, onRetry }) {
   }
 
   const remainingMs = useCountdown(deadline, Boolean(result) || submitting || timedOut, () => {
-    setTimedOut(true)
-    submit()
+    setAutoReason('TIMEOUT')
+    submit('TIMEOUT')
+  })
+
+  useExamGuard({
+    active: !result && !timedOut,
+    awayLimitSeconds: AWAY_LIMIT_SECONDS,
+    onLeave: () => {
+      setLeaves((n) => n + 1)
+      testService.recordLeave(testId).catch(() => {})
+    },
+    onReturn: (seconds) => setNotice(`Ви були поза сторінкою тесту ${seconds} с. Це зафіксовано.`),
+    onTooLong: () => {
+      setAutoReason('LEFT_PAGE')
+      submit('LEFT_PAGE')
+    },
+    onBlockedNavigation: () => setNotice('Під час тесту переходити на інші сторінки не можна. Завершіть тест кнопкою внизу.'),
   })
   const lowTime = remainingMs <= WARNING_THRESHOLD_MS
 
@@ -91,10 +116,6 @@ function ActiveTest({ testId, test, onRetry }) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
       <header className="mb-6">
-        <Link to="/tests" className="mb-3 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800">
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          До списку тестів
-        </Link>
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">{test.title}</h1>
           <span
@@ -108,6 +129,13 @@ function ActiveTest({ testId, test, onRetry }) {
             {formatRemaining(remainingMs)}
           </span>
         </div>
+        <p className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          <span>
+            Не залишайте сторінку: виходи фіксуються (поки що: {leaves}), а відсутність понад {AWAY_LIMIT_SECONDS} с автоматично завершить тест.
+            {notice && <strong className="mt-1 block">{notice}</strong>}
+          </span>
+        </p>
         <div className="mt-4">
           <div className="mb-1.5 flex justify-between text-xs text-slate-500">
             <span>
@@ -183,7 +211,7 @@ function ActiveTest({ testId, test, onRetry }) {
 
       {(confirming || timedOut) && !result && (
         <Modal
-          title={timedOut ? 'Час вичерпано' : 'Завершити тест?'}
+          title={autoReason === 'LEFT_PAGE' ? 'Тест завершено: ви залишили сторінку' : timedOut ? 'Час вичерпано' : 'Завершити тест?'}
           onClose={submitting || timedOut ? undefined : () => setConfirming(false)}
         >
           <div className="mt-3 space-y-3 text-sm text-slate-600">
@@ -201,7 +229,7 @@ function ActiveTest({ testId, test, onRetry }) {
             <ErrorAlert message={submitError} />
           </div>
           <div className="mt-6 flex flex-col gap-2 sm:flex-row-reverse">
-            <button type="button" onClick={submit} disabled={submitting} className={`${primaryButtonClass} flex-1`}>
+            <button type="button" onClick={() => submit()} disabled={submitting} className={`${primaryButtonClass} flex-1`}>
               {submitting ? 'Надсилаємо…' : timedOut ? 'Надіслати знову' : 'Завершити'}
             </button>
             {!timedOut && (
@@ -215,7 +243,7 @@ function ActiveTest({ testId, test, onRetry }) {
 
       {result && <ResultModal
           result={result}
-          timedOut={timedOut}
+          autoReason={autoReason}
           onReview={() => navigate(`/results/${result.id}`)}
           onRetry={onRetry}
           onClose={() => navigate('/tests')}

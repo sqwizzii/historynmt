@@ -64,7 +64,7 @@ export default function ResultReview() {
           </dd>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-3">
-          <dt className="text-xs text-slate-500">Бал НМТ</dt>
+          <dt className="text-xs text-slate-500">Орієнт. бал НМТ</dt>
           <dd className="mt-1 text-lg font-bold text-blue-700">{result.nmtScore}</dd>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-3">

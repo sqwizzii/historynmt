@@ -5,18 +5,19 @@ import Modal from '../Modal.jsx'
 const NMT_MIN = 100
 const NMT_MAX = 200
 
-export default function ResultModal({ result, timedOut = false, onReview, onRetry, onClose }) {
+export default function ResultModal({ result, autoReason = null, onReview, onRetry, onClose }) {
   const percent = result.maxScore > 0 ? Math.round((result.score / result.maxScore) * 100) : 0
   const nmtPosition = ((result.nmtScore - NMT_MIN) / (NMT_MAX - NMT_MIN)) * 100
 
   return (
     <Modal title="Тест завершено" onClose={onClose}>
       <p className="mt-1 text-sm text-slate-600">{result.testTitle}</p>
-      {timedOut && <p className="mt-1 text-sm font-medium text-amber-700">Час вичерпано: відповіді надіслано автоматично.</p>}
+      {autoReason === 'TIMEOUT' && <p className="mt-1 text-sm font-medium text-amber-700">Час вичерпано: відповіді надіслано автоматично.</p>}
+      {autoReason === 'LEFT_PAGE' && <p className="mt-1 text-sm font-medium text-amber-700">Ви залишили сторінку: тест завершено автоматично.</p>}
 
       <div className="mt-6 flex flex-col items-center rounded-2xl bg-gradient-to-br from-blue-700 to-blue-900 px-4 py-6 text-white">
         <Award className="mb-2 h-7 w-7 text-amber-300" aria-hidden="true" />
-        <span className="text-xs font-semibold uppercase tracking-wider text-blue-100">Бал за шкалою НМТ</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-blue-100">Орієнтовний бал НМТ (лінійна шкала)</span>
         <span className="mt-1 text-5xl font-extrabold tabular-nums">{result.nmtScore}</span>
         <div className="mt-4 w-full">
           <div className="h-2 overflow-hidden rounded-full bg-white/20">

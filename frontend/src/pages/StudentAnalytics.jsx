@@ -31,7 +31,7 @@ export default function StudentAnalytics() {
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <header className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Мої результати</h1>
-        <p className="mt-1 text-sm text-slate-600">Історія пройдених тестів із балами за шкалою НМТ 100-200.</p>
+        <p className="mt-1 text-sm text-slate-600">Історія пройдених тестів з орієнтовними балами за лінійною шкалою 100–200 (це не офіційна таблиця НМТ).</p>
       </header>
 
       {results.length === 0 ? (
@@ -45,8 +45,8 @@ export default function StudentAnalytics() {
         <>
           <section className="mb-6 grid gap-4 sm:grid-cols-3">
             <StatCard icon={ClipboardList} label="Пройдено спроб" value={results.length} />
-            <StatCard icon={Award} label="Найкращий бал НМТ" value={best} />
-            <StatCard icon={TrendingUp} label="Середній бал НМТ" value={average} />
+            <StatCard icon={Award} label="Найкращий орієнт. бал" value={best} />
+            <StatCard icon={TrendingUp} label="Середній орієнт. бал" value={average} />
           </section>
           <ResultsTable results={results} />
         </>
