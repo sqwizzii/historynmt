@@ -4,12 +4,31 @@ import ErrorAlert from '../ErrorAlert.jsx'
 import Modal from '../Modal.jsx'
 import { inputClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { getErrorMessage, testService } from '../../services/api.js'
+import { fileToDataUrl } from '../../utils/imageFile.js'
+
+async function shrinkImages(payload) {
+  for (const q of payload.questions) {
+    if (!q.image) continue
+    try {
+      const blob = await (await fetch(q.image)).blob()
+      q.image = await fileToDataUrl(new File([blob], 'image', { type: blob.type }))
+    } catch {
+      q.image = null
+    }
+  }
+}
 
 const SCRIPT = `function exportForm() {
   var form = FormApp.getActiveForm();
   var out = { title: form.getTitle(), description: form.getDescription(), questions: [] };
+  var pendingImage = null;
   form.getItems().forEach(function (item) {
     var type = item.getType();
+    if (type === FormApp.ItemType.IMAGE) {
+      var blob = item.asImageItem().getImage();
+      pendingImage = 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
+      return;
+    }
     var q;
     var kind;
     if (type === FormApp.ItemType.MULTIPLE_CHOICE) { q = item.asMultipleChoiceItem(); kind = 'SINGLE'; }
@@ -22,12 +41,15 @@ const SCRIPT = `function exportForm() {
       help: item.getHelpText(),
       type: kind,
       explanation: fb ? fb.getText() : '',
+      image: pendingImage,
       options: q.getChoices().map(function (c) {
         return { text: c.getValue(), correct: c.isCorrectAnswer() };
       })
     });
+    pendingImage = null;
   });
-  Logger.log(JSON.stringify(out));
+  var file = DriveApp.createFile('nmt-form-export.json', JSON.stringify(out), MimeType.PLAIN_TEXT);
+  Logger.log('Файл створено: ' + file.getUrl());
 }`
 
 export default function ImportFormModal({ onClose, onImported }) {
@@ -66,6 +88,7 @@ export default function ImportFormModal({ onClose, onImported }) {
     if (!payload || !Array.isArray(payload.questions)) return setError('У даних немає списку питань.')
     setLoading(true)
     try {
+      await shrinkImages(payload)
       setResult(await testService.importGoogleForm({ ...payload, timeLimitMinutes: Number(minutes) || 60 }))
     } catch (err) {
       setError(getErrorMessage(err))
@@ -97,6 +120,13 @@ export default function ImportFormModal({ onClose, onImported }) {
               </ul>
             </div>
           )}
+          {result.warnings?.length > 0 && (
+            <ul className="list-disc space-y-1 rounded-xl bg-amber-50 p-3.5 pl-8 text-xs text-amber-900">
+              {result.warnings.map((w, i) => (
+                <li key={i}>{w}</li>
+              ))}
+            </ul>
+          )}
           <p className="text-xs text-slate-500">Перегляньте питання у редакторі й додайте теми та пояснення за потреби.</p>
         </div>
         <button type="button" onClick={() => onImported(result.testId)} className={`${primaryButtonClass} mt-5 w-full`}>
@@ -114,7 +144,7 @@ export default function ImportFormModal({ onClose, onImported }) {
           <li>
             Меню «⋮», потім «Редактор скриптів». Вставте скрипт нижче, натисніть «Виконати» і дозвольте доступ до форми.
           </li>
-          <li>Відкрийте «Журнал виконання», скопіюйте весь рядок і вставте його в поле нижче.</li>
+          <li>У «Журналі виконання» з'явиться посилання на файл у вашому Google Drive. Завантажте цей файл і оберіть його нижче.</li>
         </ol>
 
         <div>
@@ -126,7 +156,7 @@ export default function ImportFormModal({ onClose, onImported }) {
 
         <div>
           <label htmlFor="import-json" className="mb-1.5 block text-sm font-medium text-slate-700">
-            Дані зі скрипта
+            Файл зі скрипта (або вставлені дані)
           </label>
           <textarea
             id="import-json"
@@ -139,7 +169,7 @@ export default function ImportFormModal({ onClose, onImported }) {
           <input ref={fileInput} type="file" accept=".json,.txt,application/json" onChange={handleFile} className="hidden" aria-label="Файл з даними" />
           <button type="button" onClick={() => fileInput.current?.click()} className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-blue-700 hover:underline">
             <FileUp className="h-3.5 w-3.5" aria-hidden="true" />
-            Або завантажити файл
+            Обрати файл
           </button>
         </div>
 
@@ -151,7 +181,7 @@ export default function ImportFormModal({ onClose, onImported }) {
         </div>
 
         <p className="text-xs text-slate-500">
-          Імпортуються питання з однією відповіддю, списки й «прапорці». Текстові відповіді та інші типи пропускаються. Фото з форми не переносяться.
+          Імпортуються питання з однією відповіддю, списки й «прапорці». Текстові відповіді та інші типи пропускаються. Переноситься фото, додане у формі окремим блоком «Зображення» перед питанням; фото всередині самого питання чи варіантів Google не віддає, їх додайте вже на сайті.
         </p>
         <ErrorAlert message={error} />
       </div>

@@ -23,6 +23,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FormImportService {
 
+    private static final java.util.regex.Pattern IMAGE_PATTERN =
+            java.util.regex.Pattern.compile("^data:image/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]{1,1500000}$");
+
     private final TestService testService;
 
     public FormImportResponse importForm(FormImportRequest request) {
@@ -32,8 +35,9 @@ public class FormImportService {
 
         int imported = 0;
         List<Skipped> skipped = new ArrayList<>();
+        List<String> warnings = new ArrayList<>();
         for (FormImportRequest.Question q : request.questions()) {
-            String reason = tryImport(test.id(), q);
+            String reason = tryImport(test.id(), q, warnings);
             if (reason == null) {
                 imported++;
             } else {
@@ -46,10 +50,10 @@ public class FormImportService {
             String detail = skipped.isEmpty() ? "У формі немає питань" : skipped.get(0).reason();
             throw new BadRequestException("Не вдалося імпортувати жодного питання. " + detail);
         }
-        return new FormImportResponse(test.id(), test.title(), imported, skipped);
+        return new FormImportResponse(test.id(), test.title(), imported, skipped, warnings);
     }
 
-    private String tryImport(Long testId, FormImportRequest.Question q) {
+    private String tryImport(Long testId, FormImportRequest.Question q, List<String> warnings) {
         QuestionType type = switch (q.type() == null ? "" : q.type().trim().toUpperCase()) {
             case "SINGLE" -> QuestionType.SINGLE_CHOICE;
             case "MULTIPLE" -> QuestionType.MULTIPLE_CHOICE;
@@ -73,9 +77,14 @@ public class FormImportService {
             return "Для питання з однією відповіддю позначено кілька правильних";
         }
         String text = q.title().trim() + (q.help() == null || q.help().isBlank() ? "" : "\n" + q.help().trim());
+        String image = blankToNull(q.image());
+        if (image != null && !IMAGE_PATTERN.matcher(image).matches()) {
+            warnings.add("«" + shorten(q.title()) + "»: фото не перенесено (непідтримуваний формат або завелике)");
+            image = null;
+        }
         try {
             testService.createQuestion(new CreateQuestionRequest(
-                    testId, text, null, type, blankToNull(q.explanation()), null, options));
+                    testId, text, image, type, blankToNull(q.explanation()), null, options));
             return null;
         } catch (BadRequestException e) {
             return e.getMessage();

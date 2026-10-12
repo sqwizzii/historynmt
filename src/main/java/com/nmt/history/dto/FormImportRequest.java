@@ -21,6 +21,7 @@ public record FormImportRequest(
             String help,
             @NotBlank String type,
             String explanation,
+            String image,
             @NotNull @Size(max = 30) @Valid List<Option> options) {
     }
 

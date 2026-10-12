@@ -10,8 +10,8 @@ Google не дозволяє іншим сайтам читати правиль
 2. Меню «⋮» (праворуч угорі), потім «Редактор скриптів».
 3. Видаліть усе, що там є, і вставте скрипт з розділу нижче (або натисніть «Скопіювати скрипт» у вікні імпорту на сайті).
 4. Натисніть «Виконати» й дозвольте доступ до форми (Google попросить підтвердити).
-5. Внизу відкрийте «Журнал виконання» і скопіюйте весь рядок, що починається з `{`.
-6. На сайті: «Панель вчителя», вкладка «Тести та питання», кнопка «Імпорт з Google Forms». Вставте рядок і натисніть «Імпортувати».
+5. Внизу відкрийте «Журнал виконання»: там буде посилання на файл `nmt-form-export.json` у вашому Google Drive. Завантажте цей файл.
+6. На сайті: «Панель вчителя», вкладка «Тести та питання», кнопка «Імпорт з Google Forms». Оберіть файл і натисніть «Імпортувати».
 
 ## Що імпортується
 
@@ -23,7 +23,13 @@ Google не дозволяє іншим сайтам читати правиль
 
 - Текстові відповіді, шкали, таблиці, дати та інші типи питань.
 - Питання, де не позначено правильну відповідь, або для питання з однією відповіддю позначено кілька.
-- Зображення з форми (їх можна додати вже на сайті).
+- Зображення всередині самого питання чи варіанта відповіді. Google Apps Script їх не віддає, тому такі фото додайте вже на сайті (редактор питання, «Завантажити файл»).
+
+## Як переносяться фото
+
+Переноситься лише фото, додане у формі окремим блоком «Зображення» (кнопка із зображенням у бічній панелі) **безпосередньо перед питанням**.
+Воно прикріплюється до наступного питання. Якщо у вашій формі зображення стоїть після питання, воно потрапить не до того питання: перевірте після імпорту.
+Фото перед імпортом автоматично стискаються до 1000 пікселів.
 
 Після імпорту перегляньте питання в редакторі: додайте теми, пояснення й зображення за потреби.
 
@@ -33,8 +39,14 @@ Google не дозволяє іншим сайтам читати правиль
 function exportForm() {
   var form = FormApp.getActiveForm();
   var out = { title: form.getTitle(), description: form.getDescription(), questions: [] };
+  var pendingImage = null;
   form.getItems().forEach(function (item) {
     var type = item.getType();
+    if (type === FormApp.ItemType.IMAGE) {
+      var blob = item.asImageItem().getImage();
+      pendingImage = 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
+      return;
+    }
     var q;
     var kind;
     if (type === FormApp.ItemType.MULTIPLE_CHOICE) { q = item.asMultipleChoiceItem(); kind = 'SINGLE'; }
@@ -47,12 +59,15 @@ function exportForm() {
       help: item.getHelpText(),
       type: kind,
       explanation: fb ? fb.getText() : '',
+      image: pendingImage,
       options: q.getChoices().map(function (c) {
         return { text: c.getValue(), correct: c.isCorrectAnswer() };
       })
     });
+    pendingImage = null;
   });
-  Logger.log(JSON.stringify(out));
+  var file = DriveApp.createFile('nmt-form-export.json', JSON.stringify(out), MimeType.PLAIN_TEXT);
+  Logger.log('Файл створено: ' + file.getUrl());
 }
 ```
 

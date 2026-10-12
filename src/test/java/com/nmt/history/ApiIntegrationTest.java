@@ -341,10 +341,11 @@ class ApiIntegrationTest {
     void googleFormImportAndOptionImages() throws Exception {
         String teacher = teacherToken();
         String student = registerStudent("import_student");
+        String formPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
         Map<String, Object> form = Map.of("title", "З Google Forms", "description", "опис", "questions", java.util.List.of(
-                Map.of("title", "Радіо", "type", "SINGLE", "explanation", "бо так", "options", java.util.List.of(
+                Map.of("title", "Радіо", "type", "SINGLE", "explanation", "бо так", "image", formPng, "options", java.util.List.of(
                         Map.of("text", "A", "correct", true), Map.of("text", "B", "correct", false))),
-                Map.of("title", "Чекбокси", "help", "оберіть усі", "type", "MULTIPLE", "options", java.util.List.of(
+                Map.of("title", "Чекбокси", "help", "оберіть усі", "type", "MULTIPLE", "image", "data:image/svg+xml;base64,AAAA", "options", java.util.List.of(
                         Map.of("text", "A", "correct", true), Map.of("text", "B", "correct", true), Map.of("text", "C", "correct", false))),
                 Map.of("title", "Без ключа", "type", "SINGLE", "options", java.util.List.of(
                         Map.of("text", "A", "correct", false), Map.of("text", "B", "correct", false))),
@@ -354,11 +355,14 @@ class ApiIntegrationTest {
         JsonNode result = body(send(post("/api/teacher/import/google-form"), teacher, form)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.imported", is(2)))
+                .andExpect(jsonPath("$.warnings", hasSize(1)))
                 .andExpect(jsonPath("$.skipped", hasSize(2))));
         long testId = result.get("testId").asLong();
         send(get("/api/tests/" + testId), null, null)
                 .andExpect(jsonPath("$.title", is("З Google Forms")))
                 .andExpect(jsonPath("$.questions", hasSize(2)))
+                .andExpect(jsonPath("$.questions[0].imageUrl", org.hamcrest.Matchers.startsWith("/api/tests/questions/")))
+                .andExpect(jsonPath("$.questions[1].imageUrl").doesNotExist())
                 .andExpect(jsonPath("$.questions[1].questionText", is("Чекбокси\nоберіть усі")));
 
         send(post("/api/teacher/import/google-form"), teacher, Map.of("title", "Порожній", "questions", java.util.List.of(
