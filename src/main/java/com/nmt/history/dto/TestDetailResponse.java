@@ -7,6 +7,7 @@ public record TestDetailResponse(
         Long id,
         String title,
         String description,
+        Integer timeLimitMinutes,
         LocalDateTime createdAt,
         List<QuestionResponse> questions) {
 }

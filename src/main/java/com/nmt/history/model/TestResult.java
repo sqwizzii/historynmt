@@ -25,7 +25,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"student", "test"})
+@ToString(exclude = {"student", "test", "reviewJson"})
 public class TestResult {
 
     @Id
@@ -47,6 +47,10 @@ public class TestResult {
     /** Бал за шкалою НМТ (100-200). */
     @Column(name = "nmt_score")
     private Integer nmtScore;
+
+    /** JSON-розбір відповідей (список QuestionReview). */
+    @Column(name = "review_json", columnDefinition = "TEXT")
+    private String reviewJson;
 
     @Column(name = "completed_at", nullable = false)
     private LocalDateTime completedAt;

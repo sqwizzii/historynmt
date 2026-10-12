@@ -4,6 +4,7 @@ import com.nmt.history.dto.CreateModuleRequest;
 import com.nmt.history.dto.FlashcardRequest;
 import com.nmt.history.dto.FlashcardResponse;
 import com.nmt.history.dto.QuizletModuleResponse;
+import com.nmt.history.dto.UpdateModuleRequest;
 import com.nmt.history.exception.ResourceNotFoundException;
 import com.nmt.history.model.Flashcard;
 import com.nmt.history.model.QuizletModule;
@@ -51,6 +52,37 @@ public class QuizletService {
         Flashcard flashcard = toFlashcard(request);
         flashcard.setModule(module);
         return FlashcardResponse.from(flashcardRepository.save(flashcard));
+    }
+
+    @Transactional
+    public QuizletModuleResponse updateModule(Long moduleId, UpdateModuleRequest request) {
+        QuizletModule module = findModule(moduleId);
+        module.setTitle(request.title().trim());
+        module.setDescription(request.description() == null || request.description().isBlank() ? null : request.description());
+        return QuizletModuleResponse.from(module);
+    }
+
+    @Transactional
+    public void deleteModule(Long moduleId) {
+        moduleRepository.delete(findModule(moduleId));
+    }
+
+    @Transactional
+    public FlashcardResponse updateFlashcard(Long cardId, FlashcardRequest request) {
+        Flashcard flashcard = findFlashcard(cardId);
+        flashcard.setTermOrQuestion(request.termOrQuestion().trim());
+        flashcard.setAnswerOrDate(request.answerOrDate().trim());
+        return FlashcardResponse.from(flashcard);
+    }
+
+    @Transactional
+    public void deleteFlashcard(Long cardId) {
+        flashcardRepository.delete(findFlashcard(cardId));
+    }
+
+    private Flashcard findFlashcard(Long cardId) {
+        return flashcardRepository.findById(cardId)
+                .orElseThrow(() -> new ResourceNotFoundException("Картку не знайдено: " + cardId));
     }
 
     private Flashcard toFlashcard(FlashcardRequest request) {

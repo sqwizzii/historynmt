@@ -51,9 +51,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/tests/*/submit").hasAnyRole(STUDENT, TEACHER)
                         .requestMatchers(HttpMethod.GET, "/api/results/my").hasAnyRole(STUDENT, TEACHER)
 
+                        .requestMatchers(HttpMethod.GET, "/api/results/*").hasAnyRole(STUDENT, TEACHER)
+
                         .requestMatchers(HttpMethod.POST, "/api/tests/create", "/api/tests/questions/create").hasRole(TEACHER)
                         .requestMatchers(HttpMethod.POST, "/api/quizlet/**").hasRole(TEACHER)
-                        .requestMatchers(HttpMethod.GET, "/api/teacher/**").hasRole(TEACHER)
+                        .requestMatchers(HttpMethod.PUT, "/api/tests/**", "/api/quizlet/**").hasRole(TEACHER)
+                        .requestMatchers(HttpMethod.DELETE, "/api/tests/**", "/api/quizlet/**").hasRole(TEACHER)
+                        .requestMatchers("/api/teacher/**").hasRole(TEACHER)
 
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtils, userDetailsService),

@@ -39,6 +39,10 @@ public class Test {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "time_limit_minutes", nullable = false)
+    @Builder.Default
+    private Integer timeLimitMinutes = 60;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

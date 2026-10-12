@@ -3,10 +3,14 @@ package com.nmt.history.service;
 import com.nmt.history.dto.AnswerRequest;
 import com.nmt.history.dto.CreateQuestionRequest;
 import com.nmt.history.dto.CreateTestRequest;
+import com.nmt.history.dto.OptionEditResponse;
 import com.nmt.history.dto.OptionRequest;
 import com.nmt.history.dto.OptionResponse;
+import com.nmt.history.dto.QuestionEditResponse;
 import com.nmt.history.dto.QuestionResponse;
+import com.nmt.history.dto.QuestionReview;
 import com.nmt.history.dto.TestDetailResponse;
+import com.nmt.history.dto.TestEditResponse;
 import com.nmt.history.dto.TestResultResponse;
 import com.nmt.history.dto.TestSubmitRequest;
 import com.nmt.history.dto.TestSummaryResponse;
@@ -46,12 +50,13 @@ public class TestService {
     private final UserRepository userRepository;
     private final ScoringService scoringService;
     private final NmtScoreConverter nmtScoreConverter;
+    private final ReviewService reviewService;
+
+    private static final int DEFAULT_TIME_LIMIT_MINUTES = 60;
 
     @Transactional(readOnly = true)
     public List<TestSummaryResponse> getAllTests() {
-        return testRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(TestSummaryResponse::from)
-                .toList();
+        return testRepository.findAllSummaries();
     }
 
     @Transactional(readOnly = true)
@@ -61,38 +66,91 @@ public class TestService {
                 .map(this::toQuestionResponse)
                 .toList();
         return new TestDetailResponse(test.getId(), test.getTitle(), test.getDescription(),
-                test.getCreatedAt(), questions);
+                test.getTimeLimitMinutes(), test.getCreatedAt(), questions);
+    }
+
+    @Transactional(readOnly = true)
+    public TestEditResponse getTestForEdit(Long testId) {
+        Test test = findTest(testId);
+        List<QuestionEditResponse> questions = questionRepository.findByTestIdOrderByIdAsc(testId).stream()
+                .map(this::toQuestionEditResponse)
+                .toList();
+        return new TestEditResponse(test.getId(), test.getTitle(), test.getDescription(),
+                test.getTimeLimitMinutes(), test.getCreatedAt(), questions);
     }
 
     @Transactional
     public TestSummaryResponse createTest(CreateTestRequest request) {
         Test test = testRepository.save(Test.builder()
                 .title(request.title().trim())
-                .description(request.description())
+                .description(blankToNull(request.description()))
+                .timeLimitMinutes(timeLimit(request))
                 .build());
         return TestSummaryResponse.from(test);
     }
 
     @Transactional
-    public QuestionResponse createQuestion(CreateQuestionRequest request) {
+    public TestSummaryResponse updateTest(Long testId, CreateTestRequest request) {
+        Test test = findTest(testId);
+        test.setTitle(request.title().trim());
+        test.setDescription(blankToNull(request.description()));
+        test.setTimeLimitMinutes(timeLimit(request));
+        return TestSummaryResponse.from(test);
+    }
+
+    @Transactional
+    public void deleteTest(Long testId) {
+        Test test = findTest(testId);
+        testResultRepository.deleteByTestId(testId);
+        testRepository.delete(test);
+    }
+
+    @Transactional
+    public QuestionEditResponse createQuestion(CreateQuestionRequest request) {
         Test test = findTest(request.testId());
         validateOptions(request.questionType(), request.options());
 
-        Question question = Question.builder()
-                .test(test)
-                .questionText(request.questionText().trim())
-                .imageUrl(request.imageUrl() == null || request.imageUrl().isBlank() ? null : request.imageUrl().trim())
-                .questionType(request.questionType())
-                .build();
+        Question question = Question.builder().test(test).build();
+        applyQuestion(question, request);
+        return toQuestionEditResponse(questionRepository.save(question));
+    }
+
+    @Transactional
+    public QuestionEditResponse updateQuestion(Long questionId, CreateQuestionRequest request) {
+        Question question = findQuestion(questionId);
+        validateOptions(request.questionType(), request.options());
+
+        question.getOptions().clear();
+        applyQuestion(question, request);
+        return toQuestionEditResponse(questionRepository.save(question));
+    }
+
+    @Transactional
+    public void deleteQuestion(Long questionId) {
+        questionRepository.delete(findQuestion(questionId));
+    }
+
+    private void applyQuestion(Question question, CreateQuestionRequest request) {
+        question.setQuestionText(request.questionText().trim());
+        question.setImageUrl(blankToNull(request.imageUrl()));
+        question.setExplanation(blankToNull(request.explanation()));
+        question.setQuestionType(request.questionType());
         for (OptionRequest o : request.options()) {
             question.addOption(Option.builder()
                     .optionText(o.optionText().trim())
                     .isCorrect(Boolean.TRUE.equals(o.isCorrect()))
-                    .matchKey(o.matchKey() == null || o.matchKey().isBlank() ? null : o.matchKey().trim())
+                    .matchKey(blankToNull(o.matchKey()))
                     .orderIndex(o.orderIndex())
                     .build());
         }
-        return toQuestionResponse(questionRepository.save(question));
+    }
+
+    private int timeLimit(CreateTestRequest request) {
+        return request.timeLimitMinutes() != null ? request.timeLimitMinutes() : DEFAULT_TIME_LIMIT_MINUTES;
+    }
+
+    private String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
     }
 
     @Transactional
@@ -110,10 +168,14 @@ public class TestService {
 
         int score = 0;
         int maxScore = 0;
+        List<QuestionReview> review = new ArrayList<>();
         for (Question question : questions) {
+            AnswerRequest answer = answersByQuestion.get(question.getId());
             int questionMax = scoringService.maxScore(question);
+            int earned = Math.min(scoringService.score(question, answer), questionMax);
             maxScore += questionMax;
-            score += Math.min(scoringService.score(question, answersByQuestion.get(question.getId())), questionMax);
+            score += earned;
+            review.add(reviewService.build(question, answer, earned, questionMax));
         }
 
         TestResult saved = testResultRepository.save(TestResult.builder()
@@ -121,8 +183,9 @@ public class TestService {
                 .test(test)
                 .score(score)
                 .nmtScore(nmtScoreConverter.convert(score, maxScore))
+                .reviewJson(reviewService.toJson(review))
                 .build());
-        return TestResultResponse.from(saved, maxScore);
+        return TestResultResponse.from(saved, maxScore, review);
     }
 
     private Map<Long, AnswerRequest> indexAnswers(List<Question> questions, TestSubmitRequest request) {
@@ -206,6 +269,21 @@ public class TestService {
                 .toList();
         return new QuestionResponse(question.getId(), question.getQuestionText(),
                 question.getImageUrl(), question.getQuestionType(), optionResponses, matchChoices);
+    }
+
+    private QuestionEditResponse toQuestionEditResponse(Question question) {
+        List<OptionEditResponse> options = question.getOptions().stream()
+                .sorted(Comparator.comparing(Option::getId, Comparator.nullsLast(Comparator.naturalOrder())))
+                .map(o -> new OptionEditResponse(o.getId(), o.getOptionText(), Boolean.TRUE.equals(o.getIsCorrect()),
+                        o.getMatchKey(), o.getOrderIndex()))
+                .toList();
+        return new QuestionEditResponse(question.getId(), question.getQuestionText(), question.getImageUrl(),
+                question.getQuestionType(), question.getExplanation(), options);
+    }
+
+    private Question findQuestion(Long questionId) {
+        return questionRepository.findById(questionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Питання не знайдено: " + questionId));
     }
 
     private Test findTest(Long testId) {

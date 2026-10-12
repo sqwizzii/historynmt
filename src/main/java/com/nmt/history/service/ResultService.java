@@ -1,9 +1,11 @@
 package com.nmt.history.service;
 
+import com.nmt.history.dto.QuestionReview;
 import com.nmt.history.dto.StudentResponse;
 import com.nmt.history.dto.TestResultResponse;
 import com.nmt.history.exception.ResourceNotFoundException;
 import com.nmt.history.model.Role;
+import com.nmt.history.model.TestResult;
 import com.nmt.history.model.User;
 import com.nmt.history.repository.StudentStats;
 import com.nmt.history.repository.TestResultRepository;
@@ -22,6 +24,7 @@ public class ResultService {
 
     private final TestResultRepository testResultRepository;
     private final UserRepository userRepository;
+    private final ReviewService reviewService;
 
     @Transactional(readOnly = true)
     public List<TestResultResponse> getMyResults(String username) {
@@ -60,5 +63,15 @@ public class ResultService {
         return testResultRepository.findByStudentIdOrderByCompletedAtDesc(studentId).stream()
                 .map(TestResultResponse::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public TestResultResponse getResult(Long resultId, String username, boolean teacher) {
+        TestResult result = testResultRepository.findById(resultId)
+                .filter(r -> teacher || r.getStudent().getUsername().equals(username))
+                .orElseThrow(() -> new ResourceNotFoundException("Результат не знайдено: " + resultId));
+        List<QuestionReview> review = reviewService.fromJson(result.getReviewJson());
+        Integer maxScore = review == null ? null : review.stream().mapToInt(QuestionReview::max).sum();
+        return TestResultResponse.from(result, maxScore, review);
     }
 }

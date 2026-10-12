@@ -2,6 +2,7 @@ package com.nmt.history.controller;
 
 import com.nmt.history.dto.StudentResponse;
 import com.nmt.history.dto.TestResultResponse;
+import com.nmt.history.model.Role;
 import com.nmt.history.service.ResultService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,13 @@ public class ResultController {
     @GetMapping("/results/my")
     public List<TestResultResponse> getMyResults(Authentication authentication) {
         return resultService.getMyResults(authentication.getName());
+    }
+
+    @GetMapping("/results/{resultId}")
+    public TestResultResponse getResult(@PathVariable Long resultId, Authentication authentication) {
+        boolean teacher = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_" + Role.TEACHER.name()));
+        return resultService.getResult(resultId, authentication.getName(), teacher);
     }
 
     @GetMapping("/teacher/results")

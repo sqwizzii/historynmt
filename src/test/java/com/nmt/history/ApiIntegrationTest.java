@@ -1,0 +1,213 @@
+package com.nmt.history;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+class ApiIntegrationTest {
+
+    @Autowired
+    private MockMvc mvc;
+
+    @Autowired
+    private ObjectMapper json;
+
+    private ResultActions send(org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder request,
+                               String token, Object body) throws Exception {
+        if (token != null) {
+            request.header("Authorization", "Bearer " + token);
+        }
+        if (body != null) {
+            request.contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(body));
+        }
+        return mvc.perform(request);
+    }
+
+    private JsonNode body(ResultActions actions) throws Exception {
+        return json.readTree(actions.andReturn().getResponse().getContentAsString());
+    }
+
+    private String registerStudent(String username) throws Exception {
+        ResultActions result = send(post("/api/auth/register"), null,
+                Map.of("username", username, "email", username + "@test.ua", "password", "secret1", "role", "TEACHER"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.role", is("STUDENT")));
+        return body(result).get("token").asText();
+    }
+
+    private String teacherToken() throws Exception {
+        ResultActions result = send(post("/api/auth/login"), null, Map.of("username", "teacher", "password", "Teacher123!"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.role", is("TEACHER")));
+        return body(result).get("token").asText();
+    }
+
+    @Test
+    void registrationNeverGrantsTeacherRoleAndBootstrapTeacherCanLogin() throws Exception {
+        registerStudent("reg_student");
+        teacherToken();
+    }
+
+    @Test
+    void studentCannotManageContent() throws Exception {
+        String student = registerStudent("plain_student");
+        send(post("/api/tests/create"), student, Map.of("title", "x")).andExpect(status().isForbidden());
+        send(put("/api/tests/1"), student, Map.of("title", "x")).andExpect(status().isForbidden());
+        send(delete("/api/tests/1"), student, null).andExpect(status().isForbidden());
+        send(get("/api/teacher/students"), student, null).andExpect(status().isForbidden());
+        send(post("/api/tests/create"), null, Map.of("title", "x")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void fullTestFlowWithReviewAndCleanup() throws Exception {
+        String teacher = teacherToken();
+        String student = registerStudent("flow_student");
+        String other = registerStudent("flow_other");
+
+        long testId = body(send(post("/api/tests/create"), teacher,
+                Map.of("title", "Flow", "description", "d", "timeLimitMinutes", 30))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.timeLimitMinutes", is(30)))).get("id").asLong();
+
+        JsonNode single = body(send(post("/api/tests/questions/create"), teacher, Map.of(
+                "testId", testId, "questionText", "Хто?", "questionType", "SINGLE_CHOICE",
+                "explanation", "Бо так",
+                "options", java.util.List.of(
+                        Map.of("optionText", "A", "isCorrect", true),
+                        Map.of("optionText", "B", "isCorrect", false))))
+                .andExpect(status().isCreated()));
+        long singleId = single.get("id").asLong();
+        long correctOptionId = single.get("options").get(0).get("id").asLong();
+
+        send(get("/api/tests/" + testId), null, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.questions", hasSize(1)))
+                .andExpect(jsonPath("$.questions[0].explanation").doesNotExist())
+                .andExpect(jsonPath("$.questions[0].options[0].isCorrect").doesNotExist());
+
+        ResultActions submit = send(post("/api/tests/" + testId + "/submit"), student, Map.of("answers",
+                java.util.List.of(Map.of("questionId", singleId, "selectedOptionIds", java.util.List.of(correctOptionId)))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.score", is(1)))
+                .andExpect(jsonPath("$.maxScore", is(1)))
+                .andExpect(jsonPath("$.nmtScore", is(200)))
+                .andExpect(jsonPath("$.review[0].explanation", is("Бо так")))
+                .andExpect(jsonPath("$.review[0].correctAnswer[0]", is("A")));
+        long resultId = body(submit).get("id").asLong();
+
+        send(get("/api/results/" + resultId), student, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.review[0].yourAnswer[0]", is("A")));
+        send(get("/api/results/" + resultId), teacher, null).andExpect(status().isOk());
+        send(get("/api/results/" + resultId), other, null).andExpect(status().isNotFound());
+
+        send(put("/api/tests/questions/" + singleId), teacher, Map.of(
+                "testId", testId, "questionText", "Хто насправді?", "questionType", "MULTIPLE_CHOICE",
+                "options", java.util.List.of(
+                        Map.of("optionText", "A", "isCorrect", true),
+                        Map.of("optionText", "B", "isCorrect", true))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.questionType", is("MULTIPLE_CHOICE")))
+                .andExpect(jsonPath("$.options", hasSize(2)));
+
+        send(get("/api/teacher/tests/" + testId), teacher, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.questions[0].options[1].isCorrect", is(true)));
+
+        send(delete("/api/tests/" + testId), teacher, null).andExpect(status().isNoContent());
+        send(get("/api/tests/" + testId), null, null).andExpect(status().isNotFound());
+        send(get("/api/results/my"), student, null).andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    void invalidQuestionsAreRejected() throws Exception {
+        String teacher = teacherToken();
+        long testId = body(send(post("/api/tests/create"), teacher, Map.of("title", "Validation"))).get("id").asLong();
+        send(post("/api/tests/questions/create"), teacher, Map.of(
+                "testId", testId, "questionText", "x", "questionType", "SINGLE_CHOICE",
+                "options", java.util.List.of(Map.of("optionText", "a"), Map.of("optionText", "b"))))
+                .andExpect(status().isBadRequest());
+        send(post("/api/tests/questions/create"), teacher, Map.of(
+                "testId", testId, "questionText", "x", "imageUrl", "javascript:alert(1)", "questionType", "CHRONOLOGY",
+                "options", java.util.List.of(Map.of("optionText", "a", "orderIndex", 1), Map.of("optionText", "b", "orderIndex", 2))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void repeatedFailedLoginsAreThrottled() throws Exception {
+        registerStudent("brute_target");
+        for (int i = 0; i < 5; i++) {
+            send(post("/api/auth/login"), null, Map.of("username", "brute_target", "password", "wrong"))
+                    .andExpect(status().isUnauthorized());
+        }
+        send(post("/api/auth/login"), null, Map.of("username", "brute_target", "password", "secret1"))
+                .andExpect(status().isTooManyRequests());
+    }
+
+    @Test
+    void passwordChangeAndTeacherManagementOfStudents() throws Exception {
+        String teacher = teacherToken();
+        String token = registerStudent("pw_student");
+
+        send(put("/api/account/password"), token, Map.of("currentPassword", "bad", "newPassword", "newsecret1"))
+                .andExpect(status().isBadRequest());
+        send(put("/api/account/password"), token, Map.of("currentPassword", "secret1", "newPassword", "newsecret1"))
+                .andExpect(status().isNoContent());
+        send(post("/api/auth/login"), null, Map.of("username", "pw_student", "password", "newsecret1"))
+                .andExpect(status().isOk());
+
+        JsonNode students = body(send(get("/api/teacher/students"), teacher, null).andExpect(status().isOk()));
+        long id = 0;
+        for (JsonNode s : students) {
+            if (s.get("username").asText().equals("pw_student")) {
+                id = s.get("id").asLong();
+            }
+        }
+        send(put("/api/teacher/students/" + id + "/password"), teacher, Map.of("newPassword", "reset123"))
+                .andExpect(status().isNoContent());
+        send(post("/api/auth/login"), null, Map.of("username", "pw_student", "password", "reset123"))
+                .andExpect(status().isOk());
+        send(delete("/api/teacher/students/" + id), teacher, null).andExpect(status().isNoContent());
+        send(get("/api/teacher/students/" + id + "/results"), teacher, null).andExpect(status().isNotFound());
+        send(delete("/api/teacher/students/1"), teacher, null).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void quizletCrud() throws Exception {
+        String teacher = teacherToken();
+        long moduleId = body(send(post("/api/quizlet/create"), teacher, Map.of(
+                "title", "M", "flashcards", java.util.List.of(Map.of("termOrQuestion", "t", "answerOrDate", "a"))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.flashcards[0].id", notNullValue()))).get("id").asLong();
+        long cardId = body(send(get("/api/quizlet/" + moduleId), null, null)).get("flashcards").get(0).get("id").asLong();
+
+        send(put("/api/quizlet/cards/" + cardId), teacher, Map.of("termOrQuestion", "t2", "answerOrDate", "a2"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.termOrQuestion", is("t2")));
+        send(put("/api/quizlet/" + moduleId), teacher, Map.of("title", "M2"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.title", is("M2")));
+        send(delete("/api/quizlet/cards/" + cardId), teacher, null).andExpect(status().isNoContent());
+        send(delete("/api/quizlet/" + moduleId), teacher, null).andExpect(status().isNoContent());
+        send(get("/api/quizlet/" + moduleId), null, null).andExpect(status().isNotFound());
+    }
+}

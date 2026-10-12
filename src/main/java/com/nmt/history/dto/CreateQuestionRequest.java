@@ -14,5 +14,6 @@ public record CreateQuestionRequest(
         @NotBlank String questionText,
         @Size(max = 2048) @Pattern(regexp = "^(https?://\\S+)?$", message = "imageUrl має бути http(s)-посиланням") String imageUrl,
         @NotNull QuestionType questionType,
+        String explanation,
         @NotEmpty @Valid List<OptionRequest> options) {
 }

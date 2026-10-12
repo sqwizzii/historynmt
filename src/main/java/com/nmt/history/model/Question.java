@@ -50,6 +50,9 @@ public class Question {
     @Column(name = "question_type", nullable = false, length = 30)
     private QuestionType questionType;
 
+    @Column(columnDefinition = "TEXT")
+    private String explanation;
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Option> options = new ArrayList<>();
