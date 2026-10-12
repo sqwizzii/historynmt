@@ -30,6 +30,7 @@ import com.nmt.history.repository.TestRepository;
 import com.nmt.history.repository.TestResultRepository;
 import com.nmt.history.repository.UserRepository;
 import java.time.Duration;
+import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -138,7 +139,10 @@ public class TestService {
 
     private void applyQuestion(Question question, CreateQuestionRequest request) {
         question.setQuestionText(request.questionText().trim());
-        question.setImageUrl(blankToNull(request.imageUrl()));
+        String imageUrl = blankToNull(request.imageUrl());
+        if (imageUrl == null || !QuestionImages.OWN_URL.matcher(imageUrl).matches()) {
+            question.setImageUrl(imageUrl);
+        }
         question.setExplanation(blankToNull(request.explanation()));
         question.setTopic(blankToNull(request.topic()));
         question.setQuestionType(request.questionType());
@@ -323,7 +327,7 @@ public class TestService {
                 .map(o -> new OptionResponse(o.getId(), o.getOptionText()))
                 .toList();
         return new QuestionResponse(question.getId(), question.getQuestionText(),
-                question.getImageUrl(), question.getQuestionType(), optionResponses, matchChoices);
+                QuestionImages.publicUrl(question), question.getQuestionType(), optionResponses, matchChoices);
     }
 
     private QuestionEditResponse toQuestionEditResponse(Question question) {
@@ -332,8 +336,23 @@ public class TestService {
                 .map(o -> new OptionEditResponse(o.getId(), o.getOptionText(), Boolean.TRUE.equals(o.getIsCorrect()),
                         o.getMatchKey(), o.getOrderIndex()))
                 .toList();
-        return new QuestionEditResponse(question.getId(), question.getQuestionText(), question.getImageUrl(),
+        return new QuestionEditResponse(question.getId(), question.getQuestionText(), QuestionImages.publicUrl(question),
                 question.getQuestionType(), question.getExplanation(), question.getTopic(), options);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<byte[]> questionImage(Long questionId) {
+        String url = findQuestion(questionId).getImageUrl();
+        if (url == null || !url.startsWith("data:")) {
+            throw new ResourceNotFoundException("Зображення не знайдено");
+        }
+        int comma = url.indexOf(',');
+        String mime = url.substring(5, url.indexOf(';'));
+        byte[] bytes = java.util.Base64.getDecoder().decode(url.substring(comma + 1));
+        return ResponseEntity.ok()
+                .contentType(org.springframework.http.MediaType.parseMediaType(mime))
+                .cacheControl(org.springframework.http.CacheControl.maxAge(java.time.Duration.ofMinutes(5)).cachePublic())
+                .body(bytes);
     }
 
     private Question findQuestion(Long questionId) {

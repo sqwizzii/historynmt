@@ -1,10 +1,12 @@
 import { ImageOff } from 'lucide-react'
 import { useState } from 'react'
+import { resolveImageUrl } from '../utils/imageUrl.js'
 
 export default function QuestionImage({ src, alt = 'Ілюстрація до питання' }) {
   const [failedSrc, setFailedSrc] = useState(null)
 
   if (!src) return null
+  const resolved = resolveImageUrl(src)
 
   if (failedSrc === src) {
     return (
@@ -18,7 +20,7 @@ export default function QuestionImage({ src, alt = 'Ілюстрація до п
   return (
     <figure className="mb-5 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
       <img
-        src={src}
+        src={resolved}
         alt={alt}
         loading="lazy"
         referrerPolicy="no-referrer"

@@ -1,9 +1,11 @@
-import { CheckCircle2, Plus, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { CheckCircle2, ImagePlus, Plus, Trash2 } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { fileToDataUrl } from '../../utils/imageFile.js'
 import ErrorAlert from '../ErrorAlert.jsx'
 import QuestionImage from '../QuestionImage.jsx'
 import { inputClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { getErrorMessage, testService } from '../../services/api.js'
+import { isUploadedImage } from '../../utils/imageUrl.js'
 
 const TYPES = {
   SINGLE_CHOICE: { label: 'Одна правильна відповідь (1 з 4)', rows: 4 },
@@ -26,7 +28,7 @@ function rowsFromQuestion(question) {
 
 function validate(type, text, imageUrl, rows) {
   if (!text.trim()) return 'Введіть текст питання.'
-  if (imageUrl.trim() && !URL_PATTERN.test(imageUrl.trim())) return 'Посилання на зображення має починатися з http:// або https://.'
+  if (imageUrl.trim() && !isUploadedImage(imageUrl.trim()) && !URL_PATTERN.test(imageUrl.trim())) return 'Посилання на зображення має починатися з http:// або https://.'
   if (rows.length < 2) return 'Потрібно щонайменше 2 варіанти.'
   if (rows.some((r) => !r.text.trim())) return 'Заповніть текст усіх варіантів або видаліть зайві.'
   const correct = rows.filter((r) => r.correct).length
@@ -52,6 +54,23 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? '')
   const [explanation, setExplanation] = useState(initial?.explanation ?? '')
   const [topic, setTopic] = useState(initial?.topic ?? '')
+  const fileInput = useRef(null)
+  const [fileError, setFileError] = useState('')
+  const uploaded = isUploadedImage(imageUrl)
+
+  async function handleFile(event) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    if (!file.type.startsWith('image/')) return setFileError('Оберіть файл-зображення.')
+    if (file.size > 15 * 1024 * 1024) return setFileError('Файл завеликий (максимум 15 МБ).')
+    setFileError('')
+    try {
+      setImageUrl(await fileToDataUrl(file))
+    } catch (err) {
+      setFileError(err.message)
+    }
+  }
   const [rows, setRows] = useState(() => (initial ? rowsFromQuestion(initial) : emptyRows('SINGLE_CHOICE')))
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -151,18 +170,36 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
 
       <div>
         <label htmlFor="q-image" className="mb-1.5 block text-sm font-medium text-slate-700">
-          Посилання на зображення <span className="font-normal text-slate-400">(необов&apos;язково)</span>
+          Зображення <span className="font-normal text-slate-400">(необов&apos;язково)</span>
         </label>
-        <input
-          id="q-image"
-          type="url"
-          className={inputClass}
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="https://example.com/karta.jpg"
-        />
+        <input ref={fileInput} type="file" accept="image/*" onChange={handleFile} className="hidden" aria-label="Файл зображення" />
+        <div className="flex flex-wrap items-center gap-2">
+          {uploaded ? (
+            <span className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-600">Завантажений файл</span>
+          ) : (
+            <input
+              id="q-image"
+              type="url"
+              className={`${inputClass} min-w-0 flex-1`}
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="Посилання https://example.com/karta.jpg"
+            />
+          )}
+          <button type="button" onClick={() => fileInput.current?.click()} className={secondaryButtonClass}>
+            <ImagePlus className="h-4 w-4" aria-hidden="true" />
+            {uploaded ? 'Замінити файл' : 'Завантажити файл'}
+          </button>
+          {uploaded && (
+            <button type="button" onClick={() => setImageUrl('')} className={secondaryButtonClass}>
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
+              Прибрати
+            </button>
+          )}
+        </div>
+        {fileError && <p className="mt-1 text-xs text-red-700">{fileError}</p>}
         <p className="mt-1 text-xs text-slate-500">Карта, портрет чи пам&apos;ятка. Зображення буде показано перед текстом питання.</p>
-        {URL_PATTERN.test(imageUrl.trim()) && (
+        {(uploaded || URL_PATTERN.test(imageUrl.trim())) && (
           <div className="mt-3">
             <QuestionImage src={imageUrl.trim()} alt="Попередній перегляд" />
           </div>

@@ -12,7 +12,9 @@ import java.util.List;
 public record CreateQuestionRequest(
         @NotNull Long testId,
         @NotBlank String questionText,
-        @Size(max = 2048) @Pattern(regexp = "^(https?://\\S+)?$", message = "imageUrl має бути http(s)-посиланням") String imageUrl,
+        @Size(max = 1_500_000, message = "Зображення завелике")
+        @Pattern(regexp = "^(https?://\\S{1,2000}|data:image/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+|/api/tests/questions/\\d+/image)?$",
+                message = "Невірний формат зображення") String imageUrl,
         @NotNull QuestionType questionType,
         String explanation,
         @Size(max = 100) String topic,

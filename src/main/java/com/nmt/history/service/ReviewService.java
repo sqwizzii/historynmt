@@ -30,7 +30,7 @@ public class ReviewService {
         return new QuestionReview(
                 question.getId(),
                 question.getQuestionText(),
-                question.getImageUrl(),
+                QuestionImages.publicUrl(question),
                 question.getQuestionType(),
                 earned,
                 max,

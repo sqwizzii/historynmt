@@ -43,7 +43,7 @@ public class Question {
     @Column(name = "question_text", nullable = false, columnDefinition = "TEXT")
     private String questionText;
 
-    @Column(name = "image_url", length = 2048)
+    @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)

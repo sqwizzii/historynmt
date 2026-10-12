@@ -308,4 +308,32 @@ class ApiIntegrationTest {
                 .andExpect(jsonPath("$.questions[0].wrong", is(1)))
                 .andExpect(jsonPath("$.questions[0].correctPercent", is(0)));
     }
+
+    @Test
+    void questionImageCanBeUploadedAsFile() throws Exception {
+        String teacher = teacherToken();
+        long testId = body(send(post("/api/tests/create"), teacher, Map.of("title", "Img"))).get("id").asLong();
+        String png = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+        java.util.function.Function<String, Map<String, Object>> payload = image -> Map.of(
+                "testId", testId, "questionText", "Q?", "questionType", "SINGLE_CHOICE", "imageUrl", image,
+                "options", java.util.List.of(Map.of("optionText", "A", "isCorrect", true), Map.of("optionText", "B", "isCorrect", false)));
+
+        long qid = body(send(post("/api/tests/questions/create"), teacher, payload.apply(png))
+                .andExpect(status().isCreated())).get("id").asLong();
+        String ownUrl = "/api/tests/questions/" + qid + "/image";
+
+        send(get("/api/tests/" + testId), null, null).andExpect(jsonPath("$.questions[0].imageUrl", is(ownUrl)));
+        byte[] bytes = mvc.perform(get(ownUrl)).andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content().contentType("image/png"))
+                .andReturn().getResponse().getContentAsByteArray();
+        org.junit.jupiter.api.Assertions.assertTrue(bytes.length > 10);
+
+        send(put("/api/tests/questions/" + qid), teacher, payload.apply(ownUrl)).andExpect(status().isOk());
+        mvc.perform(get(ownUrl)).andExpect(status().isOk());
+
+        send(post("/api/tests/questions/create"), teacher, payload.apply("javascript:alert(1)")).andExpect(status().isBadRequest());
+
+        send(put("/api/tests/questions/" + qid), teacher, payload.apply("")).andExpect(status().isOk());
+        mvc.perform(get(ownUrl)).andExpect(status().isNotFound());
+    }
 }
