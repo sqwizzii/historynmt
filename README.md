@@ -4,7 +4,25 @@
 
 **Стек:** Java 17, Spring Boot 3.2.5 (Web, Data JPA, Security, Validation), PostgreSQL, Lombok, JJWT 0.12.5, Maven.
 
-## Структура
+## Фронтенд
+
+React 19 + Vite + Tailwind CSS 4 + Lucide React + Axios + React Router, каталог `frontend/`.
+
+```bash
+cd frontend
+npm install
+npm run dev        # http://localhost:45173
+```
+
+Базовий URL API - `http://localhost:8080/api` (змінюється через `VITE_API_URL`, див. `frontend/.env.example`).
+Бекенд дозволяє CORS для origin-ів із `app.cors.allowed-origins` (змінна `CORS_ALLOWED_ORIGINS`).
+
+- `src/services/api.js` - Axios з інтерцептором `Authorization: Bearer <token>` і сервіси `authService`, `testService`, `quizletService`, `resultService`.
+- `src/context/AuthContext.jsx` - стан користувача, токен і дані користувача зберігаються в `localStorage` (`token`, `user`).
+- `src/components/Header.jsx` - шапка з навігацією, користувачем/роллю та виходом.
+- `src/pages/Login.jsx`, `src/pages/Register.jsx` - вхід і реєстрація з вибором ролі.
+
+## Структура бекенду
 
 ```
 src/main/java/com/nmt/history
