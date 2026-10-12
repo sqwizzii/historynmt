@@ -22,7 +22,7 @@ React 19, Vite, Tailwind CSS 4, Axios.
 
 ```bash
 cp .env.example .env
-# заповніть .env: DOMAIN, DB_PASSWORD, JWT_SECRET (openssl rand -base64 48), BOOTSTRAP_TEACHER_PASSWORD
+# заповніть .env: DOMAIN, PUBLIC_URL (https://<DOMAIN>), POSTGRES_PASSWORD, JWT_SECRET (openssl rand -base64 48), BOOTSTRAP_TEACHER_PASSWORD
 docker compose up -d --build
 ```
 
@@ -38,10 +38,10 @@ docker compose up -d --build
 ### Резервні копії
 
 ```bash
-./scripts/backup.sh        # дамп у ./backups, зберігає останні 14
+./scripts/backup.sh        # дамп у ./backups, зберігає копії за 30 днів
 # приклад cron (щодня о 03:00): 0 3 * * * cd /opt/nmt-history && ./scripts/backup.sh
 # відновлення:
-gunzip -c backups/<файл>.sql.gz | docker compose exec -T db psql -U "$DB_USERNAME" nmt_history_db
+gunzip -c backups/<файл>.sql.gz | docker compose exec -T db psql -U nmt nmt_history_db
 ```
 
 Резервні копії варто копіювати за межі сервера.

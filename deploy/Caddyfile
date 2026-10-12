@@ -1,4 +1,4 @@
-{$DOMAIN} {
+{$DOMAIN:localhost} {
     encode gzip
     reverse_proxy frontend:80
 }
