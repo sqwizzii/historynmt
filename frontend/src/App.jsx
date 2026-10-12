@@ -2,11 +2,13 @@ import { Route, Routes } from 'react-router-dom'
 import GuestRoute from './components/GuestRoute.jsx'
 import Header from './components/Header.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import Account from './pages/Account.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
 import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
 import QuizletView from './pages/QuizletView.jsx'
 import Register from './pages/Register.jsx'
+import ResultReview from './pages/ResultReview.jsx'
 import StudentAnalytics from './pages/StudentAnalytics.jsx'
 import TeacherPanel from './pages/TeacherPanel.jsx'
 import TestRunner from './pages/TestRunner.jsx'
@@ -27,6 +29,8 @@ export default function App() {
           <Route path="/quizlet/:moduleId" element={<QuizletView />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/tests/:testId" element={<TestRunner />} />
+            <Route path="/results/:resultId" element={<ResultReview />} />
+            <Route path="/account" element={<Account />} />
           </Route>
           <Route element={<ProtectedRoute role="STUDENT" />}>
             <Route path="/results" element={<StudentAnalytics />} />

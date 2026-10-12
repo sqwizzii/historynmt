@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { formatDate } from '../utils/format.js'
 
 export default function ResultsTable({ results, showStudent = false }) {
@@ -11,6 +12,7 @@ export default function ResultsTable({ results, showStudent = false }) {
             <th className="px-4 py-3">Первинний бал</th>
             <th className="px-4 py-3">Бал НМТ</th>
             <th className="px-4 py-3">Дата</th>
+            <th className="px-4 py-3"><span className="sr-only">Розбір</span></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -21,6 +23,11 @@ export default function ResultsTable({ results, showStudent = false }) {
               <td className="px-4 py-3 tabular-nums text-slate-700">{r.score}</td>
               <td className="px-4 py-3 font-semibold tabular-nums text-blue-700">{r.nmtScore}</td>
               <td className="whitespace-nowrap px-4 py-3 text-slate-500">{formatDate(r.completedAt)}</td>
+              <td className="whitespace-nowrap px-4 py-3 text-right">
+                <Link to={`/results/${r.id}`} className="font-medium text-blue-700 hover:underline">
+                  Розбір
+                </Link>
+              </td>
             </tr>
           ))}
         </tbody>

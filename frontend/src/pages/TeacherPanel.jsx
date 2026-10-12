@@ -1,37 +1,14 @@
 import { BarChart3, ClipboardList, Layers } from 'lucide-react'
 import { useState } from 'react'
-import { ErrorState, LoadingState } from '../components/PageState.jsx'
-import ModuleForm from '../components/teacher/ModuleForm.jsx'
-import QuestionForm from '../components/teacher/QuestionForm.jsx'
+import ModulesManager from '../components/teacher/ModulesManager.jsx'
 import StudentsResults from '../components/teacher/StudentsResults.jsx'
-import TestForm from '../components/teacher/TestForm.jsx'
-import { useAsyncData } from '../hooks/useAsyncData.js'
-import { getErrorMessage, testService } from '../services/api.js'
+import TestsManager from '../components/teacher/TestsManager.jsx'
 
 const TABS = [
   { id: 'tests', label: 'Тести та питання', Icon: ClipboardList },
   { id: 'cards', label: 'Картки', Icon: Layers },
   { id: 'results', label: 'Учні та результати', Icon: BarChart3 },
 ]
-
-function TestsTab() {
-  const { data, error, reload } = useAsyncData(testService.getAll)
-  const [created, setCreated] = useState([])
-
-  if (error) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
-  if (!data) return <LoadingState />
-
-  const tests = [...created, ...data]
-
-  return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-      <div className="self-start">
-        <TestForm onCreated={(test) => setCreated((prev) => [test, ...prev])} />
-      </div>
-      <QuestionForm tests={tests} />
-    </div>
-  )
-}
 
 export default function TeacherPanel() {
   const [tab, setTab] = useState('tests')
@@ -61,8 +38,8 @@ export default function TeacherPanel() {
         ))}
       </div>
 
-      {tab === 'tests' && <TestsTab />}
-      {tab === 'cards' && <ModuleForm />}
+      {tab === 'tests' && <TestsManager />}
+      {tab === 'cards' && <ModulesManager />}
       {tab === 'results' && <StudentsResults />}
     </div>
   )

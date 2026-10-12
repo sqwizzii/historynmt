@@ -12,7 +12,7 @@ import { getErrorMessage, testService } from '../../services/api.js'
 import { pluralize } from '../../utils/format.js'
 import ResultModal from './ResultModal.jsx'
 
-const TEST_DURATION_MINUTES = 60
+const DEFAULT_TIME_LIMIT_MINUTES = 60
 const WARNING_THRESHOLD_MS = 5 * 60 * 1000
 
 function isAnswered(answer) {
@@ -55,7 +55,7 @@ function ActiveTest({ testId, test, onRetry }) {
   const [submitError, setSubmitError] = useState('')
   const [result, setResult] = useState(null)
   const [timedOut, setTimedOut] = useState(false)
-  const [deadline] = useState(() => Date.now() + TEST_DURATION_MINUTES * 60 * 1000)
+  const [deadline] = useState(() => Date.now() + (test.timeLimitMinutes ?? DEFAULT_TIME_LIMIT_MINUTES) * 60 * 1000)
 
   const answeredCount = questions.filter((q) => isAnswered(answers[q.id])).length
 
@@ -213,7 +213,13 @@ function ActiveTest({ testId, test, onRetry }) {
         </Modal>
       )}
 
-      {result && <ResultModal result={result} timedOut={timedOut} onRetry={onRetry} onClose={() => navigate('/tests')} />}
+      {result && <ResultModal
+          result={result}
+          timedOut={timedOut}
+          onReview={() => navigate(`/results/${result.id}`)}
+          onRetry={onRetry}
+          onClose={() => navigate('/tests')}
+        />}
     </div>
   )
 }

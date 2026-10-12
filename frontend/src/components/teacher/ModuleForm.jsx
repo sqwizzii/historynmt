@@ -1,4 +1,4 @@
-import { CheckCircle2, Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import ErrorAlert from '../ErrorAlert.jsx'
 import { inputClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
@@ -6,12 +6,11 @@ import { getErrorMessage, quizletService } from '../../services/api.js'
 
 const emptyCard = () => ({ termOrQuestion: '', answerOrDate: '' })
 
-export default function ModuleForm() {
+export default function ModuleForm({ onCreated, onCancel }) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [cards, setCards] = useState([emptyCard(), emptyCard(), emptyCard()])
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
 
   function updateCard(index, patch) {
@@ -20,7 +19,6 @@ export default function ModuleForm() {
 
   async function handleSubmit(event) {
     event.preventDefault()
-    setSuccess('')
     if (!title.trim()) {
       setError('Вкажіть назву модуля.')
       return
@@ -33,15 +31,12 @@ export default function ModuleForm() {
     setError('')
     setLoading(true)
     try {
-      await quizletService.createModule({
+      const created = await quizletService.createModule({
         title: title.trim(),
         description: description.trim() || null,
         flashcards: filled.map((c) => ({ termOrQuestion: c.termOrQuestion.trim(), answerOrDate: c.answerOrDate.trim() })),
       })
-      setTitle('')
-      setDescription('')
-      setCards([emptyCard(), emptyCard(), emptyCard()])
-      setSuccess("Модуль створено. Він з'явився у розділі «Картки».")
+      onCreated(created)
     } catch (err) {
       setError(getErrorMessage(err))
     } finally {
@@ -53,12 +48,6 @@ export default function ModuleForm() {
     <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6" noValidate>
       <h2 className="text-base font-semibold text-slate-900">Новий модуль карток</h2>
       <ErrorAlert message={error} />
-      {success && (
-        <div role="status" className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
-          <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-          {success}
-        </div>
-      )}
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="m-title" className="mb-1.5 block text-sm font-medium text-slate-700">
@@ -110,9 +99,16 @@ export default function ModuleForm() {
         </button>
       </fieldset>
 
-      <button type="submit" disabled={loading} className={primaryButtonClass}>
-        {loading ? 'Зберігаємо…' : 'Створити модуль'}
-      </button>
+      <div className="flex flex-wrap gap-2">
+        <button type="submit" disabled={loading} className={primaryButtonClass}>
+          {loading ? 'Зберігаємо…' : 'Створити модуль'}
+        </button>
+        {onCancel && (
+          <button type="button" onClick={onCancel} className={secondaryButtonClass}>
+            Скасувати
+          </button>
+        )}
+      </div>
     </form>
   )
 }

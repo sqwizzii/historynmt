@@ -54,6 +54,11 @@ export const testService = {
   getById: (testId) => api.get(`/tests/${testId}`).then((r) => r.data),
   create: (payload) => api.post('/tests/create', payload).then((r) => r.data),
   createQuestion: (payload) => api.post('/tests/questions/create', payload).then((r) => r.data),
+  update: (testId, payload) => api.put(`/tests/${testId}`, payload).then((r) => r.data),
+  remove: (testId) => api.delete(`/tests/${testId}`),
+  getForEdit: (testId) => api.get(`/teacher/tests/${testId}`).then((r) => r.data),
+  updateQuestion: (questionId, payload) => api.put(`/tests/questions/${questionId}`, payload).then((r) => r.data),
+  removeQuestion: (questionId) => api.delete(`/tests/questions/${questionId}`),
   submit: (testId, answers) => api.post(`/tests/${testId}/submit`, { answers }).then((r) => r.data),
 }
 
@@ -62,13 +67,24 @@ export const quizletService = {
   getModule: (moduleId) => api.get(`/quizlet/${moduleId}`).then((r) => r.data),
   createModule: (payload) => api.post('/quizlet/create', payload).then((r) => r.data),
   addFlashcard: (moduleId, payload) => api.post(`/quizlet/${moduleId}/cards`, payload).then((r) => r.data),
+  updateModule: (moduleId, payload) => api.put(`/quizlet/${moduleId}`, payload).then((r) => r.data),
+  removeModule: (moduleId) => api.delete(`/quizlet/${moduleId}`),
+  updateFlashcard: (cardId, payload) => api.put(`/quizlet/cards/${cardId}`, payload).then((r) => r.data),
+  removeFlashcard: (cardId) => api.delete(`/quizlet/cards/${cardId}`),
 }
 
 export const resultService = {
   getMy: () => api.get('/results/my').then((r) => r.data),
+  getById: (resultId) => api.get(`/results/${resultId}`).then((r) => r.data),
   getAllForTeacher: () => api.get('/teacher/results').then((r) => r.data),
   getStudents: () => api.get('/teacher/students').then((r) => r.data),
   getStudentResults: (studentId) => api.get(`/teacher/students/${studentId}/results`).then((r) => r.data),
+}
+
+export const userService = {
+  changePassword: (payload) => api.put('/account/password', payload),
+  resetStudentPassword: (studentId, newPassword) => api.put(`/teacher/students/${studentId}/password`, { newPassword }),
+  deleteStudent: (studentId) => api.delete(`/teacher/students/${studentId}`),
 }
 
 export default api

@@ -1,16 +1,19 @@
-import { Search, Users } from 'lucide-react'
+import { KeyRound, Search, Trash2, Users } from 'lucide-react'
 import { useState } from 'react'
+import ConfirmDialog from '../ConfirmDialog.jsx'
+import ErrorAlert from '../ErrorAlert.jsx'
+import Modal from '../Modal.jsx'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
 import ResultsTable from '../ResultsTable.jsx'
-import { inputClass } from '../styles.js'
+import { inputClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
-import { getErrorMessage, resultService } from '../../services/api.js'
+import { getErrorMessage, resultService, userService } from '../../services/api.js'
 
-function StudentList({ selectedId, onSelect }) {
-  const { data: students, error, reload } = useAsyncData(resultService.getStudents)
+function StudentList({ selectedId, onSelect, version }) {
+  const { data: students, error, reload } = useAsyncData(resultService.getStudents, version, { keepPrevious: true })
   const [query, setQuery] = useState('')
 
-  if (error) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
+  if (error && !students) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
   if (!students) return <LoadingState />
 
   const needle = query.trim().toLowerCase()
@@ -24,13 +27,7 @@ function StudentList({ selectedId, onSelect }) {
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="relative mb-3">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
-        <input
-          className={`${inputClass} pl-9`}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Пошук учня"
-          aria-label="Пошук учня"
-        />
+        <input className={`${inputClass} pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Пошук учня" aria-label="Пошук учня" />
       </div>
       <ul className="max-h-[28rem] space-y-1 overflow-y-auto">
         <li>
@@ -44,7 +41,7 @@ function StudentList({ selectedId, onSelect }) {
         </li>
         {visible.map((student) => (
           <li key={student.id}>
-            <button type="button" onClick={() => onSelect(student.id)} className={itemClass(selectedId === student.id)}>
+            <button type="button" onClick={() => onSelect(student)} className={itemClass(selectedId === student.id)}>
               <span className="min-w-0">
                 <span className="block truncate font-medium text-slate-900">{student.username}</span>
                 <span className="block truncate text-xs text-slate-500">{student.email}</span>
@@ -62,29 +59,142 @@ function StudentList({ selectedId, onSelect }) {
   )
 }
 
-function ResultsPanel({ studentId }) {
+function ResetPasswordModal({ student, onClose }) {
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [done, setDone] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    if (password.length < 6) return setError('Пароль має містити щонайменше 6 символів.')
+    setError('')
+    setLoading(true)
+    try {
+      await userService.resetStudentPassword(student.id, password)
+      setDone(true)
+    } catch (err) {
+      setError(getErrorMessage(err))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Modal title={`Новий пароль для ${student.username}`} onClose={onClose}>
+      {done ? (
+        <div className="mt-3 space-y-4 text-sm text-slate-600">
+          <p>Пароль змінено. Передайте його учневі: після входу він може змінити пароль у своєму профілі.</p>
+          <button type="button" onClick={onClose} className={`${primaryButtonClass} w-full`}>
+            Готово
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
+          <ErrorAlert message={error} />
+          <div>
+            <label htmlFor="reset-password" className="mb-1.5 block text-sm font-medium text-slate-700">
+              Новий пароль
+            </label>
+            <input id="reset-password" className={inputClass} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="off" autoFocus />
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row-reverse">
+            <button type="submit" disabled={loading} className={`${primaryButtonClass} flex-1`}>
+              {loading ? 'Зберігаємо…' : 'Змінити пароль'}
+            </button>
+            <button type="button" onClick={onClose} className={`${secondaryButtonClass} flex-1`}>
+              Скасувати
+            </button>
+          </div>
+        </form>
+      )}
+    </Modal>
+  )
+}
+
+function ResultsPanel({ student, version }) {
+  const studentId = student?.id ?? null
   const { data: results, error, reload } = useAsyncData(
     () => (studentId === null ? resultService.getAllForTeacher() : resultService.getStudentResults(studentId)),
-    studentId ?? 'all',
+    `${studentId ?? 'all'}:${version}`,
   )
 
   if (error) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
   if (!results) return <LoadingState label="Завантажуємо результати…" />
   if (results.length === 0) {
-    return <EmptyState title="Результатів ще немає" text={studentId === null ? 'Тут з\'являться спроби учнів.' : 'Цей учень ще не проходив тестів.'} />
+    return <EmptyState title="Результатів ще немає" text={studentId === null ? "Тут з'являться спроби учнів." : 'Цей учень ще не проходив тестів.'} />
   }
   return <ResultsTable results={results} showStudent={studentId === null} />
 }
 
 export default function StudentsResults() {
-  const [selectedId, setSelectedId] = useState(null)
+  const [student, setStudent] = useState(null)
+  const [version, setVersion] = useState(0)
+  const [resetting, setResetting] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
+
+  async function deleteStudent() {
+    setBusy(true)
+    setDeleteError('')
+    try {
+      await userService.deleteStudent(student.id)
+      setDeleting(false)
+      setStudent(null)
+      setVersion((v) => v + 1)
+    } catch (err) {
+      setDeleteError(getErrorMessage(err))
+    } finally {
+      setBusy(false)
+    }
+  }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
       <div className="self-start">
-        <StudentList selectedId={selectedId} onSelect={setSelectedId} />
+        <StudentList selectedId={student?.id ?? null} onSelect={setStudent} version={version} />
       </div>
-      <ResultsPanel studentId={selectedId} />
+      <div className="space-y-4">
+        {student && (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="min-w-0">
+              <div className="truncate font-semibold text-slate-900">{student.username}</div>
+              <div className="truncate text-xs text-slate-500">{student.email}</div>
+            </div>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => setResetting(true)} className={secondaryButtonClass}>
+                <KeyRound className="h-4 w-4" aria-hidden="true" />
+                Новий пароль
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeleting(true)}
+                className={`${secondaryButtonClass} hover:!border-red-200 hover:!bg-red-50 hover:!text-red-600`}
+              >
+                <Trash2 className="h-4 w-4" aria-hidden="true" />
+                Видалити
+              </button>
+            </div>
+          </div>
+        )}
+        <ResultsPanel student={student} version={version} />
+      </div>
+
+      {resetting && <ResetPasswordModal student={student} onClose={() => setResetting(false)} />}
+      {deleting && (
+        <ConfirmDialog
+          title="Видалити учня?"
+          message={`Акаунт ${student.username} та всі його результати буде видалено безповоротно.`}
+          loading={busy}
+          error={deleteError}
+          onConfirm={deleteStudent}
+          onCancel={() => {
+            setDeleting(false)
+            setDeleteError('')
+          }}
+        />
+      )}
     </div>
   )
 }

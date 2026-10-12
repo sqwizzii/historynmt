@@ -5,7 +5,7 @@ import Modal from '../Modal.jsx'
 const NMT_MIN = 100
 const NMT_MAX = 200
 
-export default function ResultModal({ result, timedOut = false, onRetry, onClose }) {
+export default function ResultModal({ result, timedOut = false, onReview, onRetry, onClose }) {
   const percent = result.maxScore > 0 ? Math.round((result.score / result.maxScore) * 100) : 0
   const nmtPosition = ((result.nmtScore - NMT_MIN) / (NMT_MAX - NMT_MIN)) * 100
 
@@ -42,13 +42,18 @@ export default function ResultModal({ result, timedOut = false, onRetry, onClose
         </div>
       </dl>
 
-      <div className="mt-6 flex flex-col gap-2 sm:flex-row-reverse">
-        <button type="button" onClick={onClose} className={`${primaryButtonClass} flex-1`}>
-          До списку тестів
+      <div className="mt-6 space-y-2">
+        <button type="button" onClick={onReview} className={`${primaryButtonClass} w-full`}>
+          Переглянути розбір відповідей
         </button>
-        <button type="button" onClick={onRetry} className={`${secondaryButtonClass} flex-1`}>
-          Пройти ще раз
-        </button>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button type="button" onClick={onRetry} className={`${secondaryButtonClass} flex-1`}>
+            Пройти ще раз
+          </button>
+          <button type="button" onClick={onClose} className={`${secondaryButtonClass} flex-1`}>
+            До списку тестів
+          </button>
+        </div>
       </div>
     </Modal>
   )

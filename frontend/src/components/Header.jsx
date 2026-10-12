@@ -64,7 +64,9 @@ export default function Header() {
           {isAuthenticated ? (
             <>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-slate-800">{user.username}</span>
+                <Link to="/account" className="text-sm font-semibold text-slate-800 hover:text-blue-700 hover:underline" title="Профіль і зміна пароля">
+                  {user.username}
+                </Link>
                 {role && (
                   <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${role.className}`}>
                     <role.Icon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -126,7 +128,9 @@ export default function Header() {
             {isAuthenticated ? (
               <div className="flex items-center justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-semibold text-slate-800">{user.username}</span>
+                  <Link to="/account" onClick={closeMenu} className="text-sm font-semibold text-slate-800 hover:text-blue-700">
+                    {user.username}
+                  </Link>
                   {role && (
                     <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${role.className}`}>
                       <role.Icon className="h-3.5 w-3.5" aria-hidden="true" />

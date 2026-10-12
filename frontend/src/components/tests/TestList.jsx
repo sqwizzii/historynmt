@@ -1,9 +1,9 @@
-import { ArrowRight, CalendarDays, ClipboardList } from 'lucide-react'
+import { ArrowRight, CalendarDays, ClipboardList, Clock } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, testService } from '../../services/api.js'
-import { formatDate } from '../../utils/format.js'
+import { formatDate, pluralize } from '../../utils/format.js'
 
 export default function TestList() {
   const { data: tests, error, reload } = useAsyncData(testService.getAll)
@@ -32,6 +32,15 @@ export default function TestList() {
                   <ClipboardList className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <h2 className="text-lg font-semibold text-slate-900">{test.title}</h2>
+                <p className="mt-1 flex items-center gap-3 text-xs font-medium text-slate-500">
+                  <span>
+                    {test.questionCount} {pluralize(test.questionCount, 'питання', 'питання', 'питань')}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+                    {test.timeLimitMinutes} хв
+                  </span>
+                </p>
                 {test.description && <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-600">{test.description}</p>}
                 <div className="mt-auto flex items-center justify-between pt-5 text-sm">
                   <span className="flex items-center gap-1.5 text-xs text-slate-500">
