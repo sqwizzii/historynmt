@@ -3,8 +3,10 @@ package com.nmt.history.controller;
 import com.nmt.history.dto.InviteCodeRequest;
 import com.nmt.history.dto.ResetPasswordRequest;
 import com.nmt.history.dto.TestEditResponse;
+import com.nmt.history.dto.TestStatsResponse;
 import com.nmt.history.service.InviteCodeService;
 import com.nmt.history.service.TestService;
+import com.nmt.history.service.TestStatsService;
 import com.nmt.history.service.UserService;
 import jakarta.validation.Valid;
 import java.util.Map;
@@ -27,10 +29,16 @@ public class TeacherController {
     private final TestService testService;
     private final UserService userService;
     private final InviteCodeService inviteCodeService;
+    private final TestStatsService statsService;
 
     @GetMapping("/tests/{testId}")
     public TestEditResponse getTestForEdit(@PathVariable Long testId) {
         return testService.getTestForEdit(testId);
+    }
+
+    @GetMapping("/tests/{testId}/stats")
+    public TestStatsResponse testStats(@PathVariable Long testId) {
+        return statsService.stats(testId);
     }
 
     @GetMapping("/invite-code")

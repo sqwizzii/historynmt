@@ -18,6 +18,8 @@ public interface TestResultRepository extends JpaRepository<TestResult, Long> {
     @EntityGraph(attributePaths = {"student", "test"})
     List<TestResult> findAllByOrderByCompletedAtDesc();
 
+    List<TestResult> findByTestId(Long testId);
+
     @Query("select r.student.id as studentId, count(r) as attempts, max(r.nmtScore) as bestNmtScore "
             + "from TestResult r group by r.student.id")
     List<StudentStats> findStudentStats();

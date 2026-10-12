@@ -302,7 +302,7 @@ public class TestService {
         }
     }
 
-    private QuestionResponse toQuestionResponse(Question question) {
+    QuestionResponse toQuestionResponse(Question question) {
         List<Option> options = new ArrayList<>(question.getOptions());
         options.sort(Comparator.comparing(Option::getId, Comparator.nullsLast(Comparator.naturalOrder())));
 

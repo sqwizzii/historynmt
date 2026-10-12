@@ -259,4 +259,46 @@ class ApiIntegrationTest {
                 "password", "secret1", "inviteCode", "GROUP2026")).andExpect(status().isBadRequest());
         send(get("/api/teacher/invite-code"), teacher, null).andExpect(jsonPath("$.code", is(regenerated)));
     }
+
+    @Test
+    void mistakesPracticeAndTeacherStats() throws Exception {
+        String teacher = teacherToken();
+        String student = registerStudent("practice_student");
+        long testId = body(send(post("/api/tests/create"), teacher, Map.of("title", "P"))).get("id").asLong();
+        JsonNode question = body(send(post("/api/tests/questions/create"), teacher, Map.of(
+                "testId", testId, "questionText", "Q?", "questionType", "SINGLE_CHOICE",
+                "options", java.util.List.of(Map.of("optionText", "A", "isCorrect", true),
+                        Map.of("optionText", "B", "isCorrect", false)))));
+        long qid = question.get("id").asLong();
+        long right = question.get("options").get(0).get("id").asLong();
+        long wrong = question.get("options").get(1).get("id").asLong();
+
+        send(post("/api/tests/" + testId + "/start"), student, null).andExpect(status().isOk());
+        send(post("/api/tests/" + testId + "/submit"), student, Map.of("answers",
+                java.util.List.of(Map.of("questionId", qid, "selectedOptionIds", java.util.List.of(wrong)))))
+                .andExpect(status().isOk());
+
+        send(get("/api/practice/mistakes"), student, null)
+                .andExpect(jsonPath("$.total", is(1)))
+                .andExpect(jsonPath("$.questions[0].id", is((int) qid)))
+                .andExpect(jsonPath("$.questions[0].options[0].isCorrect").doesNotExist());
+        send(post("/api/practice/mistakes/check"), student, Map.of("answers",
+                java.util.List.of(Map.of("questionId", qid + 999, "selectedOptionIds", java.util.List.of(right)))))
+                .andExpect(status().isBadRequest());
+        send(post("/api/practice/mistakes/check"), student, Map.of("answers",
+                java.util.List.of(Map.of("questionId", qid, "selectedOptionIds", java.util.List.of(wrong)))))
+                .andExpect(jsonPath("$.fixed", is(0)));
+        send(get("/api/practice/mistakes"), student, null).andExpect(jsonPath("$.total", is(1)));
+        send(post("/api/practice/mistakes/check"), student, Map.of("answers",
+                java.util.List.of(Map.of("questionId", qid, "selectedOptionIds", java.util.List.of(right)))))
+                .andExpect(jsonPath("$.fixed", is(1)))
+                .andExpect(jsonPath("$.review[0].correctAnswer[0]", is("A")));
+        send(get("/api/practice/mistakes"), student, null).andExpect(jsonPath("$.total", is(0)));
+
+        send(get("/api/teacher/tests/" + testId + "/stats"), student, null).andExpect(status().isForbidden());
+        send(get("/api/teacher/tests/" + testId + "/stats"), teacher, null)
+                .andExpect(jsonPath("$.attempts", is(1)))
+                .andExpect(jsonPath("$.questions[0].wrong", is(1)))
+                .andExpect(jsonPath("$.questions[0].correctPercent", is(0)));
+    }
 }
