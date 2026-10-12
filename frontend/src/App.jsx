@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import GuestRoute from './components/GuestRoute.jsx'
+import Practice from './pages/Practice.jsx'
 import Header from './components/Header.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Account from './pages/Account.jsx'
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/tests/:testId" element={<TestRunner />} />
             <Route path="/results/:resultId" element={<ResultReview />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/practice" element={<Practice />} />
           </Route>
           <Route element={<ProtectedRoute role="STUDENT" />}>
             <Route path="/results" element={<StudentAnalytics />} />

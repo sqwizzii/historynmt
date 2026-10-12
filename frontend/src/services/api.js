@@ -59,6 +59,7 @@ export const testService = {
   getForEdit: (testId) => api.get(`/teacher/tests/${testId}`).then((r) => r.data),
   updateQuestion: (questionId, payload) => api.put(`/tests/questions/${questionId}`, payload).then((r) => r.data),
   removeQuestion: (questionId) => api.delete(`/tests/questions/${questionId}`),
+  getStats: (testId) => api.get(`/teacher/tests/${testId}/stats`).then((r) => r.data),
   start: (testId) => api.post(`/tests/${testId}/start`).then((r) => r.data),
   recordLeave: (testId) => api.post(`/tests/${testId}/leave`).then((r) => r.data),
   submit: (testId, answers, endReason = 'MANUAL') => api.post(`/tests/${testId}/submit`, { answers, endReason }).then((r) => r.data),
@@ -81,6 +82,11 @@ export const resultService = {
   getAllForTeacher: () => api.get('/teacher/results').then((r) => r.data),
   getStudents: () => api.get('/teacher/students').then((r) => r.data),
   getStudentResults: (studentId) => api.get(`/teacher/students/${studentId}/results`).then((r) => r.data),
+}
+
+export const practiceService = {
+  getMistakes: () => api.get('/practice/mistakes').then((r) => r.data),
+  check: (answers) => api.post('/practice/mistakes/check', { answers }).then((r) => r.data),
 }
 
 export const userService = {

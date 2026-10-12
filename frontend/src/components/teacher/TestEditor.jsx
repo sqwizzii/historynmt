@@ -1,4 +1,4 @@
-import { ImageIcon, Pencil, Plus, Trash2 } from 'lucide-react'
+import { BarChart3, ImageIcon, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import ConfirmDialog from '../ConfirmDialog.jsx'
 import { ErrorState, LoadingState } from '../PageState.jsx'
@@ -13,6 +13,50 @@ const TYPE_LABELS = {
   MULTIPLE_CHOICE: 'Кілька відповідей',
   MATCHING: 'Відповідність',
   CHRONOLOGY: 'Хронологія',
+}
+
+function QuestionStats({ testId }) {
+  const { data: stats, error } = useAsyncData(() => testService.getStats(testId), testId)
+
+  if (error) return null
+  if (!stats) return null
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <h2 className="mb-1 flex items-center gap-2 text-base font-semibold text-slate-900">
+        <BarChart3 className="h-4 w-4 text-blue-700" aria-hidden="true" />
+        Статистика по питаннях
+      </h2>
+      {stats.questions.length === 0 ? (
+        <p className="text-sm text-slate-500">Тест ще ніхто не проходив.</p>
+      ) : (
+        <>
+          <p className="mb-4 text-xs text-slate-500">Спроб: {stats.attempts}. Спочатку найскладніші питання.</p>
+          <ul className="space-y-3">
+            {stats.questions.map((q) => (
+              <li key={q.questionId}>
+                <div className="mb-1 flex items-start justify-between gap-3 text-sm">
+                  <span className="min-w-0 text-slate-800">{q.questionText}</span>
+                  <span className="shrink-0 whitespace-nowrap text-xs text-slate-500">
+                    помилок: {q.wrong} з {q.answered}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className={`h-full rounded-full ${q.correctPercent < 40 ? 'bg-red-500' : q.correctPercent < 70 ? 'bg-amber-400' : 'bg-emerald-500'}`}
+                      style={{ width: `${q.correctPercent}%` }}
+                    />
+                  </div>
+                  <span className="w-10 text-right text-xs font-semibold tabular-nums text-slate-700">{q.correctPercent}%</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+  )
 }
 
 export default function TestEditor({ testId, onChanged, onDeleted }) {
@@ -65,6 +109,8 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
         </div>
         <TestForm key={`${test.id}-${test.title}-${test.timeLimitMinutes}-${test.description}`} initial={test} onSaved={refreshQuestions} />
       </section>
+
+      <QuestionStats testId={testId} />
 
       <section>
         <div className="mb-3 flex items-center justify-between gap-3">

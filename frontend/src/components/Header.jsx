@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, ClipboardList, GraduationCap, Landmark, LayoutDashboard, LogIn, LogOut, Menu, Presentation, UserPlus, X } from 'lucide-react'
+import { BarChart3, BookOpen, ClipboardList, GraduationCap, Landmark, LayoutDashboard, LogIn, LogOut, Menu, Presentation, RotateCcw, UserPlus, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -23,7 +23,12 @@ export default function Header() {
   const links = [
     { to: '/tests', label: 'Тести', Icon: ClipboardList },
     { to: '/quizlet', label: 'Картки', Icon: BookOpen },
-    ...(isAuthenticated && !isTeacher ? [{ to: '/results', label: 'Мої результати', Icon: BarChart3 }] : []),
+    ...(isAuthenticated && !isTeacher
+      ? [
+          { to: '/practice', label: 'Помилки', Icon: RotateCcw },
+          { to: '/results', label: 'Мої результати', Icon: BarChart3 },
+        ]
+      : []),
     ...(isTeacher ? [{ to: '/teacher', label: 'Панель вчителя', Icon: LayoutDashboard }] : []),
   ]
 

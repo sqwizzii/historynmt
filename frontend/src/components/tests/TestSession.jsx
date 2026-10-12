@@ -10,19 +10,12 @@ import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { useCountdown } from '../../hooks/useCountdown.js'
 import { useExamGuard } from '../../hooks/useExamGuard.js'
 import { getErrorMessage, testService } from '../../services/api.js'
+import { isAnswered } from '../../utils/answers.js'
 import { pluralize } from '../../utils/format.js'
 import ResultModal from './ResultModal.jsx'
 
 const AWAY_LIMIT_SECONDS = 15
 const WARNING_THRESHOLD_MS = 5 * 60 * 1000
-
-function isAnswered(answer) {
-  if (!answer) return false
-  if (answer.selectedOptionIds) return answer.selectedOptionIds.length > 0
-  if (answer.matches) return Object.keys(answer.matches).length > 0
-  if (answer.orderedOptionIds) return answer.orderedOptionIds.length > 0
-  return false
-}
 
 function formatRemaining(ms) {
   const totalSeconds = Math.ceil(ms / 1000)
