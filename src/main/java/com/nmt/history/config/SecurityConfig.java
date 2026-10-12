@@ -1,30 +1,62 @@
 package com.nmt.history.config;
 
+import com.nmt.history.model.Role;
+import com.nmt.history.security.JwtAuthenticationFilter;
+import com.nmt.history.security.JwtUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-/**
- * Базова конфігурація безпеки. JWT-фільтр та правила доступу
- * додаються на наступному кроці.
- */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private static final String STUDENT = Role.STUDENT.name();
+    private static final String TEACHER = Role.TEACHER.name();
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   JwtUtils jwtUtils,
+                                                   UserDetailsService userDetailsService) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+                .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**", "/error").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/tests", "/api/tests/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/quizlet", "/api/quizlet/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/tests/*/submit").hasAnyRole(STUDENT, TEACHER)
+                        .requestMatchers(HttpMethod.GET, "/api/results/my").hasAnyRole(STUDENT, TEACHER)
+
+                        .requestMatchers(HttpMethod.POST, "/api/tests/create", "/api/tests/questions/create").hasRole(TEACHER)
+                        .requestMatchers(HttpMethod.POST, "/api/quizlet/**").hasRole(TEACHER)
+                        .requestMatchers(HttpMethod.GET, "/api/teacher/results").hasRole(TEACHER)
+
+                        .anyRequest().authenticated())
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtils, userDetailsService),
+                        UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
     }
 
     @Bean
