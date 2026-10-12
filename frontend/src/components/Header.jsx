@@ -45,7 +45,7 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/75 shadow-[0_1px_0_0_rgb(245_180_0/0.35)] backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-[#f6f2ea]/80 shadow-[0_1px_0_0_rgb(176_141_91/0.35)] backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link to="/" onClick={closeMenu} className="group flex items-center gap-2.5">
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-ink text-gold-soft shadow-md shadow-blue-900/30 ring-1 ring-white/20 transition-transform group-hover:rotate-6">
