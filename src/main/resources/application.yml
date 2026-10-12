@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: nmt-history
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/nmt_history_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+server:
+  port: ${SERVER_PORT:8080}
+
+app:
+  jwt:
+    # Base64-кодований секрет (мінімум 256 біт). У production задавайте через JWT_SECRET.
+    secret: ${JWT_SECRET:bm10LWhpc3RvcnktZGV2LW9ubHktc2VjcmV0LWtleS1jaGFuZ2UtbWUtaW4tcHJvZHVjdGlvbg==}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
