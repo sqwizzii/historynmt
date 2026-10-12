@@ -52,6 +52,18 @@ public class TestResult {
     @Column(name = "review_json", columnDefinition = "TEXT")
     private String reviewJson;
 
+    /** Відправлено після завершення часу (з урахуванням допуску). */
+    @Column(nullable = false)
+    private boolean late;
+
+    /** Скільки разів учень залишав сторінку тесту. */
+    @Column(name = "leave_count", nullable = false)
+    private int leaveCount;
+
+    /** MANUAL, TIMEOUT або LEFT_PAGE. */
+    @Column(name = "end_reason", length = 20)
+    private String endReason;
+
     @Column(name = "completed_at", nullable = false)
     private LocalDateTime completedAt;
 

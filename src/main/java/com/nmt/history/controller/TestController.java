@@ -1,5 +1,6 @@
 package com.nmt.history.controller;
 
+import com.nmt.history.dto.AttemptResponse;
 import com.nmt.history.dto.CreateQuestionRequest;
 import com.nmt.history.dto.CreateTestRequest;
 import com.nmt.history.dto.QuestionEditResponse;
@@ -71,6 +72,16 @@ public class TestController {
     public ResponseEntity<Void> deleteQuestion(@PathVariable Long questionId) {
         testService.deleteQuestion(questionId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{testId}/start")
+    public AttemptResponse startAttempt(@PathVariable Long testId, Authentication authentication) {
+        return testService.startAttempt(testId, authentication.getName());
+    }
+
+    @PostMapping("/{testId}/leave")
+    public AttemptResponse recordLeave(@PathVariable Long testId, Authentication authentication) {
+        return testService.recordLeave(testId, authentication.getName());
     }
 
     @PostMapping("/{testId}/submit")

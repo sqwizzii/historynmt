@@ -106,12 +106,24 @@ class ApiIntegrationTest {
                 .andExpect(jsonPath("$.questions[0].explanation").doesNotExist())
                 .andExpect(jsonPath("$.questions[0].options[0].isCorrect").doesNotExist());
 
-        ResultActions submit = send(post("/api/tests/" + testId + "/submit"), student, Map.of("answers",
+        send(post("/api/tests/" + testId + "/submit"), student, Map.of("answers", java.util.List.of()))
+                .andExpect(status().isBadRequest());
+        send(post("/api/tests/" + testId + "/start"), student, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.remainingSeconds", org.hamcrest.Matchers.greaterThan(0)));
+        send(post("/api/tests/" + testId + "/start"), student, null).andExpect(status().isOk());
+        send(post("/api/tests/" + testId + "/leave"), student, null)
+                .andExpect(status().isOk()).andExpect(jsonPath("$.leaveCount", is(1)));
+
+        ResultActions submit = send(post("/api/tests/" + testId + "/submit"), student, Map.of("endReason", "LEFT_PAGE", "answers",
                 java.util.List.of(Map.of("questionId", singleId, "selectedOptionIds", java.util.List.of(correctOptionId)))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.score", is(1)))
                 .andExpect(jsonPath("$.maxScore", is(1)))
                 .andExpect(jsonPath("$.nmtScore", is(200)))
+                .andExpect(jsonPath("$.leaveCount", is(1)))
+                .andExpect(jsonPath("$.late", is(false)))
+                .andExpect(jsonPath("$.endReason", is("LEFT_PAGE")))
                 .andExpect(jsonPath("$.review[0].explanation", is("Бо так")))
                 .andExpect(jsonPath("$.review[0].correctAnswer[0]", is("A")));
         long resultId = body(submit).get("id").asLong();

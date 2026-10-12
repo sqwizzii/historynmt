@@ -1,6 +1,7 @@
 package com.nmt.history.service;
 
 import com.nmt.history.dto.AnswerRequest;
+import com.nmt.history.dto.AttemptResponse;
 import com.nmt.history.dto.CreateQuestionRequest;
 import com.nmt.history.dto.CreateTestRequest;
 import com.nmt.history.dto.OptionEditResponse;
@@ -21,11 +22,15 @@ import com.nmt.history.model.Question;
 import com.nmt.history.model.QuestionType;
 import com.nmt.history.model.Test;
 import com.nmt.history.model.TestResult;
+import com.nmt.history.model.TestAttempt;
 import com.nmt.history.model.User;
 import com.nmt.history.repository.QuestionRepository;
+import com.nmt.history.repository.TestAttemptRepository;
 import com.nmt.history.repository.TestRepository;
 import com.nmt.history.repository.TestResultRepository;
 import com.nmt.history.repository.UserRepository;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,6 +52,7 @@ public class TestService {
     private final TestRepository testRepository;
     private final QuestionRepository questionRepository;
     private final TestResultRepository testResultRepository;
+    private final TestAttemptRepository attemptRepository;
     private final UserRepository userRepository;
     private final ScoringService scoringService;
     private final NmtScoreConverter nmtScoreConverter;
@@ -154,10 +160,54 @@ public class TestService {
     }
 
     @Transactional
+    public AttemptResponse startAttempt(Long testId, String username) {
+        Test test = findTest(testId);
+        User student = findStudent(username);
+        if (questionRepository.findByTestIdOrderByIdAsc(testId).isEmpty()) {
+            throw new BadRequestException("У тесті немає питань");
+        }
+        TestAttempt attempt = attemptRepository.findFirstByStudentIdAndTestIdOrderByIdDesc(student.getId(), testId)
+                .filter(existing -> LocalDateTime.now().isBefore(existing.getStartedAt().plus(limit(test)).plus(SUBMIT_GRACE)))
+                .orElse(null);
+        if (attempt == null) {
+            attemptRepository.deleteByStudentIdAndTestId(student.getId(), testId);
+            attempt = attemptRepository.save(TestAttempt.builder()
+                    .student(student).test(test).startedAt(LocalDateTime.now()).build());
+        }
+        return toResponse(attempt, test);
+    }
+
+    @Transactional
+    public AttemptResponse recordLeave(Long testId, String username) {
+        User student = findStudent(username);
+        TestAttempt attempt = attemptRepository.findFirstByStudentIdAndTestIdOrderByIdDesc(student.getId(), testId)
+                .orElseThrow(() -> new BadRequestException("Тест не розпочато"));
+        attempt.setLeaveCount(attempt.getLeaveCount() + 1);
+        return toResponse(attempt, attempt.getTest());
+    }
+
+    private static final Duration SUBMIT_GRACE = Duration.ofSeconds(30);
+
+    private static Duration limit(Test test) {
+        return Duration.ofMinutes(test.getTimeLimitMinutes());
+    }
+
+    private AttemptResponse toResponse(TestAttempt attempt, Test test) {
+        long elapsed = Duration.between(attempt.getStartedAt(), LocalDateTime.now()).toSeconds();
+        return new AttemptResponse(Math.max(0, limit(test).toSeconds() - elapsed), attempt.getLeaveCount());
+    }
+
+    private User findStudent(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Користувача не знайдено: " + username));
+    }
+
+    @Transactional
     public TestResultResponse submitTest(Long testId, String username, TestSubmitRequest request) {
         Test test = findTest(testId);
-        User student = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Користувача не знайдено: " + username));
+        User student = findStudent(username);
+        TestAttempt attempt = attemptRepository.findFirstByStudentIdAndTestIdOrderByIdDesc(student.getId(), testId)
+                .orElseThrow(() -> new BadRequestException("Тест не розпочато. Відкрийте його заново."));
 
         List<Question> questions = questionRepository.findByTestIdOrderByIdAsc(testId);
         if (questions.isEmpty()) {
@@ -184,7 +234,11 @@ public class TestService {
                 .score(score)
                 .nmtScore(nmtScoreConverter.convert(score, maxScore))
                 .reviewJson(reviewService.toJson(review))
+                .late(LocalDateTime.now().isAfter(attempt.getStartedAt().plus(limit(test)).plus(SUBMIT_GRACE)))
+                .leaveCount(attempt.getLeaveCount())
+                .endReason(request.endReason() == null ? "MANUAL" : request.endReason())
                 .build());
+        attemptRepository.delete(attempt);
         return TestResultResponse.from(saved, maxScore, review);
     }
 

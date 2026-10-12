@@ -18,6 +18,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final TestResultRepository testResultRepository;
+    private final com.nmt.history.repository.TestAttemptRepository attemptRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -39,6 +40,7 @@ public class UserService {
     public void deleteStudent(Long studentId) {
         User student = findStudent(studentId);
         testResultRepository.deleteByStudentId(studentId);
+        attemptRepository.deleteByStudentId(studentId);
         userRepository.delete(student);
     }
 

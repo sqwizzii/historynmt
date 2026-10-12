@@ -16,6 +16,9 @@ public record TestResultResponse(
         Integer maxScore,
         Integer nmtScore,
         LocalDateTime completedAt,
+        boolean late,
+        int leaveCount,
+        String endReason,
         List<QuestionReview> review) {
 
     public static TestResultResponse from(TestResult result) {
@@ -33,6 +36,9 @@ public record TestResultResponse(
                 maxScore,
                 result.getNmtScore(),
                 result.getCompletedAt(),
+                result.isLate(),
+                result.getLeaveCount(),
+                result.getEndReason(),
                 review);
     }
 }

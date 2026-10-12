@@ -48,7 +48,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/tests", "/api/tests/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/quizlet", "/api/quizlet/**").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/tests/*/submit").hasAnyRole(STUDENT, TEACHER)
+                        .requestMatchers(HttpMethod.POST, "/api/tests/*/start", "/api/tests/*/leave", "/api/tests/*/submit").hasAnyRole(STUDENT, TEACHER)
                         .requestMatchers(HttpMethod.GET, "/api/results/my").hasAnyRole(STUDENT, TEACHER)
 
                         .requestMatchers(HttpMethod.GET, "/api/results/*").hasAnyRole(STUDENT, TEACHER)
