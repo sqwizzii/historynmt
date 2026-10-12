@@ -13,10 +13,10 @@ function HeroCard() {
   return (
     <div className="relative hidden lg:block" aria-hidden="true">
       <div className="absolute -inset-6 rounded-[2rem] bg-gold/20 blur-3xl" />
-      <div className="relative animate-float rounded-3xl border border-white/15 bg-white/10 p-6 shadow-2xl shadow-black/30 backdrop-blur-md">
+      <div className="relative rounded-3xl border border-white/15 bg-white/10 p-6 shadow-2xl shadow-black/30 backdrop-blur-md">
         <div className="mb-4 flex items-center justify-between text-xs font-semibold uppercase tracking-widest text-blue-100">
-          <span>Результат тесту</span>
-          <span className="rounded-full bg-emerald-400/20 px-2.5 py-1 text-emerald-200">завершено</span>
+          <span>Приклад результату</span>
+          <span className="rounded-full bg-emerald-400/20 px-2.5 py-1 text-emerald-200">демо</span>
         </div>
         <div className="flex items-end gap-2">
           <span className="font-display text-6xl font-bold leading-none text-white" style={{ fontFamily: 'var(--font-display)' }}>178</span>
