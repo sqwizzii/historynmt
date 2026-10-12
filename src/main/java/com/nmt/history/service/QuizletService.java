@@ -72,6 +72,7 @@ public class QuizletService {
         Flashcard flashcard = findFlashcard(cardId);
         flashcard.setTermOrQuestion(request.termOrQuestion().trim());
         flashcard.setAnswerOrDate(request.answerOrDate().trim());
+        flashcard.setImageUrl(blankToNull(request.imageUrl()));
         return FlashcardResponse.from(flashcard);
     }
 
@@ -85,10 +86,15 @@ public class QuizletService {
                 .orElseThrow(() -> new ResourceNotFoundException("Картку не знайдено: " + cardId));
     }
 
+    private static String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value;
+    }
+
     private Flashcard toFlashcard(FlashcardRequest request) {
         return Flashcard.builder()
                 .termOrQuestion(request.termOrQuestion().trim())
                 .answerOrDate(request.answerOrDate().trim())
+                .imageUrl(blankToNull(request.imageUrl()))
                 .build();
     }
 

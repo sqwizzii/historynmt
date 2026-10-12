@@ -1,10 +1,11 @@
 import { Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import ImagePicker from '../ImagePicker.jsx'
 import ErrorAlert from '../ErrorAlert.jsx'
 import { inputClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { getErrorMessage, quizletService } from '../../services/api.js'
 
-const emptyCard = () => ({ termOrQuestion: '', answerOrDate: '' })
+const emptyCard = () => ({ termOrQuestion: '', answerOrDate: '', imageUrl: null })
 
 export default function ModuleForm({ onCreated, onCancel }) {
   const [title, setTitle] = useState('')
@@ -34,7 +35,7 @@ export default function ModuleForm({ onCreated, onCancel }) {
       const created = await quizletService.createModule({
         title: title.trim(),
         description: description.trim() || null,
-        flashcards: filled.map((c) => ({ termOrQuestion: c.termOrQuestion.trim(), answerOrDate: c.answerOrDate.trim() })),
+        flashcards: filled.map((c) => ({ termOrQuestion: c.termOrQuestion.trim(), answerOrDate: c.answerOrDate.trim(), imageUrl: c.imageUrl })),
       })
       onCreated(created)
     } catch (err) {
@@ -75,6 +76,7 @@ export default function ModuleForm({ onCreated, onCancel }) {
               placeholder="Термін або питання"
               aria-label={`Термін ${index + 1}`}
             />
+            <ImagePicker value={card.imageUrl} onChange={(imageUrl) => updateCard(index, { imageUrl })} label={`Фото до картки ${index + 1}`} />
             <input
               className={`${inputClass} min-w-0 flex-1`}
               value={card.answerOrDate}

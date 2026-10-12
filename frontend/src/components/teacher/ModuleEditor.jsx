@@ -1,5 +1,6 @@
 import { Plus, Save, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import ImagePicker from '../ImagePicker.jsx'
 import ConfirmDialog from '../ConfirmDialog.jsx'
 import ErrorAlert from '../ErrorAlert.jsx'
 import { ErrorState, LoadingState } from '../PageState.jsx'
@@ -57,20 +58,22 @@ function CardRow({ card, moduleId, onChanged, onDelete }) {
   const isNew = !card
   const [term, setTerm] = useState(card?.termOrQuestion ?? '')
   const [answer, setAnswer] = useState(card?.answerOrDate ?? '')
+  const [image, setImage] = useState(card?.imageUrl ?? null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const dirty = isNew || term !== card.termOrQuestion || answer !== card.answerOrDate
+  const dirty = isNew || term !== card.termOrQuestion || answer !== card.answerOrDate || image !== (card.imageUrl ?? null)
 
   async function save() {
     if (!term.trim() || !answer.trim()) return setError('Заповніть обидві сторони картки.')
     setError('')
     setLoading(true)
-    const payload = { termOrQuestion: term.trim(), answerOrDate: answer.trim() }
+    const payload = { termOrQuestion: term.trim(), answerOrDate: answer.trim(), imageUrl: image }
     try {
       if (isNew) {
         await quizletService.addFlashcard(moduleId, payload)
         setTerm('')
         setAnswer('')
+        setImage(null)
       } else {
         await quizletService.updateFlashcard(card.id, payload)
       }
@@ -86,6 +89,7 @@ function CardRow({ card, moduleId, onChanged, onDelete }) {
     <li className="space-y-1.5">
       <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
         <input className={`${inputClass} min-w-0 flex-1`} value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Термін або питання" aria-label="Термін" />
+        <ImagePicker value={image} onChange={setImage} label="Фото до картки" />
         <input className={`${inputClass} min-w-0 flex-1`} value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Відповідь або дата" aria-label="Відповідь" />
         <button type="button" onClick={save} disabled={loading || !dirty} className={`${isNew ? primaryButtonClass : secondaryButtonClass} shrink-0 !px-3`} aria-label={isNew ? 'Додати картку' : 'Зберегти картку'}>
           {isNew ? <Plus className="h-4 w-4" /> : <Save className="h-4 w-4" />}
@@ -151,7 +155,7 @@ export default function ModuleEditor({ moduleId, onChanged, onDeleted }) {
         <h2 className="mb-4 text-base font-semibold text-slate-900">Картки ({module.flashcards.length})</h2>
         <ul className="space-y-3">
           {module.flashcards.map((card) => (
-            <CardRow key={`${card.id}-${card.termOrQuestion}-${card.answerOrDate}`} card={card} moduleId={module.id} onChanged={refresh} onDelete={(c) => setToDelete({ kind: 'card', id: c.id })} />
+            <CardRow key={`${card.id}-${card.termOrQuestion}-${card.answerOrDate}-${card.imageUrl?.length ?? 0}`} card={card} moduleId={module.id} onChanged={refresh} onDelete={(c) => setToDelete({ kind: 'card', id: c.id })} />
           ))}
           <CardRow key="new" moduleId={module.id} onChanged={refresh} />
         </ul>

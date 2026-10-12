@@ -37,6 +37,9 @@ public class Flashcard {
     @Column(name = "term_or_question", nullable = false, columnDefinition = "TEXT")
     private String termOrQuestion;
 
+    @Column(name = "image_url", columnDefinition = "TEXT")
+    private String imageUrl;
+
     @Column(name = "answer_or_date", nullable = false, columnDefinition = "TEXT")
     private String answerOrDate;
 }

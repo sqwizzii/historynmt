@@ -210,4 +210,18 @@ class ApiIntegrationTest {
         send(delete("/api/quizlet/" + moduleId), teacher, null).andExpect(status().isNoContent());
         send(get("/api/quizlet/" + moduleId), null, null).andExpect(status().isNotFound());
     }
+
+    @Test
+    void flashcardPhotoIsStoredAndValidated() throws Exception {
+        String teacher = teacherToken();
+        long moduleId = body(send(post("/api/quizlet/create"), teacher, Map.of("title", "Карти"))).get("id").asLong();
+        String photo = "data:image/jpeg;base64,/9j/4AAQSkZJRg==";
+        send(post("/api/quizlet/" + moduleId + "/cards"), teacher,
+                Map.of("termOrQuestion", "Карта", "answerOrDate", "Україна", "imageUrl", photo))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.imageUrl", is(photo)));
+        send(post("/api/quizlet/" + moduleId + "/cards"), teacher,
+                Map.of("termOrQuestion", "x", "answerOrDate", "y", "imageUrl", "javascript:alert(1)"))
+                .andExpect(status().isBadRequest());
+        send(get("/api/quizlet/" + moduleId), null, null).andExpect(jsonPath("$.flashcards[0].imageUrl", is(photo)));
+    }
 }
