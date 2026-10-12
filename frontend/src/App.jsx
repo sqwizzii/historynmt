@@ -7,6 +7,7 @@ import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
 import QuizletView from './pages/QuizletView.jsx'
 import Register from './pages/Register.jsx'
+import StudentAnalytics from './pages/StudentAnalytics.jsx'
 import TeacherPanel from './pages/TeacherPanel.jsx'
 import TestRunner from './pages/TestRunner.jsx'
 
@@ -26,6 +27,9 @@ export default function App() {
           <Route path="/quizlet/:moduleId" element={<QuizletView />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/tests/:testId" element={<TestRunner />} />
+          </Route>
+          <Route element={<ProtectedRoute role="STUDENT" />}>
+            <Route path="/results" element={<StudentAnalytics />} />
           </Route>
           <Route element={<ProtectedRoute role="TEACHER" />}>
             <Route path="/teacher" element={<TeacherPanel />} />

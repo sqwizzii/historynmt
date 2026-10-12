@@ -25,6 +25,15 @@ npm run dev        # http://localhost:45173
 - `src/pages/TeacherPanel.jsx` (`/teacher`) - створення тестів і питань (з посиланням на зображення), модулів карток, таблиця результатів учнів.
 - `src/pages/Login.jsx`, `src/pages/Register.jsx` - вхід і реєстрація з вибором ролі.
 
+## Ролі
+
+Реєстрація через API завжди створює `STUDENT`. Акаунт вчителя створюється автоматично при першому запуску
+(`TeacherBootstrap`): логін `teacher`, пароль `Teacher123!`. Змінюється через `BOOTSTRAP_TEACHER_USERNAME`,
+`BOOTSTRAP_TEACHER_EMAIL`, `BOOTSTRAP_TEACHER_PASSWORD`; у production пароль потрібно змінити.
+
+Тест обмежений за часом: 60 хвилин (`TEST_DURATION_MINUTES` у `TestSession.jsx`), після чого відповіді надсилаються автоматично.
+Учні бачать історію спроб на сторінці `/results` («Мої результати»).
+
 ## Структура бекенду
 
 ```
@@ -70,6 +79,7 @@ export DB_USERNAME=postgres DB_PASSWORD=postgres
 | `POST /api/tests/create`, `POST /api/tests/questions/create` | TEACHER | створення тесту / питання з варіантами |
 | `POST /api/quizlet/create`, `POST /api/quizlet/{id}/cards` | TEACHER | створення модуля (опційно з картками) / додавання картки |
 | `GET /api/teacher/results` | TEACHER | результати всіх учнів |
+| `GET /api/teacher/students`, `GET /api/teacher/students/{id}/results` | TEACHER | список учнів (спроби, кращий бал) / результати конкретного учня |
 
 Токен передається заголовком `Authorization: Bearer <token>`.
 

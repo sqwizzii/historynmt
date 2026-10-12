@@ -5,13 +5,14 @@ import Modal from '../Modal.jsx'
 const NMT_MIN = 100
 const NMT_MAX = 200
 
-export default function ResultModal({ result, onRetry, onClose }) {
+export default function ResultModal({ result, timedOut = false, onRetry, onClose }) {
   const percent = result.maxScore > 0 ? Math.round((result.score / result.maxScore) * 100) : 0
   const nmtPosition = ((result.nmtScore - NMT_MIN) / (NMT_MAX - NMT_MIN)) * 100
 
   return (
     <Modal title="Тест завершено" onClose={onClose}>
       <p className="mt-1 text-sm text-slate-600">{result.testTitle}</p>
+      {timedOut && <p className="mt-1 text-sm font-medium text-amber-700">Час вичерпано: відповіді надіслано автоматично.</p>}
 
       <div className="mt-6 flex flex-col items-center rounded-2xl bg-gradient-to-br from-blue-700 to-blue-900 px-4 py-6 text-white">
         <Award className="mb-2 h-7 w-7 text-amber-300" aria-hidden="true" />

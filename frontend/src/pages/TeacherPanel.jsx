@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { ErrorState, LoadingState } from '../components/PageState.jsx'
 import ModuleForm from '../components/teacher/ModuleForm.jsx'
 import QuestionForm from '../components/teacher/QuestionForm.jsx'
-import ResultsTable from '../components/teacher/ResultsTable.jsx'
+import StudentsResults from '../components/teacher/StudentsResults.jsx'
 import TestForm from '../components/teacher/TestForm.jsx'
 import { useAsyncData } from '../hooks/useAsyncData.js'
 import { getErrorMessage, testService } from '../services/api.js'
@@ -11,7 +11,7 @@ import { getErrorMessage, testService } from '../services/api.js'
 const TABS = [
   { id: 'tests', label: 'Тести та питання', Icon: ClipboardList },
   { id: 'cards', label: 'Картки', Icon: Layers },
-  { id: 'results', label: 'Результати учнів', Icon: BarChart3 },
+  { id: 'results', label: 'Учні та результати', Icon: BarChart3 },
 ]
 
 function TestsTab() {
@@ -63,7 +63,7 @@ export default function TeacherPanel() {
 
       {tab === 'tests' && <TestsTab />}
       {tab === 'cards' && <ModuleForm />}
-      {tab === 'results' && <ResultsTable />}
+      {tab === 'results' && <StudentsResults />}
     </div>
   )
 }

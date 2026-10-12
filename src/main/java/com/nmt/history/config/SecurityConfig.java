@@ -53,7 +53,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/api/tests/create", "/api/tests/questions/create").hasRole(TEACHER)
                         .requestMatchers(HttpMethod.POST, "/api/quizlet/**").hasRole(TEACHER)
-                        .requestMatchers(HttpMethod.GET, "/api/teacher/results").hasRole(TEACHER)
+                        .requestMatchers(HttpMethod.GET, "/api/teacher/**").hasRole(TEACHER)
 
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtils, userDetailsService),

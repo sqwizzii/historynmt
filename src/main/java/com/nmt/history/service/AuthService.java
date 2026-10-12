@@ -41,7 +41,7 @@ public class AuthService {
                 .username(username)
                 .email(email)
                 .password(passwordEncoder.encode(request.password()))
-                .role(request.role() != null ? request.role() : Role.STUDENT)
+                .role(Role.STUDENT)
                 .build());
 
         return JwtResponse.bearer(jwtUtils.generateToken(user.getUsername(), user.getRole()),
