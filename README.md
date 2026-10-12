@@ -18,6 +18,8 @@ React 19, Vite, Tailwind CSS 4, Axios.
 
 ## Розгортання (Docker Compose + автоматичний HTTPS)
 
+Покрокова інструкція для початківців: [docs/deploy.md](docs/deploy.md).
+
 Потрібні: сервер із Docker, домен, DNS A-запис на сервер, відкриті порти 80 і 443.
 
 ```bash
