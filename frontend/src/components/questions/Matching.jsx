@@ -1,3 +1,4 @@
+import OptionImage from '../OptionImage.jsx'
 const LETTERS = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Є', 'Ж', 'З', 'И']
 
 export default function Matching({ question, value, onChange }) {
@@ -36,7 +37,10 @@ export default function Matching({ question, value, onChange }) {
               <label className="block">
                 <span className="mb-2 flex items-start gap-2 text-sm text-slate-800">
                   <span className="font-bold text-slate-500">{index + 1}.</span>
-                  <span>{option.optionText}</span>
+                  <span>
+                    {option.optionText}
+                    <OptionImage src={option.imageUrl} />
+                  </span>
                 </span>
                 <select
                   value={matches[option.id] ?? ''}

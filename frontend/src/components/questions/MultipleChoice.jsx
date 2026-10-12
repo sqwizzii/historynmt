@@ -1,3 +1,4 @@
+import OptionImage from '../OptionImage.jsx'
 import { Check } from 'lucide-react'
 
 export default function MultipleChoice({ question, value, onChange }) {
@@ -29,7 +30,10 @@ export default function MultipleChoice({ question, value, onChange }) {
               >
                 {checked ? <Check className="h-4 w-4" aria-hidden="true" /> : index + 1}
               </span>
-              <span className="pt-0.5 text-sm text-slate-800">{option.optionText}</span>
+              <span className="pt-0.5 text-sm text-slate-800">
+                {option.optionText}
+                <OptionImage src={option.imageUrl} />
+              </span>
             </label>
           )
         })}

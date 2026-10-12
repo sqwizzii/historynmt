@@ -1,5 +1,6 @@
 import { ImagePlus, X } from 'lucide-react'
 import { useRef, useState } from 'react'
+import { resolveImageUrl } from '../utils/imageUrl.js'
 import { fileToDataUrl } from '../utils/imageFile.js'
 
 const MAX_FILE_BYTES = 15 * 1024 * 1024
@@ -27,7 +28,7 @@ export default function ImagePicker({ value, onChange, label = 'Фото' }) {
       <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} className="hidden" aria-label={label} />
       {value ? (
         <span className="relative">
-          <img src={value} alt="" className="h-10 w-10 rounded-lg border border-slate-200 object-cover" />
+          <img src={resolveImageUrl(value)} alt="" className="h-10 w-10 rounded-lg border border-slate-200 object-cover" />
           <button
             type="button"
             onClick={() => onChange(null)}

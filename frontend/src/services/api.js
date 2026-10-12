@@ -59,6 +59,7 @@ export const testService = {
   getForEdit: (testId) => api.get(`/teacher/tests/${testId}`).then((r) => r.data),
   updateQuestion: (questionId, payload) => api.put(`/tests/questions/${questionId}`, payload).then((r) => r.data),
   removeQuestion: (questionId) => api.delete(`/tests/questions/${questionId}`),
+  importGoogleForm: (payload) => api.post('/teacher/import/google-form', payload).then((r) => r.data),
   getStats: (testId) => api.get(`/teacher/tests/${testId}/stats`).then((r) => r.data),
   start: (testId) => api.post(`/tests/${testId}/start`).then((r) => r.data),
   recordLeave: (testId) => api.post(`/tests/${testId}/leave`).then((r) => r.data),

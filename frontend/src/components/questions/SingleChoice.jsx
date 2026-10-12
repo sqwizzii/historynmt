@@ -1,3 +1,4 @@
+import OptionImage from '../OptionImage.jsx'
 export default function SingleChoice({ question, value, onChange }) {
   const selected = value?.selectedOptionIds?.[0]
 
@@ -26,7 +27,10 @@ export default function SingleChoice({ question, value, onChange }) {
             >
               {String.fromCharCode(1040 + index)}
             </span>
-            <span className="pt-0.5 text-sm text-slate-800">{option.optionText}</span>
+            <span className="pt-0.5 text-sm text-slate-800">
+              {option.optionText}
+              <OptionImage src={option.imageUrl} />
+            </span>
           </label>
         )
       })}

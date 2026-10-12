@@ -1,9 +1,10 @@
-import { Plus } from 'lucide-react'
+import { FileUp, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
-import { primaryButtonClass } from '../styles.js'
+import { primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, testService } from '../../services/api.js'
+import ImportFormModal from './ImportFormModal.jsx'
 import TestEditor from './TestEditor.jsx'
 import TestForm from './TestForm.jsx'
 
@@ -11,6 +12,7 @@ export default function TestsManager() {
   const { data: tests, error, reload } = useAsyncData(testService.getAll, null, { keepPrevious: true })
   const [selectedId, setSelectedId] = useState(null)
   const [creating, setCreating] = useState(false)
+  const [importing, setImporting] = useState(false)
 
   if (error && !tests) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
   if (!tests) return <LoadingState />
@@ -27,6 +29,10 @@ export default function TestsManager() {
         >
           <Plus className="h-4 w-4" aria-hidden="true" />
           Новий тест
+        </button>
+        <button type="button" onClick={() => setImporting(true)} className={`${secondaryButtonClass} w-full`}>
+          <FileUp className="h-4 w-4" aria-hidden="true" />
+          Імпорт з Google Forms
         </button>
         <ul className="space-y-1 rounded-2xl border border-slate-200 bg-white p-2 shadow-card">
           {tests.map((test) => {
@@ -83,6 +89,18 @@ export default function TestsManager() {
           <EmptyState title="Створіть перший тест" text="Натисніть «Новий тест», потім додайте питання." />
         )}
       </div>
+
+      {importing && (
+        <ImportFormModal
+          onClose={() => setImporting(false)}
+          onImported={(testId) => {
+            setImporting(false)
+            setCreating(false)
+            setSelectedId(testId)
+            reload()
+          }}
+        />
+      )}
     </div>
   )
 }

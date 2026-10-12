@@ -1,3 +1,4 @@
+import OptionImage from '../OptionImage.jsx'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 
 export default function Chronology({ question, value, onChange }) {
@@ -28,7 +29,10 @@ export default function Chronology({ question, value, onChange }) {
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-700">
               {index + 1}
             </span>
-            <span className="flex-1 text-sm text-slate-800">{byId.get(id)?.optionText}</span>
+            <span className="flex-1 text-sm text-slate-800">
+              {byId.get(id)?.optionText}
+              <OptionImage src={byId.get(id)?.imageUrl} />
+            </span>
             <div className="flex shrink-0 gap-1">
               <button
                 type="button"

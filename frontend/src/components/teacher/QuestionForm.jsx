@@ -1,5 +1,6 @@
 import { CheckCircle2, ImagePlus, Plus, Trash2 } from 'lucide-react'
 import { useRef, useState } from 'react'
+import ImagePicker from '../ImagePicker.jsx'
 import { fileToDataUrl } from '../../utils/imageFile.js'
 import ErrorAlert from '../ErrorAlert.jsx'
 import QuestionImage from '../QuestionImage.jsx'
@@ -15,7 +16,7 @@ const TYPES = {
 }
 
 const URL_PATTERN = /^https?:\/\/\S+$/
-const emptyRow = () => ({ text: '', correct: false, matchKey: '' })
+const emptyRow = () => ({ text: '', correct: false, matchKey: '', image: null })
 const emptyRows = (type) => Array.from({ length: TYPES[type].rows }, emptyRow)
 
 function rowsFromQuestion(question) {
@@ -23,7 +24,7 @@ function rowsFromQuestion(question) {
     question.questionType === 'CHRONOLOGY'
       ? [...question.options].sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))
       : question.options
-  return options.map((o) => ({ text: o.optionText, correct: o.isCorrect, matchKey: o.matchKey ?? '' }))
+  return options.map((o) => ({ text: o.optionText, correct: o.isCorrect, matchKey: o.matchKey ?? '', image: o.imageUrl ?? null }))
 }
 
 function validate(type, text, imageUrl, rows) {
@@ -44,6 +45,7 @@ function buildOptions(type, rows) {
     isCorrect: type === 'SINGLE_CHOICE' || type === 'MULTIPLE_CHOICE' ? row.correct : false,
     matchKey: type === 'MATCHING' ? row.matchKey.trim() : null,
     orderIndex: type === 'CHRONOLOGY' ? index + 1 : null,
+    imageUrl: row.image,
   }))
 }
 
@@ -220,6 +222,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
               placeholder={`${optionLabel} ${index + 1}`}
               aria-label={`${optionLabel} ${index + 1}`}
             />
+            <ImagePicker value={row.image} onChange={(image) => updateRow(index, { image })} label={`Фото до варіанта ${index + 1}`} />
             {type === 'MATCHING' && (
               <input
                 className={`${inputClass} min-w-0 flex-1`}
