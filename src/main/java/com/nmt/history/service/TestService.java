@@ -140,6 +140,7 @@ public class TestService {
         question.setQuestionText(request.questionText().trim());
         question.setImageUrl(blankToNull(request.imageUrl()));
         question.setExplanation(blankToNull(request.explanation()));
+        question.setTopic(blankToNull(request.topic()));
         question.setQuestionType(request.questionType());
         for (OptionRequest o : request.options()) {
             question.addOption(Option.builder()
@@ -332,7 +333,7 @@ public class TestService {
                         o.getMatchKey(), o.getOrderIndex()))
                 .toList();
         return new QuestionEditResponse(question.getId(), question.getQuestionText(), question.getImageUrl(),
-                question.getQuestionType(), question.getExplanation(), options);
+                question.getQuestionType(), question.getExplanation(), question.getTopic(), options);
     }
 
     private Question findQuestion(Long questionId) {

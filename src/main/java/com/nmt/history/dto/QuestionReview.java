@@ -13,5 +13,6 @@ public record QuestionReview(
         int max,
         List<String> yourAnswer,
         List<String> correctAnswer,
-        String explanation) {
+        String explanation,
+        String topic) {
 }

@@ -266,7 +266,7 @@ class ApiIntegrationTest {
         String student = registerStudent("practice_student");
         long testId = body(send(post("/api/tests/create"), teacher, Map.of("title", "P"))).get("id").asLong();
         JsonNode question = body(send(post("/api/tests/questions/create"), teacher, Map.of(
-                "testId", testId, "questionText", "Q?", "questionType", "SINGLE_CHOICE",
+                "testId", testId, "questionText", "Q?", "questionType", "SINGLE_CHOICE", "topic", "Київська Русь",
                 "options", java.util.List.of(Map.of("optionText", "A", "isCorrect", true),
                         Map.of("optionText", "B", "isCorrect", false)))));
         long qid = question.get("id").asLong();
@@ -295,6 +295,13 @@ class ApiIntegrationTest {
                 .andExpect(jsonPath("$.review[0].correctAnswer[0]", is("A")));
         send(get("/api/practice/mistakes"), student, null).andExpect(jsonPath("$.total", is(0)));
 
+        send(get("/api/results/my/topics"), student, null)
+                .andExpect(jsonPath("$[0].topic", is("Київська Русь")))
+                .andExpect(jsonPath("$[0].percent", is(0)))
+                .andExpect(jsonPath("$[0].answered", is(1)));
+        long studentId = body(send(get("/api/teacher/results"), teacher, null)).get(0).get("id").asLong();
+        send(get("/api/teacher/students/" + studentId + "/topics"), teacher, null).andExpect(status().isOk());
+        send(get("/api/teacher/students/" + studentId + "/topics"), student, null).andExpect(status().isForbidden());
         send(get("/api/teacher/tests/" + testId + "/stats"), student, null).andExpect(status().isForbidden());
         send(get("/api/teacher/tests/" + testId + "/stats"), teacher, null)
                 .andExpect(jsonPath("$.attempts", is(1)))

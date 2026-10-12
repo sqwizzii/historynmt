@@ -2,8 +2,10 @@ package com.nmt.history.controller;
 
 import com.nmt.history.dto.StudentResponse;
 import com.nmt.history.dto.TestResultResponse;
+import com.nmt.history.dto.TopicStat;
 import com.nmt.history.model.Role;
 import com.nmt.history.service.ResultService;
+import com.nmt.history.service.TopicStatsService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -18,10 +20,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class ResultController {
 
     private final ResultService resultService;
+    private final TopicStatsService topicStatsService;
 
     @GetMapping("/results/my")
     public List<TestResultResponse> getMyResults(Authentication authentication) {
         return resultService.getMyResults(authentication.getName());
+    }
+
+    @GetMapping("/results/my/topics")
+    public List<TopicStat> getMyTopics(Authentication authentication) {
+        return topicStatsService.forUsername(authentication.getName());
+    }
+
+    @GetMapping("/teacher/students/{studentId}/topics")
+    public List<TopicStat> getStudentTopics(@PathVariable Long studentId) {
+        return topicStatsService.forStudent(studentId);
     }
 
     @GetMapping("/results/{resultId}")

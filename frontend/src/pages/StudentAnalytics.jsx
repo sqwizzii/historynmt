@@ -1,6 +1,7 @@
 import { Award, ClipboardList, TrendingUp } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { EmptyState, ErrorState, LoadingState } from '../components/PageState.jsx'
+import TopicProgress from '../components/TopicProgress.jsx'
 import ResultsTable from '../components/ResultsTable.jsx'
 import { primaryButtonClass } from '../components/styles.js'
 import { useAsyncData } from '../hooks/useAsyncData.js'
@@ -48,6 +49,7 @@ export default function StudentAnalytics() {
             <StatCard icon={Award} label="Найкращий орієнт. бал" value={best} />
             <StatCard icon={TrendingUp} label="Середній орієнт. бал" value={average} />
           </section>
+          <TopicProgress fetcher={resultService.getMyTopics} dependency={results.length} />
           <ResultsTable results={results} />
         </>
       )}

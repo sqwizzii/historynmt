@@ -4,6 +4,7 @@ import ConfirmDialog from '../ConfirmDialog.jsx'
 import ErrorAlert from '../ErrorAlert.jsx'
 import Modal from '../Modal.jsx'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
+import TopicProgress from '../TopicProgress.jsx'
 import ResultsTable from '../ResultsTable.jsx'
 import { inputClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
@@ -124,7 +125,12 @@ function ResultsPanel({ student, version }) {
   if (results.length === 0) {
     return <EmptyState title="Результатів ще немає" text={studentId === null ? "Тут з'являться спроби учнів." : 'Цей учень ще не проходив тестів.'} />
   }
-  return <ResultsTable results={results} showStudent={studentId === null} />
+  return (
+    <>
+      {studentId !== null && <TopicProgress fetcher={() => resultService.getStudentTopics(studentId)} dependency={`${studentId}:${version}`} />}
+      <ResultsTable results={results} showStudent={studentId === null} />
+    </>
+  )
 }
 
 function InviteCodeCard() {

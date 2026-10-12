@@ -78,6 +78,8 @@ export const quizletService = {
 
 export const resultService = {
   getMy: () => api.get('/results/my').then((r) => r.data),
+  getMyTopics: () => api.get('/results/my/topics').then((r) => r.data),
+  getStudentTopics: (studentId) => api.get(`/teacher/students/${studentId}/topics`).then((r) => r.data),
   getById: (resultId) => api.get(`/results/${resultId}`).then((r) => r.data),
   getAllForTeacher: () => api.get('/teacher/results').then((r) => r.data),
   getStudents: () => api.get('/teacher/students').then((r) => r.data),

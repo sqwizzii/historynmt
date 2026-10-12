@@ -36,7 +36,8 @@ public class ReviewService {
                 max,
                 yourAnswer(question, answer),
                 correctAnswer(question),
-                question.getExplanation());
+                question.getExplanation(),
+                question.getTopic());
     }
 
     public String toJson(List<QuestionReview> review) {

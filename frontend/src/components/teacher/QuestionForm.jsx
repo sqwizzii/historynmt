@@ -51,6 +51,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
   const [text, setText] = useState(initial?.questionText ?? '')
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? '')
   const [explanation, setExplanation] = useState(initial?.explanation ?? '')
+  const [topic, setTopic] = useState(initial?.topic ?? '')
   const [rows, setRows] = useState(() => (initial ? rowsFromQuestion(initial) : emptyRows('SINGLE_CHOICE')))
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -93,6 +94,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
       imageUrl: imageUrl.trim(),
       questionType: type,
       explanation: explanation.trim(),
+      topic: topic.trim(),
       options: buildOptions(type, rows),
     }
     try {
@@ -103,6 +105,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
         setText('')
         setImageUrl('')
         setExplanation('')
+        setTopic('')
         setRows(emptyRows(type))
         setSuccess('Питання додано до тесту.')
       }
@@ -217,6 +220,20 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
           Додати рядок
         </button>
       </fieldset>
+
+      <div>
+        <label htmlFor="q-topic" className="mb-1.5 block text-sm font-medium text-slate-700">
+          Тема <span className="font-normal text-slate-400">(необов&apos;язково, для статистики по темах)</span>
+        </label>
+        <input
+          id="q-topic"
+          maxLength={100}
+          className={inputClass}
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          placeholder="Наприклад, Київська Русь"
+        />
+      </div>
 
       <div>
         <label htmlFor="q-explanation" className="mb-1.5 block text-sm font-medium text-slate-700">

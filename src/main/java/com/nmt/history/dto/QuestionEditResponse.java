@@ -10,5 +10,6 @@ public record QuestionEditResponse(
         String imageUrl,
         QuestionType questionType,
         String explanation,
+        String topic,
         List<OptionEditResponse> options) {
 }
