@@ -106,7 +106,7 @@ export default function ImportFormModal({ onClose, onImported }) {
             «{result.title}»: додано питань {result.imported}.
           </p>
           {result.skipped.length > 0 && (
-            <div className="rounded-xl bg-amber-50 p-3.5 text-amber-900">
+            <div className="rounded-xl bg-slate-100 p-3.5 text-black">
               <p className="mb-1.5 flex items-center gap-2 font-semibold">
                 <TriangleAlert className="h-4 w-4" aria-hidden="true" />
                 Пропущено: {result.skipped.length}
@@ -121,7 +121,7 @@ export default function ImportFormModal({ onClose, onImported }) {
             </div>
           )}
           {result.warnings?.length > 0 && (
-            <ul className="list-disc space-y-1 rounded-xl bg-amber-50 p-3.5 pl-8 text-xs text-amber-900">
+            <ul className="list-disc space-y-1 rounded-xl bg-slate-100 p-3.5 pl-8 text-xs text-black">
               {result.warnings.map((w, i) => (
                 <li key={i}>{w}</li>
               ))}

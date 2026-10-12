@@ -4,7 +4,7 @@ import QuestionImage from './QuestionImage.jsx'
 function statusOf(item) {
   if (item.earned === item.max) return { label: 'Правильно', Icon: CheckCircle2, className: 'bg-emerald-100 text-emerald-800' }
   if (item.earned === 0) return { label: 'Неправильно', Icon: XCircle, className: 'bg-red-100 text-red-800' }
-  return { label: 'Частково', Icon: MinusCircle, className: 'bg-amber-100 text-amber-800' }
+  return { label: 'Частково', Icon: MinusCircle, className: 'bg-slate-200 text-black' }
 }
 
 function AnswerBlock({ title, lines, emptyText, tone }) {
@@ -27,10 +27,10 @@ function AnswerBlock({ title, lines, emptyText, tone }) {
 export default function ReviewItem({ item, number }) {
   const status = statusOf(item)
   return (
-              <li className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card">
+              <li className="rounded-none border border-black bg-white p-5 shadow-card">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <span className="text-sm font-semibold text-slate-500">Питання {number}</span>
-                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${status.className}`}>
+                  <span className={`inline-flex items-center gap-1.5 rounded-none px-2.5 py-1 text-xs font-semibold ${status.className}`}>
                     <status.Icon className="h-3.5 w-3.5" aria-hidden="true" />
                     {status.label}: {item.earned} з {item.max}
                   </span>

@@ -4,14 +4,14 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 
 const ROLE_LABELS = {
-  STUDENT: { label: 'Учень', Icon: GraduationCap, className: 'bg-sky-100 text-sky-800' },
-  TEACHER: { label: 'Вчитель', Icon: Presentation, className: 'bg-amber-100 text-amber-800' },
+  STUDENT: { label: 'Учень', Icon: GraduationCap, className: 'border border-black text-black' },
+  TEACHER: { label: 'Вчитель', Icon: Presentation, className: 'bg-black text-white' },
 }
 
 function navLinkClass({ isActive }) {
   return [
-    'flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-all',
-    isActive ? 'bg-ink text-white shadow-md shadow-blue-900/20' : 'text-slate-600 hover:bg-blue-50 hover:text-blue-800',
+    'flex items-center gap-2 border px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.12em] transition-colors',
+    isActive ? 'border-black bg-black text-white' : 'border-transparent text-slate-600 hover:border-black hover:text-black',
   ].join(' ')
 }
 
@@ -45,14 +45,14 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-[#f6f2ea]/80 shadow-[0_1px_0_0_rgb(176_141_91/0.35)] backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-black bg-white">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link to="/" onClick={closeMenu} className="group flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-ink text-gold-soft shadow-md shadow-blue-900/30 ring-1 ring-white/20 transition-transform group-hover:rotate-6">
+          <span className="flex h-9 w-9 items-center justify-center bg-black text-white">
             <Landmark className="h-5 w-5" aria-hidden="true" />
           </span>
-          <span className="font-display text-xl font-bold tracking-tight text-ink" style={{ fontFamily: 'var(--font-display)' }}>
-            НМТ <span className="text-blue-700">Історія</span>
+          <span className="font-display text-xl font-semibold uppercase tracking-wide text-black">
+            НМТ / Історія
           </span>
         </Link>
 
@@ -69,11 +69,11 @@ export default function Header() {
           {isAuthenticated ? (
             <>
               <div className="flex items-center gap-2">
-                <Link to="/account" className="text-sm font-semibold text-slate-800 hover:text-blue-700 hover:underline" title="Профіль і зміна пароля">
+                <Link to="/account" className="text-sm font-semibold text-slate-800 hover:underline" title="Профіль і зміна пароля">
                   {user.username}
                 </Link>
                 {role && (
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${role.className}`}>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${role.className}`}>
                     <role.Icon className="h-3.5 w-3.5" aria-hidden="true" />
                     {role.label}
                   </span>
@@ -82,7 +82,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+                className="flex items-center gap-2 border border-black px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-black transition-colors hover:bg-black hover:text-white"
               >
                 <LogOut className="h-4 w-4" aria-hidden="true" />
                 Вийти
@@ -92,14 +92,14 @@ export default function Header() {
             <>
               <Link
                 to="/login"
-                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-black hover:underline"
               >
                 <LogIn className="h-4 w-4" aria-hidden="true" />
                 Увійти
               </Link>
               <Link
                 to="/register"
-                className="btn-shine flex items-center gap-2 rounded-full bg-gradient-to-b from-blue-600 to-blue-800 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-900/25 transition hover:-translate-y-px hover:shadow-lg"
+                className="flex items-center gap-2 border border-black bg-black px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white hover:text-black"
               >
                 <UserPlus className="h-4 w-4" aria-hidden="true" />
                 Реєстрація
@@ -111,7 +111,7 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setMenuOpen((open) => !open)}
-          className="rounded-lg p-2 text-slate-700 hover:bg-slate-100 md:hidden"
+          className="p-2 text-black hover:bg-slate-100 md:hidden"
           aria-label={menuOpen ? 'Закрити меню' : 'Відкрити меню'}
           aria-expanded={menuOpen}
         >
@@ -120,7 +120,7 @@ export default function Header() {
       </div>
 
       {menuOpen && (
-        <div className="border-t border-slate-200 bg-white px-4 pb-4 pt-3 md:hidden">
+        <div className="border-t border-black bg-white px-4 pb-4 pt-3 md:hidden">
           <nav className="flex flex-col gap-1" aria-label="Мобільна навігація">
             {links.map(({ to, label, Icon }) => (
               <NavLink key={to} to={to} onClick={closeMenu} className={navLinkClass}>
@@ -133,11 +133,11 @@ export default function Header() {
             {isAuthenticated ? (
               <div className="flex items-center justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Link to="/account" onClick={closeMenu} className="text-sm font-semibold text-slate-800 hover:text-blue-700">
+                  <Link to="/account" onClick={closeMenu} className="text-sm font-semibold text-slate-800 hover:underline">
                     {user.username}
                   </Link>
                   {role && (
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${role.className}`}>
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${role.className}`}>
                       <role.Icon className="h-3.5 w-3.5" aria-hidden="true" />
                       {role.label}
                     </span>
@@ -146,7 +146,7 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-red-50 hover:text-red-700"
+                  className="flex items-center gap-2 border border-black px-3 py-2 text-xs font-semibold uppercase tracking-wider text-black hover:bg-black hover:text-white"
                 >
                   <LogOut className="h-4 w-4" aria-hidden="true" />
                   Вийти
@@ -157,14 +157,14 @@ export default function Header() {
                 <Link
                   to="/login"
                   onClick={closeMenu}
-                  className="rounded-lg border border-slate-200 px-3 py-2 text-center text-sm font-medium text-slate-700"
+                  className="border border-black px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider text-black"
                 >
                   Увійти
                 </Link>
                 <Link
                   to="/register"
                   onClick={closeMenu}
-                  className="rounded-lg bg-blue-700 px-3 py-2 text-center text-sm font-semibold text-white"
+                  className="bg-black px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider text-white"
                 >
                   Реєстрація
                 </Link>

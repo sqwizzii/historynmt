@@ -140,7 +140,7 @@ export default function ModuleEditor({ moduleId, onChanged, onDeleted }) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card sm:p-6">
+      <section className="rounded-none border border-black bg-white p-5 shadow-card sm:p-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-base font-semibold text-slate-900">Модуль</h2>
           <button type="button" onClick={() => setToDelete({ kind: 'module' })} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50">
@@ -151,7 +151,7 @@ export default function ModuleEditor({ moduleId, onChanged, onDeleted }) {
         <ModuleHeaderForm key={`${module.id}-${module.title}-${module.description}`} module={module} onSaved={refresh} />
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card sm:p-6">
+      <section className="rounded-none border border-black bg-white p-5 shadow-card sm:p-6">
         <h2 className="mb-4 text-base font-semibold text-slate-900">Картки ({module.flashcards.length})</h2>
         <ul className="space-y-3">
           {module.flashcards.map((card) => (

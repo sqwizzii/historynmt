@@ -9,7 +9,7 @@ import { getErrorMessage, resultService } from '../services/api.js'
 
 function StatCard({ icon: Icon, label, value }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card">
+    <div className="rounded-none border border-black bg-white p-5 shadow-card">
       <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
         <Icon className="h-5 w-5" aria-hidden="true" />
       </span>

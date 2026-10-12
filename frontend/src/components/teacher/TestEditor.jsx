@@ -22,7 +22,7 @@ function QuestionStats({ testId }) {
   if (!stats) return null
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card sm:p-6">
+    <section className="rounded-none border border-black bg-white p-5 shadow-card sm:p-6">
       <h2 className="mb-1 flex items-center gap-2 text-base font-semibold text-slate-900">
         <BarChart3 className="h-4 w-4 text-blue-700" aria-hidden="true" />
         Статистика по питаннях
@@ -42,9 +42,9 @@ function QuestionStats({ testId }) {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-2 flex-1 overflow-hidden rounded-none bg-slate-100">
                     <div
-                      className={`h-full rounded-full ${q.correctPercent < 40 ? 'bg-red-500' : q.correctPercent < 70 ? 'bg-amber-400' : 'bg-emerald-500'}`}
+                      className={`h-full rounded-none ${q.correctPercent < 40 ? 'bg-red-500' : q.correctPercent < 70 ? 'bg-slate-500' : 'bg-emerald-500'}`}
                       style={{ width: `${q.correctPercent}%` }}
                     />
                   </div>
@@ -95,7 +95,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card sm:p-6">
+      <section className="rounded-none border border-black bg-white p-5 shadow-card sm:p-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-base font-semibold text-slate-900">Параметри тесту</h2>
           <button
@@ -130,7 +130,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
         )}
 
         {test.questions.length === 0 && editing !== 'new' && (
-          <p className="rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm text-slate-500">
+          <p className="rounded-none border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm text-slate-500">
             У цьому тесті ще немає питань.
           </p>
         )}
@@ -150,14 +150,14 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
                 />
               </li>
             ) : (
-              <li key={question.id} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-card">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">
+              <li key={question.id} className="flex items-start gap-3 rounded-none border border-black bg-white p-4 shadow-card">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-none bg-slate-100 text-xs font-bold text-slate-600">
                   {index + 1}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="line-clamp-2 text-sm font-medium text-slate-900">{question.questionText}</p>
                   <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-700">{TYPE_LABELS[question.questionType]}</span>
+                    <span className="rounded-none bg-slate-100 px-2 py-0.5 font-medium text-slate-700">{TYPE_LABELS[question.questionType]}</span>
                     <span>Варіантів: {question.options.length}</span>
                     {question.imageUrl && (
                       <span className="inline-flex items-center gap-1">

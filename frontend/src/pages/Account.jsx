@@ -40,7 +40,7 @@ export default function Account() {
         Акаунт: <span className="font-semibold text-slate-800">{user.username}</span>
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-card" noValidate>
+      <form onSubmit={handleSubmit} className="mt-6 space-y-5 rounded-none border border-black bg-white p-6 shadow-card" noValidate>
         <h2 className="text-base font-semibold text-slate-900">Зміна пароля</h2>
         <ErrorAlert message={error} />
         {success && (

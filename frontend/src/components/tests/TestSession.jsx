@@ -114,7 +114,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
           <span
             role="timer"
             aria-label="Залишилось часу"
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold tabular-nums ${
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-none px-3 py-1.5 text-sm font-semibold tabular-nums ${
               lowTime ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'
             }`}
           >
@@ -122,7 +122,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
             {formatRemaining(remainingMs)}
           </span>
         </div>
-        <p className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
+        <p className="mt-3 flex items-start gap-2 rounded-lg bg-slate-100 px-3 py-2 text-xs text-black">
           <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           <span>
             Не залишайте сторінку: виходи фіксуються (поки що: {leaves}), а відсутність понад {AWAY_LIMIT_SECONDS} с автоматично завершить тест.
@@ -136,8 +136,8 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
             </span>
             <span>{Math.round((answeredCount / questions.length) * 100)}%</span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-slate-200">
-            <div className="h-full rounded-full bg-blue-600 transition-all" style={{ width: `${(answeredCount / questions.length) * 100}%` }} />
+          <div className="h-2 overflow-hidden rounded-none bg-slate-200">
+            <div className="h-full rounded-none bg-blue-600 transition-all" style={{ width: `${(answeredCount / questions.length) * 100}%` }} />
           </div>
         </div>
       </header>
@@ -158,7 +158,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
                   ? 'border-blue-700 bg-blue-700 text-white'
                   : done
                     ? 'border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
+                    : 'border-black bg-white text-slate-600 hover:bg-slate-100'
               }`}
             >
               {i + 1}

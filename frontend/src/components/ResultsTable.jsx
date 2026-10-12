@@ -3,7 +3,7 @@ import { formatDate } from '../utils/format.js'
 
 export default function ResultsTable({ results, showStudent = false }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-card">
+    <div className="overflow-x-auto rounded-none border border-black bg-white shadow-card">
       <table className="min-w-full divide-y divide-slate-200 text-sm">
         <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
           <tr>
@@ -26,10 +26,10 @@ export default function ResultsTable({ results, showStudent = false }) {
               <td className="whitespace-nowrap px-4 py-3 text-slate-500">{formatDate(r.completedAt)}</td>
               <td className="px-4 py-3 text-xs">
                 <div className="flex flex-wrap gap-1">
-                  {r.leaveCount > 0 && <span className="rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-800">виходів: {r.leaveCount}</span>}
-                  {r.endReason === 'LEFT_PAGE' && <span className="rounded-full bg-red-100 px-2 py-0.5 font-medium text-red-700">покинув сторінку</span>}
-                  {r.endReason === 'TIMEOUT' && <span className="rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">час вичерпано</span>}
-                  {r.late && <span className="rounded-full bg-red-100 px-2 py-0.5 font-medium text-red-700">прострочено</span>}
+                  {r.leaveCount > 0 && <span className="rounded-none bg-amber-100 px-2 py-0.5 font-medium text-black">виходів: {r.leaveCount}</span>}
+                  {r.endReason === 'LEFT_PAGE' && <span className="rounded-none bg-red-100 px-2 py-0.5 font-medium text-red-700">покинув сторінку</span>}
+                  {r.endReason === 'TIMEOUT' && <span className="rounded-none bg-slate-100 px-2 py-0.5 font-medium text-slate-600">час вичерпано</span>}
+                  {r.late && <span className="rounded-none bg-red-100 px-2 py-0.5 font-medium text-red-700">прострочено</span>}
                 </div>
               </td>
               <td className="whitespace-nowrap px-4 py-3 text-right">

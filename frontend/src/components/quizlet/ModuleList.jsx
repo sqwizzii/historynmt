@@ -28,9 +28,9 @@ export default function ModuleList() {
               <li key={module.id}>
                 <Link
                   to={`/quizlet/${module.id}`}
-                  className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-card transition-all hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md"
+                  className="group flex h-full flex-col rounded-none border border-black bg-white p-6 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-lift"
                 >
-                  <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
+                  <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-black text-black">
                     <Layers className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <h2 className="text-lg font-semibold text-slate-900">{module.title}</h2>

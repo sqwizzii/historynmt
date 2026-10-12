@@ -61,13 +61,13 @@ export default function StudySession({ moduleId }) {
             <span>{Math.round(progress)}%</span>
           </div>
           <div
-            className="h-2 overflow-hidden rounded-full bg-slate-200"
+            className="h-2 overflow-hidden rounded-none bg-slate-200"
             role="progressbar"
             aria-valuemin={1}
             aria-valuemax={total}
             aria-valuenow={index + 1}
           >
-            <div className="h-full rounded-full bg-amber-400 transition-all duration-300" style={{ width: `${progress}%` }} />
+            <div className="h-full rounded-none bg-slate-500 transition-all duration-300" style={{ width: `${progress}%` }} />
           </div>
         </div>
       </header>

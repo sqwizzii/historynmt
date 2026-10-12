@@ -33,18 +33,18 @@ export default function ResultReview() {
       </p>
 
       <dl className="mt-5 grid grid-cols-3 gap-3 text-center">
-        <div className="rounded-xl border border-slate-200 bg-white p-3">
+        <div className="rounded-xl border border-black bg-white p-3">
           <dt className="text-xs text-slate-500">Первинний бал</dt>
           <dd className="mt-1 text-lg font-bold text-slate-900">
             {result.score}
             {result.maxScore != null && <span className="text-sm font-medium text-slate-500"> з {result.maxScore}</span>}
           </dd>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-3">
+        <div className="rounded-xl border border-black bg-white p-3">
           <dt className="text-xs text-slate-500">Орієнт. бал НМТ</dt>
           <dd className="mt-1 text-lg font-bold text-blue-700">{result.nmtScore}</dd>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-3">
+        <div className="rounded-xl border border-black bg-white p-3">
           <dt className="text-xs text-slate-500">Правильність</dt>
           <dd className="mt-1 text-lg font-bold text-slate-900">
             {result.maxScore ? `${Math.round((result.score / result.maxScore) * 100)}%` : '-'}
@@ -53,7 +53,7 @@ export default function ResultReview() {
       </dl>
 
       {!result.review ? (
-        <p className="mt-8 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm text-slate-500">
+        <p className="mt-8 rounded-none border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm text-slate-500">
           Для цього результату детальний розбір недоступний.
         </p>
       ) : (

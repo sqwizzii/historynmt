@@ -32,7 +32,7 @@ export default function ImagePicker({ value, onChange, label = 'Фото' }) {
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="absolute -right-1.5 -top-1.5 rounded-full bg-slate-700 p-0.5 text-white hover:bg-red-600"
+            className="absolute -right-1.5 -top-1.5 rounded-none bg-slate-700 p-0.5 text-white hover:bg-red-600"
             aria-label="Прибрати фото"
           >
             <X className="h-3 w-3" />
