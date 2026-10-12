@@ -1,6 +1,6 @@
-.git
-target
-**/node_modules
-frontend/dist
-backups
+target/
+frontend/node_modules/
+frontend/dist/
+.git/
 .env
+backups/
