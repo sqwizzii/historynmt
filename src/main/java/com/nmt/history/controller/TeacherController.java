@@ -1,9 +1,12 @@
 package com.nmt.history.controller;
 
+import com.nmt.history.dto.FormImportRequest;
+import com.nmt.history.dto.FormImportResponse;
 import com.nmt.history.dto.InviteCodeRequest;
 import com.nmt.history.dto.ResetPasswordRequest;
 import com.nmt.history.dto.TestEditResponse;
 import com.nmt.history.dto.TestStatsResponse;
+import com.nmt.history.service.FormImportService;
 import com.nmt.history.service.InviteCodeService;
 import com.nmt.history.service.TestService;
 import com.nmt.history.service.TestStatsService;
@@ -30,6 +33,7 @@ public class TeacherController {
     private final UserService userService;
     private final InviteCodeService inviteCodeService;
     private final TestStatsService statsService;
+    private final FormImportService formImportService;
 
     @GetMapping("/tests/{testId}")
     public TestEditResponse getTestForEdit(@PathVariable Long testId) {
@@ -39,6 +43,11 @@ public class TeacherController {
     @GetMapping("/tests/{testId}/stats")
     public TestStatsResponse testStats(@PathVariable Long testId) {
         return statsService.stats(testId);
+    }
+
+    @PostMapping("/import/google-form")
+    public FormImportResponse importGoogleForm(@Valid @RequestBody FormImportRequest request) {
+        return formImportService.importForm(request);
     }
 
     @GetMapping("/invite-code")

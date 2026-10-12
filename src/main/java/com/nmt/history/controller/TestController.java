@@ -79,6 +79,11 @@ public class TestController {
         return testService.questionImage(questionId);
     }
 
+    @GetMapping("/options/{optionId}/image")
+    public ResponseEntity<byte[]> optionImage(@PathVariable Long optionId) {
+        return testService.optionImage(optionId);
+    }
+
     @PostMapping("/{testId}/start")
     public AttemptResponse startAttempt(@PathVariable Long testId, Authentication authentication) {
         return testService.startAttempt(testId, authentication.getName());

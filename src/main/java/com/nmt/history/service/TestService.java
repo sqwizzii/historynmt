@@ -52,6 +52,7 @@ public class TestService {
 
     private final TestRepository testRepository;
     private final QuestionRepository questionRepository;
+    private final com.nmt.history.repository.OptionRepository optionRepository;
     private final TestResultRepository testResultRepository;
     private final TestAttemptRepository attemptRepository;
     private final UserRepository userRepository;
@@ -118,7 +119,7 @@ public class TestService {
         validateOptions(request.questionType(), request.options());
 
         Question question = Question.builder().test(test).build();
-        applyQuestion(question, request);
+        applyQuestion(question, request, Map.of());
         return toQuestionEditResponse(questionRepository.save(question));
     }
 
@@ -127,8 +128,11 @@ public class TestService {
         Question question = findQuestion(questionId);
         validateOptions(request.questionType(), request.options());
 
+        Map<Long, String> previousImages = new HashMap<>();
+        question.getOptions().stream().filter(o -> o.getImageUrl() != null)
+                .forEach(o -> previousImages.put(o.getId(), o.getImageUrl()));
         question.getOptions().clear();
-        applyQuestion(question, request);
+        applyQuestion(question, request, previousImages);
         return toQuestionEditResponse(questionRepository.save(question));
     }
 
@@ -137,7 +141,7 @@ public class TestService {
         questionRepository.delete(findQuestion(questionId));
     }
 
-    private void applyQuestion(Question question, CreateQuestionRequest request) {
+    private void applyQuestion(Question question, CreateQuestionRequest request, Map<Long, String> previousImages) {
         question.setQuestionText(request.questionText().trim());
         String imageUrl = blankToNull(request.imageUrl());
         if (imageUrl == null || !QuestionImages.OWN_URL.matcher(imageUrl).matches()) {
@@ -152,8 +156,17 @@ public class TestService {
                     .isCorrect(Boolean.TRUE.equals(o.isCorrect()))
                     .matchKey(blankToNull(o.matchKey()))
                     .orderIndex(o.orderIndex())
+                    .imageUrl(resolveOptionImage(blankToNull(o.imageUrl()), previousImages))
                     .build());
         }
+    }
+
+    private static String resolveOptionImage(String url, Map<Long, String> previousImages) {
+        if (url == null) {
+            return null;
+        }
+        var own = QuestionImages.OWN_OPTION_URL.matcher(url);
+        return own.matches() ? previousImages.get(Long.parseLong(own.group(1))) : url;
     }
 
     private int timeLimit(CreateTestRequest request) {
@@ -324,7 +337,7 @@ public class TestService {
         }
 
         List<OptionResponse> optionResponses = options.stream()
-                .map(o -> new OptionResponse(o.getId(), o.getOptionText()))
+                .map(o -> new OptionResponse(o.getId(), o.getOptionText(), QuestionImages.publicUrl(o)))
                 .toList();
         return new QuestionResponse(question.getId(), question.getQuestionText(),
                 QuestionImages.publicUrl(question), question.getQuestionType(), optionResponses, matchChoices);
@@ -334,7 +347,7 @@ public class TestService {
         List<OptionEditResponse> options = question.getOptions().stream()
                 .sorted(Comparator.comparing(Option::getId, Comparator.nullsLast(Comparator.naturalOrder())))
                 .map(o -> new OptionEditResponse(o.getId(), o.getOptionText(), Boolean.TRUE.equals(o.getIsCorrect()),
-                        o.getMatchKey(), o.getOrderIndex()))
+                        o.getMatchKey(), o.getOrderIndex(), QuestionImages.publicUrl(o)))
                 .toList();
         return new QuestionEditResponse(question.getId(), question.getQuestionText(), QuestionImages.publicUrl(question),
                 question.getQuestionType(), question.getExplanation(), question.getTopic(), options);
@@ -342,13 +355,22 @@ public class TestService {
 
     @Transactional(readOnly = true)
     public ResponseEntity<byte[]> questionImage(Long questionId) {
-        String url = findQuestion(questionId).getImageUrl();
+        return imageResponse(findQuestion(questionId).getImageUrl());
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<byte[]> optionImage(Long optionId) {
+        String url = optionRepository.findById(optionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Варіант не знайдено: " + optionId)).getImageUrl();
+        return imageResponse(url);
+    }
+
+    private ResponseEntity<byte[]> imageResponse(String url) {
         if (url == null || !url.startsWith("data:")) {
             throw new ResourceNotFoundException("Зображення не знайдено");
         }
-        int comma = url.indexOf(',');
         String mime = url.substring(5, url.indexOf(';'));
-        byte[] bytes = java.util.Base64.getDecoder().decode(url.substring(comma + 1));
+        byte[] bytes = java.util.Base64.getDecoder().decode(url.substring(url.indexOf(',') + 1));
         return ResponseEntity.ok()
                 .contentType(org.springframework.http.MediaType.parseMediaType(mime))
                 .cacheControl(org.springframework.http.CacheControl.maxAge(java.time.Duration.ofMinutes(5)).cachePublic())

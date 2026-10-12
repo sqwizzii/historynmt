@@ -336,4 +336,54 @@ class ApiIntegrationTest {
         send(put("/api/tests/questions/" + qid), teacher, payload.apply("")).andExpect(status().isOk());
         mvc.perform(get(ownUrl)).andExpect(status().isNotFound());
     }
+
+    @Test
+    void googleFormImportAndOptionImages() throws Exception {
+        String teacher = teacherToken();
+        String student = registerStudent("import_student");
+        Map<String, Object> form = Map.of("title", "З Google Forms", "description", "опис", "questions", java.util.List.of(
+                Map.of("title", "Радіо", "type", "SINGLE", "explanation", "бо так", "options", java.util.List.of(
+                        Map.of("text", "A", "correct", true), Map.of("text", "B", "correct", false))),
+                Map.of("title", "Чекбокси", "help", "оберіть усі", "type", "MULTIPLE", "options", java.util.List.of(
+                        Map.of("text", "A", "correct", true), Map.of("text", "B", "correct", true), Map.of("text", "C", "correct", false))),
+                Map.of("title", "Без ключа", "type", "SINGLE", "options", java.util.List.of(
+                        Map.of("text", "A", "correct", false), Map.of("text", "B", "correct", false))),
+                Map.of("title", "Текст", "type", "TEXT", "options", java.util.List.of())));
+
+        send(post("/api/teacher/import/google-form"), student, form).andExpect(status().isForbidden());
+        JsonNode result = body(send(post("/api/teacher/import/google-form"), teacher, form)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.imported", is(2)))
+                .andExpect(jsonPath("$.skipped", hasSize(2))));
+        long testId = result.get("testId").asLong();
+        send(get("/api/tests/" + testId), null, null)
+                .andExpect(jsonPath("$.title", is("З Google Forms")))
+                .andExpect(jsonPath("$.questions", hasSize(2)))
+                .andExpect(jsonPath("$.questions[1].questionText", is("Чекбокси\nоберіть усі")));
+
+        send(post("/api/teacher/import/google-form"), teacher, Map.of("title", "Порожній", "questions", java.util.List.of(
+                Map.of("title", "Без ключа", "type", "SINGLE", "options", java.util.List.of(
+                        Map.of("text", "A", "correct", false), Map.of("text", "B", "correct", false))))))
+                .andExpect(status().isBadRequest());
+
+        String png = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+        long qid = body(send(post("/api/tests/questions/create"), teacher, Map.of(
+                "testId", testId, "questionText", "Яка карта?", "questionType", "SINGLE_CHOICE",
+                "options", java.util.List.of(
+                        Map.of("optionText", "Карта 1", "isCorrect", true, "imageUrl", png),
+                        Map.of("optionText", "Карта 2", "isCorrect", false))))
+                .andExpect(status().isCreated())).get("id").asLong();
+        JsonNode shown = body(send(get("/api/tests/" + testId), null, null)).get("questions").get(2);
+        String optionUrl = shown.get("options").get(0).get("imageUrl").asText();
+        org.junit.jupiter.api.Assertions.assertTrue(optionUrl.matches("/api/tests/options/\\d+/image"));
+        mvc.perform(get(optionUrl)).andExpect(status().isOk());
+
+        send(put("/api/tests/questions/" + qid), teacher, Map.of(
+                "testId", testId, "questionText", "Яка карта?", "questionType", "SINGLE_CHOICE",
+                "options", java.util.List.of(
+                        Map.of("optionText", "Карта 1", "isCorrect", true, "imageUrl", optionUrl),
+                        Map.of("optionText", "Карта 2", "isCorrect", false)))).andExpect(status().isOk());
+        JsonNode updated = body(send(get("/api/tests/" + testId), null, null)).get("questions").get(2);
+        mvc.perform(get(updated.get("options").get(0).get("imageUrl").asText())).andExpect(status().isOk());
+    }
 }

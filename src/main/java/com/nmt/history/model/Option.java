@@ -54,4 +54,7 @@ public class Option {
 
     @Column(name = "order_index")
     private Integer orderIndex;
+
+    @Column(name = "image_url", columnDefinition = "TEXT")
+    private String imageUrl;
 }
