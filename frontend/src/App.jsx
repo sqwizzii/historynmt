@@ -5,7 +5,10 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
 import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
+import QuizletView from './pages/QuizletView.jsx'
 import Register from './pages/Register.jsx'
+import TeacherPanel from './pages/TeacherPanel.jsx'
+import TestRunner from './pages/TestRunner.jsx'
 
 export default function App() {
   return (
@@ -18,10 +21,14 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Route>
-          <Route path="/tests" element={<ComingSoon title="Тести" />} />
-          <Route path="/quizlet" element={<ComingSoon title="Картки" />} />
+          <Route path="/tests" element={<TestRunner />} />
+          <Route path="/quizlet" element={<QuizletView />} />
+          <Route path="/quizlet/:moduleId" element={<QuizletView />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/tests/:testId" element={<TestRunner />} />
+          </Route>
           <Route element={<ProtectedRoute role="TEACHER" />}>
-            <Route path="/teacher" element={<ComingSoon title="Панель вчителя" />} />
+            <Route path="/teacher" element={<TeacherPanel />} />
           </Route>
           <Route path="*" element={<ComingSoon title="Сторінку не знайдено" message="Перевірте адресу або поверніться на головну." />} />
         </Routes>

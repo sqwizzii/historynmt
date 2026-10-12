@@ -7,3 +7,31 @@
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
 }
+
+.flip-scene {
+  perspective: 1400px;
+}
+
+.flip-card {
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.flip-card[data-flipped='true'] {
+  transform: rotateY(180deg);
+}
+
+.flip-face {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.flip-face-back {
+  transform: rotateY(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip-card {
+    transition-duration: 0.01ms;
+  }
+}
