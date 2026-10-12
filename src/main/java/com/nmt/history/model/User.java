@@ -32,8 +32,14 @@ public class User {
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(unique = true, length = 255)
     private String email;
+
+    @Column(name = "first_name", length = 100)
+    private String firstName;
+
+    @Column(name = "last_name", length = 100)
+    private String lastName;
 
     @Column(nullable = false)
     private String password;
@@ -41,4 +47,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;
+
+    /** «Прізвище Ім'я»; для акаунтів без імені повертає username. */
+    public String getFullName() {
+        String name = ((lastName == null ? "" : lastName) + " " + (firstName == null ? "" : firstName)).trim();
+        return name.isEmpty() ? username : name;
+    }
 }

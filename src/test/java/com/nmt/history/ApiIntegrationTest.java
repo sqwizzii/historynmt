@@ -50,7 +50,7 @@ class ApiIntegrationTest {
 
     private String registerStudent(String username) throws Exception {
         ResultActions result = send(post("/api/auth/register"), null,
-                Map.of("username", username, "email", username + "@test.ua", "password", "secret1", "role", "TEACHER"))
+                Map.of("username", username, "firstName", "Іван", "lastName", "Петренко", "password", "secret1", "role", "TEACHER"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.role", is("STUDENT")));
         return body(result).get("token").asText();

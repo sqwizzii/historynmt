@@ -29,7 +29,7 @@ export default function Login() {
       login(data)
       navigate(redirectTo, { replace: true })
     } catch (err) {
-      setError(err.response?.status === 401 ? 'Невірний username або пароль.' : getErrorMessage(err))
+      setError(err.response?.status === 401 ? 'Невірний логін або пароль.' : getErrorMessage(err))
     } finally {
       setLoading(false)
     }
@@ -51,7 +51,7 @@ export default function Login() {
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <ErrorAlert message={error} />
         <FormField
-          label="Username"
+          label="Логін"
           icon={User}
           name="username"
           autoComplete="username"

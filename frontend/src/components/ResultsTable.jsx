@@ -19,7 +19,7 @@ export default function ResultsTable({ results, showStudent = false }) {
         <tbody className="divide-y divide-slate-100">
           {results.map((r) => (
             <tr key={r.id} className="hover:bg-slate-50">
-              {showStudent && <td className="px-4 py-3 font-medium text-slate-900">{r.studentUsername}</td>}
+              {showStudent && <td className="px-4 py-3 font-medium text-slate-900">{r.studentName}</td>}
               <td className="px-4 py-3 text-slate-700">{r.testTitle}</td>
               <td className="px-4 py-3 tabular-nums text-slate-700">{r.score}</td>
               <td className="px-4 py-3 font-semibold tabular-nums text-blue-700">{r.nmtScore}</td>

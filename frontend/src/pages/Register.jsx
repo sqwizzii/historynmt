@@ -1,4 +1,4 @@
-import { Lock, Mail, User } from 'lucide-react'
+import { Lock, User, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthCard from '../components/AuthCard.jsx'
@@ -8,12 +8,12 @@ import SubmitButton from '../components/SubmitButton.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { authService, getErrorMessage } from '../services/api.js'
 
-function validate({ username, email, password, confirmPassword }) {
+function validate({ username, firstName, lastName, password, confirmPassword }) {
   if (username.trim().length < 3 || username.trim().length > 50) {
-    return 'Username має містити від 3 до 50 символів.'
+    return 'Логін має містити від 3 до 50 символів.'
   }
-  if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
-    return 'Вкажіть коректну електронну адресу.'
+  if (!firstName.trim() || !lastName.trim()) {
+    return "Вкажіть ім'я та прізвище."
   }
   if (password.length < 6) {
     return 'Пароль має містити щонайменше 6 символів.'
@@ -28,7 +28,7 @@ export default function Register() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' })
+  const [form, setForm] = useState({ username: '', firstName: '', lastName: '', password: '', confirmPassword: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -46,7 +46,8 @@ export default function Register() {
     try {
       const data = await authService.register({
         username: form.username.trim(),
-        email: form.email.trim(),
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
         password: form.password,
       })
       login(data)
@@ -75,7 +76,7 @@ export default function Register() {
         <ErrorAlert message={error} />
 
         <FormField
-          label="Username"
+          label="Логін"
           icon={User}
           name="username"
           autoComplete="username"
@@ -85,13 +86,22 @@ export default function Register() {
           required
         />
         <FormField
-          label="Електронна пошта"
-          icon={Mail}
-          type="email"
-          name="email"
-          autoComplete="email"
-          placeholder="name@example.com"
-          value={form.email}
+          label="Ім'я"
+          icon={UserRound}
+          name="firstName"
+          autoComplete="given-name"
+          placeholder="Наприклад, Іван"
+          value={form.firstName}
+          onChange={handleChange}
+          required
+        />
+        <FormField
+          label="Прізвище"
+          icon={UserRound}
+          name="lastName"
+          autoComplete="family-name"
+          placeholder="Наприклад, Петренко"
+          value={form.lastName}
           onChange={handleChange}
           required
         />

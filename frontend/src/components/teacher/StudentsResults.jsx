@@ -17,7 +17,7 @@ function StudentList({ selectedId, onSelect, version }) {
   if (!students) return <LoadingState />
 
   const needle = query.trim().toLowerCase()
-  const visible = students.filter((s) => `${s.username} ${s.email}`.toLowerCase().includes(needle))
+  const visible = students.filter((s) => `${s.fullName} ${s.username}`.toLowerCase().includes(needle))
   const itemClass = (active) =>
     `flex w-full items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left text-sm transition-colors ${
       active ? 'border-blue-600 bg-blue-50' : 'border-transparent hover:bg-slate-50'
@@ -43,8 +43,8 @@ function StudentList({ selectedId, onSelect, version }) {
           <li key={student.id}>
             <button type="button" onClick={() => onSelect(student)} className={itemClass(selectedId === student.id)}>
               <span className="min-w-0">
-                <span className="block truncate font-medium text-slate-900">{student.username}</span>
-                <span className="block truncate text-xs text-slate-500">{student.email}</span>
+                <span className="block truncate font-medium text-slate-900">{student.fullName}</span>
+                <span className="block truncate text-xs text-slate-500">логін: {student.username}</span>
               </span>
               <span className="shrink-0 text-right text-xs text-slate-500">
                 <span className="block">Спроб: {student.attempts}</span>
@@ -159,8 +159,8 @@ export default function StudentsResults() {
         {student && (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="min-w-0">
-              <div className="truncate font-semibold text-slate-900">{student.username}</div>
-              <div className="truncate text-xs text-slate-500">{student.email}</div>
+              <div className="truncate font-semibold text-slate-900">{student.fullName}</div>
+              <div className="truncate text-xs text-slate-500">логін: {student.username}</div>
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => setResetting(true)} className={secondaryButtonClass}>

@@ -30,18 +30,15 @@ public class AuthService {
     @Transactional
     public JwtResponse register(RegisterRequest request) {
         String username = request.username().trim();
-        String email = request.email().trim().toLowerCase();
 
         if (userRepository.existsByUsername(username)) {
             throw new ConflictException("Username уже зайнятий");
         }
-        if (userRepository.existsByEmail(email)) {
-            throw new ConflictException("Email уже використовується");
-        }
 
         User user = userRepository.save(User.builder()
                 .username(username)
-                .email(email)
+                .firstName(request.firstName().trim())
+                .lastName(request.lastName().trim())
                 .password(passwordEncoder.encode(request.password()))
                 .role(Role.STUDENT)
                 .build());

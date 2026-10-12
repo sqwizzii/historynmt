@@ -51,7 +51,7 @@ export default function ResultReview() {
       </Link>
       <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">{result.testTitle}</h1>
       <p className="mt-1 text-sm text-slate-500">
-        {isTeacher && <span className="font-medium text-slate-700">{result.studentUsername} · </span>}
+        {isTeacher && <span className="font-medium text-slate-700">{result.studentName} · </span>}
         {formatDate(result.completedAt)}
       </p>
 

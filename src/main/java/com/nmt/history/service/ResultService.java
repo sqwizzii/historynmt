@@ -49,7 +49,7 @@ public class ResultService {
         return userRepository.findByRoleOrderByUsernameAsc(Role.STUDENT).stream()
                 .map(user -> {
                     StudentStats s = stats.get(user.getId());
-                    return new StudentResponse(user.getId(), user.getUsername(), user.getEmail(),
+                    return new StudentResponse(user.getId(), user.getUsername(), user.getFullName(),
                             s == null ? 0 : s.getAttempts(), s == null ? null : s.getBestNmtScore());
                 })
                 .toList();
