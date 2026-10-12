@@ -9,7 +9,7 @@ export default function SingleChoice({ question, value, onChange }) {
           <label
             key={option.id}
             className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-blue-600/40 ${
-              checked ? 'border-blue-600 bg-blue-50' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+              checked ? 'border-blue-600 bg-blue-50 shadow-md shadow-blue-900/10' : 'border-slate-200 bg-white hover:-translate-y-px hover:border-blue-300 hover:bg-blue-50/50'
             }`}
           >
             <input
@@ -21,7 +21,7 @@ export default function SingleChoice({ question, value, onChange }) {
             />
             <span
               className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-bold ${
-                checked ? 'border-blue-700 bg-blue-700 text-white' : 'border-slate-300 text-slate-600'
+                checked ? 'border-blue-700 bg-gradient-to-br from-blue-600 to-ink text-white' : 'border-slate-300 text-slate-600'
               }`}
             >
               {String.fromCharCode(1040 + index)}

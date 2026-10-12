@@ -16,7 +16,7 @@ export default function FormField({ label, icon: Icon, type = 'text', hint, ...i
         <input
           id={id}
           type={isPassword && revealed ? 'text' : type}
-          className={`block w-full rounded-lg border border-slate-300 bg-white py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20 ${Icon ? 'pl-10' : 'pl-3'} ${isPassword ? 'pr-11' : 'pr-3'}`}
+          className={`block w-full rounded-xl border border-slate-200 bg-white/90 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 ${Icon ? 'pl-10' : 'pl-3'} ${isPassword ? 'pr-11' : 'pr-3'}`}
           {...inputProps}
         />
         {isPassword && (

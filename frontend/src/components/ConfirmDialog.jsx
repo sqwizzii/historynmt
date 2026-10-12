@@ -14,7 +14,7 @@ export default function ConfirmDialog({ title, message, confirmLabel = 'Вида
           type="button"
           onClick={onConfirm}
           disabled={loading}
-          className="inline-flex flex-1 items-center justify-center rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex flex-1 items-center justify-center rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-card transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? 'Зачекайте…' : confirmLabel}
         </button>

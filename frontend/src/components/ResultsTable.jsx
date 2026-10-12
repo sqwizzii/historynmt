@@ -3,7 +3,7 @@ import { formatDate } from '../utils/format.js'
 
 export default function ResultsTable({ results, showStudent = false }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-card">
       <table className="min-w-full divide-y divide-slate-200 text-sm">
         <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
           <tr>

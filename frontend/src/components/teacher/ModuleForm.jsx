@@ -46,7 +46,7 @@ export default function ModuleForm({ onCreated, onCancel }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-card sm:p-6" noValidate>
       <h2 className="text-base font-semibold text-slate-900">Новий модуль карток</h2>
       <ErrorAlert message={error} />
       <div className="grid gap-4 sm:grid-cols-2">

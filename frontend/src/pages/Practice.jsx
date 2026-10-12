@@ -110,7 +110,7 @@ export default function Practice() {
     )
   } else if (!started) {
     content = (
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-card">
         <CheckCircle2 className="mx-auto h-8 w-8 text-blue-700" aria-hidden="true" />
         <p className="mt-3 text-lg font-bold text-slate-900">Питань для повторення: {data.total}</p>
         <p className="mt-1 text-sm text-slate-600">

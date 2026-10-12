@@ -22,7 +22,7 @@ function QuestionStats({ testId }) {
   if (!stats) return null
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card sm:p-6">
       <h2 className="mb-1 flex items-center gap-2 text-base font-semibold text-slate-900">
         <BarChart3 className="h-4 w-4 text-blue-700" aria-hidden="true" />
         Статистика по питаннях
@@ -95,7 +95,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card sm:p-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-base font-semibold text-slate-900">Параметри тесту</h2>
           <button
@@ -150,7 +150,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
                 />
               </li>
             ) : (
-              <li key={question.id} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <li key={question.id} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-card">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">
                   {index + 1}
                 </span>

@@ -28,7 +28,7 @@ export default function TestsManager() {
           <Plus className="h-4 w-4" aria-hidden="true" />
           Новий тест
         </button>
-        <ul className="space-y-1 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+        <ul className="space-y-1 rounded-2xl border border-slate-200 bg-white p-2 shadow-card">
           {tests.map((test) => {
             const active = test.id === activeId
             return (
@@ -58,7 +58,7 @@ export default function TestsManager() {
 
       <div>
         {creating ? (
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card sm:p-6">
             <h2 className="mb-4 text-base font-semibold text-slate-900">Новий тест</h2>
             <TestForm
               onSaved={(created) => {

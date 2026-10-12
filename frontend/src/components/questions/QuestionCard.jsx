@@ -16,7 +16,7 @@ export default function QuestionCard({ question, number, total, value, onChange 
   const Input = type?.Component
 
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card sm:p-7">
       <div className="mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold">
         <span className="rounded-full bg-blue-100 px-2.5 py-1 text-blue-800">
           Питання {number} з {total}

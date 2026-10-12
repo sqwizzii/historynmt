@@ -24,7 +24,7 @@ export default function ModulesManager() {
           <Plus className="h-4 w-4" aria-hidden="true" />
           Новий модуль
         </button>
-        <ul className="space-y-1 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+        <ul className="space-y-1 rounded-2xl border border-slate-200 bg-white p-2 shadow-card">
           {modules.map((module) => {
             const active = module.id === activeId
             return (
