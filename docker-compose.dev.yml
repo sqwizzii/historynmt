@@ -1,0 +1,15 @@
+# Лише база даних для локальної розробки: docker compose -f docker-compose.dev.yml up -d
+services:
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: nmt_history_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - devdata:/var/lib/postgresql/data
+
+volumes:
+  devdata:

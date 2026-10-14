@@ -58,15 +58,34 @@ git pull && docker compose up -d --build
 
 ## Локальна розробка
 
-Потрібні JDK 17+, Node 22+, PostgreSQL з базою `nmt_history_db`.
+Потрібні JDK 17+, Node 22+ і PostgreSQL (найпростіше через Docker Desktop).
+
+**1. База даних** (порт 5432, логін і пароль `postgres`):
 
 ```bash
-createdb nmt_history_db
-export DB_USERNAME=postgres DB_PASSWORD=postgres
-./mvnw spring-boot:run               # API на :8080, вчитель teacher / Teacher123!
-
-cd frontend && npm install && npm run dev   # http://localhost:45173
+docker compose -f docker-compose.dev.yml up -d
 ```
+
+Без Docker встановіть PostgreSQL і створіть базу `nmt_history_db`.
+
+**2. Бекенд** (API на :8080, вчитель `teacher` / `Teacher123!`), у корені проєкту:
+
+```bash
+./mvnw spring-boot:run          # macOS, Linux, WSL, Git Bash
+mvnw.cmd spring-boot:run        # Windows PowerShell / cmd
+```
+
+Якщо пароль PostgreSQL інший, задайте `DB_USERNAME` і `DB_PASSWORD` (PowerShell: `$env:DB_PASSWORD="..."`).
+
+**3. Фронтенд** (http://localhost:45173), в іншому терміналі:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Бекенд і фронтенд мають працювати одночасно, а база має бути запущена до бекенду.
 
 Тести бекенду: `./mvnw test` (юніт- та інтеграційні тести на H2). Фронтенд: `npm run lint && npm run build`.
 
