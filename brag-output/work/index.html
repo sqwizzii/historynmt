@@ -1,0 +1,149 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Osw;src:url(fonts/oswald-cyrillic-wght-normal.woff2);font-weight:200 700;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:Osw;src:url(fonts/oswald-latin-wght-normal.woff2);font-weight:200 700;unicode-range:U+0000-00FF,U+2000-206F,U+2212}
+@font-face{font-family:Int;src:url(fonts/inter-cyrillic-wght-normal.woff2);font-weight:100 900;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:Int;src:url(fonts/inter-latin-wght-normal.woff2);font-weight:100 900;unicode-range:U+0000-00FF,U+2000-206F,U+2212}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:Int,sans-serif}
+.scene{position:absolute;inset:0;display:none}
+.grid{position:absolute;inset:0;background-image:linear-gradient(to right,rgba(255,255,255,.09) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.09) 1px,transparent 1px);background-size:96px 96px}
+.grid.dark{background-image:linear-gradient(to right,rgba(0,0,0,.07) 1px,transparent 1px),linear-gradient(to bottom,rgba(0,0,0,.07) 1px,transparent 1px)}
+.osw{font-family:Osw,sans-serif;font-weight:600;text-transform:uppercase;line-height:1.02}
+.tag{font-size:26px;letter-spacing:.3em;text-transform:uppercase;font-weight:600}
+.clip{overflow:hidden;display:block}
+.frame{position:absolute;width:1260px;height:788px;border:3px solid #000;background:#fff;box-shadow:16px 16px 0 #000;overflow:hidden}
+.frame img{position:absolute;inset:0;width:100%;height:100%}
+.cap{position:absolute;left:100px;width:440px}
+.cap h2{font-size:104px}
+.cap p{font-size:34px;line-height:1.35;margin-top:28px;color:#333}
+#wipe{position:absolute;top:0;left:0;width:1920px;height:1080px;background:#000;z-index:50;transform:translateX(-100%)}
+#wipe::after{content:"";position:absolute;right:0;top:0;bottom:0;width:6px;background:#fff}
+#cursor{position:absolute;z-index:20;width:48px;height:48px}
+.ripple{position:absolute;z-index:19;width:90px;height:90px;border:4px solid #000;border-radius:50%;opacity:0}
+</style></head><body>
+<div id="stage">
+ <section class="scene" id="s1" style="background:#000;color:#fff">
+  <div class="grid"></div>
+  <div class="tag" id="s1tag" style="position:absolute;left:140px;top:210px;color:#aaa">/ Історія України · НМТ</div>
+  <div style="position:absolute;left:130px;top:300px">
+   <span class="clip"><div class="osw" id="s1a" style="font-size:230px">Знай історію.</div></span>
+   <span class="clip"><div class="osw" id="s1b" style="font-size:230px">Складай НМТ.</div></span>
+  </div>
+ </section>
+
+ <section class="scene" id="s2" style="background:#f4f4f4;color:#000">
+  <div class="grid dark"></div>
+  <div class="cap" style="top:200px"><h2 class="osw" id="s2h">Усе для НМТ в одному місці</h2><p id="s2p">Тести, картки з фото й робота над помилками.</p></div>
+  <div class="frame" id="s2f" style="left:580px;top:146px"><img src="shots/home.png"></div>
+ </section>
+
+ <section class="scene" id="s3" style="background:#f4f4f4;color:#000">
+  <div class="grid dark"></div>
+  <div class="cap" style="top:200px"><h2 class="osw" id="s3h">Тести з таймером</h2><p id="s3p">І детальний розбір кожної відповіді.</p></div>
+  <div class="frame" id="s3f" style="left:580px;top:146px"><img src="shots/question0.png"><img id="s3b" src="shots/question.png" style="opacity:0"></div>
+ </section>
+
+ <section class="scene" id="s4" style="background:#f4f4f4;color:#000">
+  <div class="grid dark"></div>
+  <div class="cap" style="top:200px"><h2 class="osw" id="s4h">Картки з фото</h2><p id="s4p">Дати, терміни й карти для запам’ятовування.</p></div>
+  <div class="frame" id="s4f" style="left:580px;top:146px"><img id="s4a" src="shots/card-front.png"><img id="s4b" src="shots/card-back.png" style="opacity:0"></div>
+ </section>
+
+ <section class="scene" id="s5" style="background:#000;color:#fff">
+  <div class="grid"></div>
+  <div class="tag" style="position:absolute;left:140px;top:150px;color:#aaa">/ Приклад результату</div>
+  <div style="position:absolute;left:130px;top:210px;display:flex;align-items:flex-end;gap:36px">
+   <div class="osw" id="s5n" style="font-size:380px;line-height:.9">100</div>
+   <div class="tag" style="padding-bottom:50px;color:#ccc;font-size:28px;white-space:nowrap">/ 200 орієнтовно</div>
+  </div>
+  <div style="position:absolute;left:140px;top:640px;width:760px;height:12px;background:rgba(255,255,255,.2)"><div id="s5bar" style="height:100%;width:0;background:#fff"></div></div>
+  <div style="position:absolute;left:140px;top:700px;width:760px" id="s5rows"></div>
+  <div class="cap" style="left:1180px;top:300px;width:640px"><h2 class="osw" id="s5h" style="font-size:104px">Робота над помилками</h2><p id="s5p" style="color:#ccc;margin-top:32px;font-size:36px">Сайт сам повертає питання, де ви помилилися, поки відповідь не стане правильною.</p></div>
+ </section>
+
+ <section class="scene" id="s6" style="background:#000;color:#fff">
+  <div class="grid"></div>
+  <div style="position:absolute;left:0;right:0;top:330px;text-align:center">
+   <div class="osw" id="s6a" style="font-size:250px">НМТ / Історія</div>
+   <div class="tag" id="s6b" style="margin-top:44px;color:#ddd;font-size:34px">Тести · Картки · Робота над помилками</div>
+   <div class="tag" id="s6c" style="margin-top:34px;color:#888">Реєстрація за кодом від вашого вчителя</div>
+  </div>
+ </section>
+
+ <svg id="cursor" viewBox="0 0 24 24" style="display:none"><path d="M3 2l16 9-7 2-3 7z" fill="#000" stroke="#fff" stroke-width="1.5"/></svg>
+ <div class="ripple" id="rip"></div>
+ <div id="wipe"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id)
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x))
+const pr=(t,a,b)=>cl((t-a)/(b-a))
+const eo=x=>1-Math.pow(1-x,3)
+const eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2
+const B=[0,3,7,11.5,15.5,18.5,21.5]
+const TR=0.3
+const rows=[['Київська Русь',92],['Козацька доба',81],['УНР 1917–1921',64]]
+$('s5rows').innerHTML=rows.map(r=>`<div class="osw" style="display:flex;justify-content:space-between;border-top:1px solid rgba(255,255,255,.3);padding:18px 0;font-size:36px;font-weight:500;opacity:0"><span>${r[0]}</span><span>${r[1]}%</span></div>`).join('')
+function slideIn(el,t,a,dy=70){const k=eo(pr(t,a,a+.55));el.style.opacity=k;el.style.transform=`translateY(${(1-k)*dy}px)`}
+function maskIn(el,t,a){const k=eo(pr(t,a,a+.6));el.style.transform=`translateY(${(1-k)*105}%)`}
+function pos(sel,x,y){sel.style.left=x+'px';sel.style.top=y+'px'}
+window.seek=function(t){
+  let si=0;for(let i=0;i<6;i++)if(t>=B[i])si=i
+  document.querySelectorAll('.scene').forEach((s,i)=>s.style.display=i===si?'block':'none')
+  const l=t-B[si]
+  // wipe: covers over the last TR before a boundary, reveals over TR after it
+  let w=-100
+  for(let i=1;i<6;i++){
+    const b=B[i]
+    if(t>=b-TR&&t<b)w=-100+100*eio(pr(t,b-TR,b))
+    else if(t>=b&&t<b+TR)w=100*eio(pr(t,b,b+TR))
+  }
+  $('wipe').style.transform=`translateX(${w}%)`
+  const cur=$('cursor'),rip=$('rip');cur.style.display='none';rip.style.opacity=0
+  if(si===0){
+    $('s1tag').style.opacity=eo(pr(t,.1,.5))
+    maskIn($('s1a'),t,.25);maskIn($('s1b'),t,1.0)
+    $('s1').style.transform=`scale(${1+.02*t/3})`
+  }
+  if(si===1){
+    slideIn($('s2h'),t,B[1]+.5,50);slideIn($('s2p'),t,B[1]+1.4,30)
+    const k=eo(pr(t,B[1]+.5,B[1]+1.4));const f=$('s2f');f.style.transform=`translateX(${(1-k)*140}px) scale(${1+.04*(t-B[1])/4})`;f.style.opacity=k
+  }
+  if(si===2){
+    slideIn($('s3h'),t,B[2]+.5,50);slideIn($('s3p'),t,B[2]+1.3,30)
+    const k=eo(pr(t,B[2]+.5,B[2]+1.3));const f=$('s3f');f.style.transform=`translateX(${(1-k)*140}px)`;f.style.opacity=k
+    $('s3b').style.opacity=t>=9.6?1:0
+    const m=eio(pr(t,8.6,9.5))
+    cur.style.display='block';pos(cur,1640-(1640-1210)*m,950-(950-586)*m)
+    const r=pr(t,9.6,10.1);if(r>0&&r<1){rip.style.opacity=1-r;rip.style.transform=`scale(${.3+r})`;pos(rip,1210-45+10,586-45+10)}
+    if(t>10.2){const o=eio(pr(t,10.2,11));pos(cur,1210+o*40,586+o*120)}
+  }
+  if(si===3){
+    slideIn($('s4h'),t,B[3]+.5,50);slideIn($('s4p'),t,B[3]+1.3,30)
+    const k=eo(pr(t,B[3]+.5,B[3]+1.3));const f=$('s4f');f.style.transform=`translateX(${(1-k)*140}px)`;f.style.opacity=k
+    const fl=pr(t,13.3,13.9)
+    const sx=fl<.5?1-fl*2:(fl-.5)*2
+    $('s4a').style.opacity=fl<.5?1:0;$('s4b').style.opacity=fl<.5?0:1
+    $('s4f').firstElementChild.style.transform=`scaleX(${sx})`;$('s4b').style.transform=`scaleX(${sx})`
+    const m=eio(pr(t,12.4,13.2))
+    cur.style.display='block';pos(cur,1640-(1640-1210)*m,950-(950-560)*m)
+    const r=pr(t,13.3,13.8);if(r>0&&r<1){rip.style.opacity=1-r;rip.style.transform=`scale(${.3+r})`;pos(rip,1210-35,560-35)}
+  }
+  if(si===4){
+    const n=eio(pr(t,B[4]+.3,B[4]+1.8));$('s5n').textContent=Math.round(100+78*n)
+    $('s5bar').style.width=(78*n)+'%'
+    document.querySelectorAll('#s5rows > div').forEach((d,i)=>{const k=eo(pr(t,B[4]+.9+i*.25,B[4]+1.5+i*.25));d.style.opacity=k;d.style.transform=`translateX(${(1-k)*-40}px)`})
+    slideIn($('s5h'),t,B[4]+.4,50);slideIn($('s5p'),t,B[4]+1.1,30)
+  }
+  if(si===5){
+    maskIn($('s6a').parentElement,t,B[5]+.0)
+    $('s6a').style.opacity=eo(pr(t,B[5]+.1,B[5]+.6));$('s6a').style.transform=`scale(${1.06-.06*eo(pr(t,B[5]+.1,B[5]+.9))})`
+    $('s6a').parentElement.style.transform='none'
+    slideIn($('s6b'),t,B[5]+.8,30);slideIn($('s6c'),t,B[5]+1.2,20)
+  }
+}
+window.ready=document.fonts.load('600 100px Osw','Знай історію').then(()=>document.fonts.load('400 20px Int','Тести')).then(()=>document.fonts.ready).then(()=>Promise.all([...document.images].map(i=>i.decode())))
+</script></body></html>
