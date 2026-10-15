@@ -1,10 +1,11 @@
 import { ArrowRight, BookOpen, ClipboardList, LayoutDashboard, RotateCcw, Timer } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { BRAND_NAME } from '../config/brand.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import { primaryButtonClass, secondaryButtonClass } from '../components/styles.js'
 
 const FEATURES = [
-  { Icon: ClipboardList, title: 'Тести у форматі НМТ', text: 'Вибір відповіді, відповідність, хронологія. Орієнтовний бал за шкалою 100-200 одразу після завершення.' },
+  { Icon: ClipboardList, title: 'Різні типи завдань', text: 'Одна чи кілька правильних відповідей, відповідність, хронологія. Результат і розбір одразу після завершення.' },
   { Icon: RotateCcw, title: 'Робота над помилками', text: 'Сайт сам збирає питання, де ви помилилися, і повертає їх, поки ви не відповісте правильно.' },
   { Icon: BookOpen, title: 'Картки з фото', text: 'Дати, терміни, персоналії та карти для запам\u2019ятовування з 3D-перевертанням.' },
   { Icon: Timer, title: 'Реальні умови', text: 'Таймер тесту, чесний контроль сторінки й детальний розбір із поясненнями.' },
@@ -19,17 +20,17 @@ function HeroCard() {
       </div>
       <div className="p-6">
         <div className="flex items-end gap-3">
-          <span className="font-display text-8xl font-semibold leading-none text-white">178</span>
-          <span className="pb-3 text-xs uppercase tracking-[0.16em] text-slate-300">/ 200 орієнтовно</span>
+          <span className="font-display text-8xl font-semibold leading-none text-white">18</span>
+          <span className="pb-3 text-xs uppercase tracking-[0.16em] text-slate-300">/ 20 балів</span>
         </div>
         <div className="mt-6 h-1.5 bg-white/20">
-          <div className="h-full w-[78%] bg-white" />
+          <div className="h-full w-[90%] bg-white" />
         </div>
         <ul className="mt-6 divide-y divide-white/25 border-y border-white/25 text-sm text-white">
-          {['Київська Русь', 'Козацька доба', 'УНР 1917-1921'].map((topic, i) => (
+          {['Тема 1', 'Тема 2', 'Тема 3'].map((topic, i) => (
             <li key={topic} className="flex items-center justify-between py-3">
               <span className="uppercase tracking-[0.08em]">{topic}</span>
-              <span className="font-display text-lg">{[92, 81, 64][i]}%</span>
+              <span className="font-display text-lg">{[95, 85, 70][i]}%</span>
             </li>
           ))}
         </ul>
@@ -43,7 +44,7 @@ export default function Home() {
 
   const quickLinks = [
     { to: '/tests', title: 'Тести', text: 'Перевірте себе на реальних завданнях.', Icon: ClipboardList },
-    { to: '/quizlet', title: 'Картки', text: 'Повторіть дати, терміни й карти.', Icon: BookOpen },
+    { to: '/quizlet', title: 'Картки', text: 'Повторюйте терміни й поняття.', Icon: BookOpen },
     ...(isTeacher ? [{ to: '/teacher', title: 'Панель вчителя', text: 'Тести, картки, учні й статистика.', Icon: LayoutDashboard }] : []),
     ...(isAuthenticated && !isTeacher ? [{ to: '/practice', title: 'Помилки', text: 'Виправте те, що не вийшло.', Icon: RotateCcw }] : []),
   ]
@@ -56,7 +57,7 @@ export default function Home() {
       <section className="bg-hero ornament relative overflow-hidden border border-black px-6 py-14 text-white sm:px-12 sm:py-20">
         <div className="relative grid items-center gap-12 lg:grid-cols-[1.25fr_0.75fr]">
           <div className="stagger">
-            <p className="mb-6 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300">/ Історія України · НМТ</p>
+            <p className="mb-6 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300">/ {BRAND_NAME}</p>
             <h1 className="text-5xl sm:text-7xl lg:text-8xl">
               {isAuthenticated ? (
                 <>
@@ -66,14 +67,14 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  Знай історію.
+                  Тести й картки
                   <br />
-                  Складай НМТ.
+                  для уроків.
                 </>
               )}
             </h1>
             <p className="mt-7 max-w-xl text-base leading-relaxed text-slate-300">
-              Тести, картки з фото та розумна робота над помилками для підготовки до НМТ з історії України.
+              Створюйте тести й картки з фото, а учні проходять їх онлайн з автоматичною роботою над помилками.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               {isAuthenticated ? (
@@ -93,7 +94,7 @@ export default function Home() {
                 </>
               )}
             </div>
-            <p className="mt-8 text-[11px] uppercase tracking-[0.2em] text-slate-400">Реєстрація за кодом від вашого вчителя</p>
+            <p className="mt-8 text-[11px] uppercase tracking-[0.2em] text-slate-400">Учні реєструються за кодом від вчителя</p>
           </div>
           <HeroCard />
         </div>

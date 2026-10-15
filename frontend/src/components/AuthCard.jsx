@@ -1,4 +1,5 @@
 import { Landmark } from 'lucide-react'
+import { BRAND_NAME, BRAND_TAGLINE } from '../config/brand.js'
 
 export default function AuthCard({ title, subtitle, children, footer }) {
   return (
@@ -9,12 +10,12 @@ export default function AuthCard({ title, subtitle, children, footer }) {
         </span>
         <div>
           <p className="font-display text-5xl font-semibold uppercase leading-[1.02]">
-            Хто не знає свого минулого, не вартий майбутнього.
+            {BRAND_NAME}
           </p>
-          <p className="mt-5 text-xs uppercase tracking-[0.2em] text-slate-400">Підготовка до НМТ з історії України</p>
+          <p className="mt-5 text-xs uppercase tracking-[0.2em] text-slate-400">{BRAND_TAGLINE}</p>
         </div>
         <ul className="space-y-2 border-t border-white/30 pt-5 text-xs uppercase tracking-[0.14em] text-slate-300">
-          <li>/ Тести у форматі НМТ з розбором</li>
+          <li>/ Тести з таймером і розбором відповідей</li>
           <li>/ Картки з фото для запам&apos;ятовування</li>
           <li>/ Автоматична робота над помилками</li>
         </ul>

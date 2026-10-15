@@ -38,7 +38,7 @@ export default function Login() {
   return (
     <AuthCard
       title="З поверненням!"
-      subtitle="Увійдіть, щоб продовжити підготовку до НМТ з історії."
+      subtitle="Увійдіть, щоб продовжити навчання."
       footer={
         <>
           Ще немає акаунта?{' '}

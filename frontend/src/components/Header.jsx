@@ -1,6 +1,7 @@
 import { BarChart3, BookOpen, ClipboardList, GraduationCap, Landmark, LayoutDashboard, LogIn, LogOut, Menu, Presentation, RotateCcw, UserPlus, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { BRAND_NAME } from '../config/brand.js'
 import { useAuth } from '../context/AuthContext.jsx'
 
 const ROLE_LABELS = {
@@ -52,7 +53,7 @@ export default function Header() {
             <Landmark className="h-5 w-5" aria-hidden="true" />
           </span>
           <span className="font-display text-xl font-semibold uppercase tracking-wide text-black">
-            НМТ / Історія
+            {BRAND_NAME}
           </span>
         </Link>
 
