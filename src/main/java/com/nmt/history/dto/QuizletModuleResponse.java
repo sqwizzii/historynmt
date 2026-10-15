@@ -4,13 +4,16 @@ import com.nmt.history.model.QuizletModule;
 import java.util.Comparator;
 import java.util.List;
 
-public record QuizletModuleResponse(Long id, String title, String description, List<FlashcardResponse> flashcards) {
+public record QuizletModuleResponse(Long id, String title, String description, List<FlashcardResponse> flashcards,
+                                    Long subjectId, Integer grade, boolean system, boolean editable) {
 
-    public static QuizletModuleResponse from(QuizletModule module) {
+    public static QuizletModuleResponse from(QuizletModule module, boolean editable) {
         List<FlashcardResponse> cards = module.getFlashcards().stream()
                 .sorted(Comparator.comparing(f -> f.getId() == null ? Long.MAX_VALUE : f.getId()))
                 .map(FlashcardResponse::from)
                 .toList();
-        return new QuizletModuleResponse(module.getId(), module.getTitle(), module.getDescription(), cards);
+        return new QuizletModuleResponse(module.getId(), module.getTitle(), module.getDescription(), cards,
+                module.getSubject() == null ? null : module.getSubject().getId(), module.getGrade(),
+                module.getOwner() == null, editable);
     }
 }

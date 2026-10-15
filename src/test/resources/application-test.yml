@@ -9,3 +9,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+app:
+  legacy:
+    teacher-username: teacher
+    strict: true

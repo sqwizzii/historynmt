@@ -18,3 +18,5 @@ app:
     password: ${BOOTSTRAP_TEACHER_PASSWORD}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
+  legacy:
+    strict: true

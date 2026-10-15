@@ -20,6 +20,7 @@ public class UserService {
     private final TestResultRepository testResultRepository;
     private final com.nmt.history.repository.TestAttemptRepository attemptRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AccessPolicy accessPolicy;
 
     @Transactional
     public void changePassword(String username, ChangePasswordRequest request) {
@@ -32,21 +33,19 @@ public class UserService {
     }
 
     @Transactional
-    public void resetStudentPassword(Long studentId, String newPassword) {
-        findStudent(studentId).setPassword(passwordEncoder.encode(newPassword));
+    public void resetStudentPassword(Long studentId, String newPassword, String teacherUsername) {
+        findOwnStudent(studentId, teacherUsername).setPassword(passwordEncoder.encode(newPassword));
     }
 
     @Transactional
-    public void deleteStudent(Long studentId) {
-        User student = findStudent(studentId);
+    public void deleteStudent(Long studentId, String teacherUsername) {
+        User student = findOwnStudent(studentId, teacherUsername);
         testResultRepository.deleteByStudentId(studentId);
         attemptRepository.deleteByStudentId(studentId);
         userRepository.delete(student);
     }
 
-    private User findStudent(Long studentId) {
-        return userRepository.findById(studentId)
-                .filter(user -> user.getRole() == Role.STUDENT)
-                .orElseThrow(() -> new ResourceNotFoundException("Учня не знайдено: " + studentId));
+    private User findOwnStudent(Long studentId, String teacherUsername) {
+        return accessPolicy.requireOwnStudent(accessPolicy.requireTeacher(teacherUsername), studentId);
     }
 }

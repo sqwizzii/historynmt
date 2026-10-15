@@ -11,45 +11,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-class ApiIntegrationTest {
-
-    @Autowired
-    private MockMvc mvc;
-
-    @Autowired
-    private ObjectMapper json;
+class ApiIntegrationTest extends AbstractApiTest {
 
     @Autowired
     private com.nmt.history.service.InviteCodeService inviteCodes;
-
-    private ResultActions send(org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder request,
-                               String token, Object body) throws Exception {
-        if (token != null) {
-            request.header("Authorization", "Bearer " + token);
-        }
-        if (body != null) {
-            request.contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(body));
-        }
-        return mvc.perform(request);
-    }
-
-    private JsonNode body(ResultActions actions) throws Exception {
-        return json.readTree(actions.andReturn().getResponse().getContentAsString());
-    }
 
     private String registerStudent(String username) throws Exception {
         ResultActions result = send(post("/api/auth/register"), null,
@@ -103,7 +74,8 @@ class ApiIntegrationTest {
         long singleId = single.get("id").asLong();
         long correctOptionId = single.get("options").get(0).get("id").asLong();
 
-        send(get("/api/tests/" + testId), null, null)
+        send(get("/api/tests/" + testId), null, null).andExpect(status().isNotFound());
+        send(get("/api/tests/" + testId), student, null)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.questions", hasSize(1)))
                 .andExpect(jsonPath("$.questions[0].explanation").doesNotExist())
@@ -151,7 +123,7 @@ class ApiIntegrationTest {
                 .andExpect(jsonPath("$.questions[0].options[1].isCorrect", is(true)));
 
         send(delete("/api/tests/" + testId), teacher, null).andExpect(status().isNoContent());
-        send(get("/api/tests/" + testId), null, null).andExpect(status().isNotFound());
+        send(get("/api/tests/" + testId), teacher, null).andExpect(status().isNotFound());
         send(get("/api/results/my"), student, null).andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(0)));
     }
 
@@ -215,7 +187,7 @@ class ApiIntegrationTest {
                 "title", "M", "flashcards", java.util.List.of(Map.of("termOrQuestion", "t", "answerOrDate", "a"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.flashcards[0].id", notNullValue()))).get("id").asLong();
-        long cardId = body(send(get("/api/quizlet/" + moduleId), null, null)).get("flashcards").get(0).get("id").asLong();
+        long cardId = body(send(get("/api/quizlet/" + moduleId), teacher, null)).get("flashcards").get(0).get("id").asLong();
 
         send(put("/api/quizlet/cards/" + cardId), teacher, Map.of("termOrQuestion", "t2", "answerOrDate", "a2"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.termOrQuestion", is("t2")));
@@ -223,7 +195,7 @@ class ApiIntegrationTest {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.title", is("M2")));
         send(delete("/api/quizlet/cards/" + cardId), teacher, null).andExpect(status().isNoContent());
         send(delete("/api/quizlet/" + moduleId), teacher, null).andExpect(status().isNoContent());
-        send(get("/api/quizlet/" + moduleId), null, null).andExpect(status().isNotFound());
+        send(get("/api/quizlet/" + moduleId), teacher, null).andExpect(status().isNotFound());
     }
 
     @Test
@@ -237,7 +209,7 @@ class ApiIntegrationTest {
         send(post("/api/quizlet/" + moduleId + "/cards"), teacher,
                 Map.of("termOrQuestion", "x", "answerOrDate", "y", "imageUrl", "javascript:alert(1)"))
                 .andExpect(status().isBadRequest());
-        send(get("/api/quizlet/" + moduleId), null, null).andExpect(jsonPath("$.flashcards[0].imageUrl", is(photo)));
+        send(get("/api/quizlet/" + moduleId), teacher, null).andExpect(jsonPath("$.flashcards[0].imageUrl", is(photo)));
     }
 
     @Test
@@ -299,7 +271,7 @@ class ApiIntegrationTest {
                 .andExpect(jsonPath("$[0].topic", is("Київська Русь")))
                 .andExpect(jsonPath("$[0].percent", is(0)))
                 .andExpect(jsonPath("$[0].answered", is(1)));
-        long studentId = body(send(get("/api/teacher/results"), teacher, null)).get(0).get("id").asLong();
+        long studentId = body(send(get("/api/teacher/results"), teacher, null)).get(0).get("studentId").asLong();
         send(get("/api/teacher/students/" + studentId + "/topics"), teacher, null).andExpect(status().isOk());
         send(get("/api/teacher/students/" + studentId + "/topics"), student, null).andExpect(status().isForbidden());
         send(get("/api/teacher/tests/" + testId + "/stats"), student, null).andExpect(status().isForbidden());
@@ -322,19 +294,22 @@ class ApiIntegrationTest {
                 .andExpect(status().isCreated())).get("id").asLong();
         String ownUrl = "/api/tests/questions/" + qid + "/image";
 
-        send(get("/api/tests/" + testId), null, null).andExpect(jsonPath("$.questions[0].imageUrl", is(ownUrl)));
-        byte[] bytes = mvc.perform(get(ownUrl)).andExpect(status().isOk())
+        send(get("/api/tests/" + testId), teacher, null)
+                .andExpect(jsonPath("$.questions[0].imageUrl", org.hamcrest.Matchers.startsWith(ownUrl + "?exp=")));
+        String signedUrl = body(send(get("/api/tests/" + testId), teacher, null)).get("questions").get(0).get("imageUrl").asText();
+        byte[] bytes = mvc.perform(get(signedUrl)).andExpect(status().isOk())
                 .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content().contentType("image/png"))
                 .andReturn().getResponse().getContentAsByteArray();
         org.junit.jupiter.api.Assertions.assertTrue(bytes.length > 10);
 
-        send(put("/api/tests/questions/" + qid), teacher, payload.apply(ownUrl)).andExpect(status().isOk());
-        mvc.perform(get(ownUrl)).andExpect(status().isOk());
+        mvc.perform(get(ownUrl)).andExpect(status().isNotFound());
+        send(put("/api/tests/questions/" + qid), teacher, payload.apply(signedUrl)).andExpect(status().isOk());
+        mvc.perform(get(signedUrl)).andExpect(status().isOk());
 
         send(post("/api/tests/questions/create"), teacher, payload.apply("javascript:alert(1)")).andExpect(status().isBadRequest());
 
         send(put("/api/tests/questions/" + qid), teacher, payload.apply("")).andExpect(status().isOk());
-        mvc.perform(get(ownUrl)).andExpect(status().isNotFound());
+        mvc.perform(get(signedUrl)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -358,7 +333,7 @@ class ApiIntegrationTest {
                 .andExpect(jsonPath("$.warnings", hasSize(1)))
                 .andExpect(jsonPath("$.skipped", hasSize(2))));
         long testId = result.get("testId").asLong();
-        send(get("/api/tests/" + testId), null, null)
+        send(get("/api/tests/" + testId), student, null)
                 .andExpect(jsonPath("$.title", is("З Google Forms")))
                 .andExpect(jsonPath("$.questions", hasSize(2)))
                 .andExpect(jsonPath("$.questions[0].imageUrl", org.hamcrest.Matchers.startsWith("/api/tests/questions/")))
@@ -377,9 +352,9 @@ class ApiIntegrationTest {
                         Map.of("optionText", "Карта 1", "isCorrect", true, "imageUrl", png),
                         Map.of("optionText", "Карта 2", "isCorrect", false))))
                 .andExpect(status().isCreated())).get("id").asLong();
-        JsonNode shown = body(send(get("/api/tests/" + testId), null, null)).get("questions").get(2);
+        JsonNode shown = body(send(get("/api/tests/" + testId), student, null)).get("questions").get(2);
         String optionUrl = shown.get("options").get(0).get("imageUrl").asText();
-        org.junit.jupiter.api.Assertions.assertTrue(optionUrl.matches("/api/tests/options/\\d+/image"));
+        org.junit.jupiter.api.Assertions.assertTrue(optionUrl.matches("/api/tests/options/\\d+/image\\?exp=\\d+&sig=[A-Za-z0-9_-]+"));
         mvc.perform(get(optionUrl)).andExpect(status().isOk());
 
         send(put("/api/tests/questions/" + qid), teacher, Map.of(
@@ -387,7 +362,7 @@ class ApiIntegrationTest {
                 "options", java.util.List.of(
                         Map.of("optionText", "Карта 1", "isCorrect", true, "imageUrl", optionUrl),
                         Map.of("optionText", "Карта 2", "isCorrect", false)))).andExpect(status().isOk());
-        JsonNode updated = body(send(get("/api/tests/" + testId), null, null)).get("questions").get(2);
+        JsonNode updated = body(send(get("/api/tests/" + testId), student, null)).get("questions").get(2);
         mvc.perform(get(updated.get("options").get(0).get("imageUrl").asText())).andExpect(status().isOk());
     }
 }

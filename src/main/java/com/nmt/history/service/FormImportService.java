@@ -28,16 +28,16 @@ public class FormImportService {
 
     private final TestService testService;
 
-    public FormImportResponse importForm(FormImportRequest request) {
+    public FormImportResponse importForm(FormImportRequest request, String username) {
         TestSummaryResponse test = testService.createTest(new CreateTestRequest(
                 request.title().trim(), blankToNull(request.description()),
-                request.timeLimitMinutes() != null ? request.timeLimitMinutes() : 60));
+                request.timeLimitMinutes() != null ? request.timeLimitMinutes() : 60), username);
 
         int imported = 0;
         List<Skipped> skipped = new ArrayList<>();
         List<String> warnings = new ArrayList<>();
         for (FormImportRequest.Question q : request.questions()) {
-            String reason = tryImport(test.id(), q, warnings);
+            String reason = tryImport(test.id(), q, warnings, username);
             if (reason == null) {
                 imported++;
             } else {
@@ -46,14 +46,14 @@ public class FormImportService {
         }
 
         if (imported == 0) {
-            testService.deleteTest(test.id());
+            testService.deleteTest(test.id(), username);
             String detail = skipped.isEmpty() ? "У формі немає питань" : skipped.get(0).reason();
             throw new BadRequestException("Не вдалося імпортувати жодного питання. " + detail);
         }
         return new FormImportResponse(test.id(), test.title(), imported, skipped, warnings);
     }
 
-    private String tryImport(Long testId, FormImportRequest.Question q, List<String> warnings) {
+    private String tryImport(Long testId, FormImportRequest.Question q, List<String> warnings, String username) {
         QuestionType type = switch (q.type() == null ? "" : q.type().trim().toUpperCase()) {
             case "SINGLE" -> QuestionType.SINGLE_CHOICE;
             case "MULTIPLE" -> QuestionType.MULTIPLE_CHOICE;
@@ -84,7 +84,7 @@ public class FormImportService {
         }
         try {
             testService.createQuestion(new CreateQuestionRequest(
-                    testId, text, image, type, blankToNull(q.explanation()), null, options));
+                    testId, text, image, type, blankToNull(q.explanation()), null, options), username);
             return null;
         } catch (BadRequestException e) {
             return e.getMessage();

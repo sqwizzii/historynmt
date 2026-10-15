@@ -19,12 +19,15 @@ import com.nmt.history.exception.BadRequestException;
 import com.nmt.history.exception.ResourceNotFoundException;
 import com.nmt.history.model.Option;
 import com.nmt.history.model.Question;
+import com.nmt.history.model.ScoringScale;
+import com.nmt.history.model.Subject;
 import com.nmt.history.model.QuestionType;
 import com.nmt.history.model.Test;
 import com.nmt.history.model.TestResult;
 import com.nmt.history.model.TestAttempt;
 import com.nmt.history.model.User;
 import com.nmt.history.repository.QuestionRepository;
+import com.nmt.history.repository.SubjectRepository;
 import com.nmt.history.repository.TestAttemptRepository;
 import com.nmt.history.repository.TestRepository;
 import com.nmt.history.repository.TestResultRepository;
@@ -59,63 +62,116 @@ public class TestService {
     private final ScoringService scoringService;
     private final NmtScoreConverter nmtScoreConverter;
     private final ReviewService reviewService;
+    private final AccessPolicy accessPolicy;
+    private final SubjectRepository subjectRepository;
+    private final ImageUrlSigner imageUrlSigner;
 
     private static final int DEFAULT_TIME_LIMIT_MINUTES = 60;
 
     @Transactional(readOnly = true)
-    public List<TestSummaryResponse> getAllTests() {
-        return testRepository.findAllSummaries();
+    public List<TestSummaryResponse> getAllTests(String username) {
+        User actor = accessPolicy.actor(username);
+        Long ownerId = accessPolicy.visibleOwnerId(actor);
+        List<Test> tests = ownerId == null
+                ? testRepository.findByOwnerIsNullOrderByCreatedAtDesc()
+                : testRepository.findVisible(ownerId);
+        Map<Long, Long> counts = new HashMap<>();
+        testRepository.countQuestions().forEach(c -> counts.put(c.getTestId(), c.getTotal()));
+        return tests.stream()
+                .map(t -> TestSummaryResponse.from(t, counts.getOrDefault(t.getId(), 0L),
+                        accessPolicy.canEdit(ownerId(t), actor)))
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public TestDetailResponse getTest(Long testId) {
+    public TestDetailResponse getTest(Long testId, String username) {
         Test test = findTest(testId);
+        accessPolicy.requireView(ownerId(test), accessPolicy.actor(username));
         List<QuestionResponse> questions = questionRepository.findByTestIdOrderByIdAsc(testId).stream()
                 .map(this::toQuestionResponse)
                 .toList();
         return new TestDetailResponse(test.getId(), test.getTitle(), test.getDescription(),
-                test.getTimeLimitMinutes(), test.getCreatedAt(), questions);
+                test.getTimeLimitMinutes(), test.getCreatedAt(), subjectId(test), test.getGrade(),
+                test.getScoringScale(), questions);
     }
 
     @Transactional(readOnly = true)
-    public TestEditResponse getTestForEdit(Long testId) {
+    public TestEditResponse getTestForEdit(Long testId, String username) {
         Test test = findTest(testId);
+        accessPolicy.requireEdit(ownerId(test), accessPolicy.actor(username));
         List<QuestionEditResponse> questions = questionRepository.findByTestIdOrderByIdAsc(testId).stream()
                 .map(this::toQuestionEditResponse)
                 .toList();
         return new TestEditResponse(test.getId(), test.getTitle(), test.getDescription(),
-                test.getTimeLimitMinutes(), test.getCreatedAt(), questions);
+                test.getTimeLimitMinutes(), test.getCreatedAt(), subjectId(test), test.getGrade(),
+                test.getScoringScale(), questions);
     }
 
     @Transactional
-    public TestSummaryResponse createTest(CreateTestRequest request) {
+    public TestSummaryResponse createTest(CreateTestRequest request, String username) {
+        User actor = accessPolicy.requireActor(username);
+        User owner = accessPolicy.ownerForNew(actor);
         Test test = testRepository.save(Test.builder()
                 .title(request.title().trim())
                 .description(blankToNull(request.description()))
                 .timeLimitMinutes(timeLimit(request))
+                .owner(owner)
+                .subject(resolveSubject(request.subjectId()))
+                .grade(request.grade())
+                .scoringScale(request.scoringScale() != null ? request.scoringScale() : ScoringScale.NMT)
                 .build());
-        return TestSummaryResponse.from(test);
+        return TestSummaryResponse.from(test, 0, true);
     }
 
     @Transactional
-    public TestSummaryResponse updateTest(Long testId, CreateTestRequest request) {
+    public TestSummaryResponse updateTest(Long testId, CreateTestRequest request, String username) {
+        User actor = accessPolicy.requireActor(username);
         Test test = findTest(testId);
+        accessPolicy.requireEdit(ownerId(test), actor);
         test.setTitle(request.title().trim());
         test.setDescription(blankToNull(request.description()));
         test.setTimeLimitMinutes(timeLimit(request));
-        return TestSummaryResponse.from(test);
+        if (request.subjectId() != null) {
+            test.setSubject(resolveSubject(request.subjectId()));
+        }
+        if (request.grade() != null) {
+            test.setGrade(request.grade());
+        }
+        if (request.scoringScale() != null) {
+            test.setScoringScale(request.scoringScale());
+        }
+        return TestSummaryResponse.from(test, test.getQuestions().size(), true);
     }
 
     @Transactional
-    public void deleteTest(Long testId) {
+    public void deleteTest(Long testId, String username) {
         Test test = findTest(testId);
+        accessPolicy.requireEdit(ownerId(test), accessPolicy.actor(username));
         testResultRepository.deleteByTestId(testId);
         testRepository.delete(test);
     }
 
+    private Subject resolveSubject(Long subjectId) {
+        if (subjectId == null) {
+            return null;
+        }
+        return subjectRepository.findById(subjectId)
+                .filter(Subject::isActive)
+                .orElseThrow(() -> new BadRequestException("Невідомий предмет: " + subjectId));
+    }
+
+    private static Long ownerId(Test test) {
+        return test.getOwner() == null ? null : test.getOwner().getId();
+    }
+
+    private static Long subjectId(Test test) {
+        return test.getSubject() == null ? null : test.getSubject().getId();
+    }
+
     @Transactional
-    public QuestionEditResponse createQuestion(CreateQuestionRequest request) {
+    public QuestionEditResponse createQuestion(CreateQuestionRequest request, String username) {
         Test test = findTest(request.testId());
+        accessPolicy.requireEdit(ownerId(test), accessPolicy.actor(username));
         validateOptions(request.questionType(), request.options());
 
         Question question = Question.builder().test(test).build();
@@ -124,8 +180,9 @@ public class TestService {
     }
 
     @Transactional
-    public QuestionEditResponse updateQuestion(Long questionId, CreateQuestionRequest request) {
+    public QuestionEditResponse updateQuestion(Long questionId, CreateQuestionRequest request, String username) {
         Question question = findQuestion(questionId);
+        accessPolicy.requireEdit(ownerId(question.getTest()), accessPolicy.actor(username));
         validateOptions(request.questionType(), request.options());
 
         Map<Long, String> previousImages = new HashMap<>();
@@ -137,8 +194,10 @@ public class TestService {
     }
 
     @Transactional
-    public void deleteQuestion(Long questionId) {
-        questionRepository.delete(findQuestion(questionId));
+    public void deleteQuestion(Long questionId, String username) {
+        Question question = findQuestion(questionId);
+        accessPolicy.requireEdit(ownerId(question.getTest()), accessPolicy.actor(username));
+        questionRepository.delete(question);
     }
 
     private void applyQuestion(Question question, CreateQuestionRequest request, Map<Long, String> previousImages) {
@@ -181,6 +240,7 @@ public class TestService {
     public AttemptResponse startAttempt(Long testId, String username) {
         Test test = findTest(testId);
         User student = findStudent(username);
+        accessPolicy.requireView(ownerId(test), student);
         if (questionRepository.findByTestIdOrderByIdAsc(testId).isEmpty()) {
             throw new BadRequestException("У тесті немає питань");
         }
@@ -198,6 +258,7 @@ public class TestService {
     @Transactional
     public AttemptResponse recordLeave(Long testId, String username) {
         User student = findStudent(username);
+        accessPolicy.requireView(ownerId(findTest(testId)), student);
         TestAttempt attempt = attemptRepository.findFirstByStudentIdAndTestIdOrderByIdDesc(student.getId(), testId)
                 .orElseThrow(() -> new BadRequestException("Тест не розпочато"));
         attempt.setLeaveCount(attempt.getLeaveCount() + 1);
@@ -224,6 +285,7 @@ public class TestService {
     public TestResultResponse submitTest(Long testId, String username, TestSubmitRequest request) {
         Test test = findTest(testId);
         User student = findStudent(username);
+        accessPolicy.requireView(ownerId(test), student);
         TestAttempt attempt = attemptRepository.findFirstByStudentIdAndTestIdOrderByIdDesc(student.getId(), testId)
                 .orElseThrow(() -> new BadRequestException("Тест не розпочато. Відкрийте його заново."));
 
@@ -250,14 +312,14 @@ public class TestService {
                 .student(student)
                 .test(test)
                 .score(score)
-                .nmtScore(nmtScoreConverter.convert(score, maxScore))
+                .nmtScore(test.getScoringScale() == ScoringScale.NMT ? nmtScoreConverter.convert(score, maxScore) : null)
                 .reviewJson(reviewService.toJson(review))
                 .late(LocalDateTime.now().isAfter(attempt.getStartedAt().plus(limit(test)).plus(SUBMIT_GRACE)))
                 .leaveCount(attempt.getLeaveCount())
                 .endReason(request.endReason() == null ? "MANUAL" : request.endReason())
                 .build());
         attemptRepository.delete(attempt);
-        return TestResultResponse.from(saved, maxScore, review);
+        return TestResultResponse.from(saved, maxScore, reviewService.withSignedImages(review));
     }
 
     private Map<Long, AnswerRequest> indexAnswers(List<Question> questions, TestSubmitRequest request) {
@@ -337,35 +399,46 @@ public class TestService {
         }
 
         List<OptionResponse> optionResponses = options.stream()
-                .map(o -> new OptionResponse(o.getId(), o.getOptionText(), QuestionImages.publicUrl(o)))
+                .map(o -> new OptionResponse(o.getId(), o.getOptionText(), imageUrlSigner.sign(QuestionImages.publicUrl(o))))
                 .toList();
         return new QuestionResponse(question.getId(), question.getQuestionText(),
-                QuestionImages.publicUrl(question), question.getQuestionType(), optionResponses, matchChoices);
+                imageUrlSigner.sign(QuestionImages.publicUrl(question)), question.getQuestionType(), optionResponses, matchChoices);
     }
 
     private QuestionEditResponse toQuestionEditResponse(Question question) {
         List<OptionEditResponse> options = question.getOptions().stream()
                 .sorted(Comparator.comparing(Option::getId, Comparator.nullsLast(Comparator.naturalOrder())))
                 .map(o -> new OptionEditResponse(o.getId(), o.getOptionText(), Boolean.TRUE.equals(o.getIsCorrect()),
-                        o.getMatchKey(), o.getOrderIndex(), QuestionImages.publicUrl(o)))
+                        o.getMatchKey(), o.getOrderIndex(), imageUrlSigner.sign(QuestionImages.publicUrl(o))))
                 .toList();
-        return new QuestionEditResponse(question.getId(), question.getQuestionText(), QuestionImages.publicUrl(question),
+        return new QuestionEditResponse(question.getId(), question.getQuestionText(),
+                imageUrlSigner.sign(QuestionImages.publicUrl(question)),
                 question.getQuestionType(), question.getExplanation(), question.getTopic(), options);
     }
 
+    /** Системні зображення публічні; зображення приватних матеріалів потребують чинного підпису (інакше 404). */
     @Transactional(readOnly = true)
-    public ResponseEntity<byte[]> questionImage(Long questionId) {
-        return imageResponse(findQuestion(questionId).getImageUrl());
+    public ResponseEntity<byte[]> questionImage(Long questionId, String exp, String sig) {
+        Question question = findQuestion(questionId);
+        boolean isPublic = ownerId(question.getTest()) == null;
+        if (!isPublic && !imageUrlSigner.verify("/api/tests/questions/" + questionId + "/image", exp, sig)) {
+            throw new ResourceNotFoundException("Зображення не знайдено");
+        }
+        return imageResponse(question.getImageUrl(), isPublic);
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<byte[]> optionImage(Long optionId) {
-        String url = optionRepository.findById(optionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Варіант не знайдено: " + optionId)).getImageUrl();
-        return imageResponse(url);
+    public ResponseEntity<byte[]> optionImage(Long optionId, String exp, String sig) {
+        Option option = optionRepository.findById(optionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Варіант не знайдено: " + optionId));
+        boolean isPublic = ownerId(option.getQuestion().getTest()) == null;
+        if (!isPublic && !imageUrlSigner.verify("/api/tests/options/" + optionId + "/image", exp, sig)) {
+            throw new ResourceNotFoundException("Зображення не знайдено");
+        }
+        return imageResponse(option.getImageUrl(), isPublic);
     }
 
-    private ResponseEntity<byte[]> imageResponse(String url) {
+    private ResponseEntity<byte[]> imageResponse(String url, boolean isPublic) {
         if (url == null || !url.startsWith("data:")) {
             throw new ResourceNotFoundException("Зображення не знайдено");
         }
@@ -373,7 +446,9 @@ public class TestService {
         byte[] bytes = java.util.Base64.getDecoder().decode(url.substring(url.indexOf(',') + 1));
         return ResponseEntity.ok()
                 .contentType(org.springframework.http.MediaType.parseMediaType(mime))
-                .cacheControl(org.springframework.http.CacheControl.maxAge(java.time.Duration.ofMinutes(5)).cachePublic())
+                .cacheControl(isPublic
+                        ? org.springframework.http.CacheControl.maxAge(java.time.Duration.ofMinutes(5)).cachePublic()
+                        : org.springframework.http.CacheControl.maxAge(java.time.Duration.ofMinutes(5)).cachePrivate())
                 .body(bytes);
     }
 

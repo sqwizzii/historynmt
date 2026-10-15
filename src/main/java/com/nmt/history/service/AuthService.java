@@ -29,6 +29,9 @@ public class AuthService {
     private final LoginAttemptService loginAttemptService;
     private final InviteCodeService inviteCodeService;
 
+    @org.springframework.beans.factory.annotation.Value("${app.legacy.teacher-username:}")
+    private String legacyTeacherUsername;
+
     @Transactional
     public JwtResponse register(RegisterRequest request) {
         if (!inviteCodeService.matches(request.inviteCode())) {
@@ -46,6 +49,7 @@ public class AuthService {
                 .lastName(request.lastName().trim())
                 .password(passwordEncoder.encode(request.password()))
                 .role(Role.STUDENT)
+                .teacherId(inviteTeacherId())
                 .build());
 
         return JwtResponse.bearer(jwtUtils.generateToken(user.getUsername(), user.getRole()),
@@ -69,5 +73,16 @@ public class AuthService {
 
         return JwtResponse.bearer(jwtUtils.generateToken(user.getUsername(), user.getRole()),
                 user.getUsername(), user.getRole());
+    }
+
+    /** Спільний код запрошення належить вчителю з LEGACY_TEACHER_USERNAME; без нього учень лишається неприв'язаним. */
+    private Long inviteTeacherId() {
+        if (legacyTeacherUsername.isBlank()) {
+            return null;
+        }
+        return userRepository.findByUsername(legacyTeacherUsername)
+                .filter(user -> user.getRole() == Role.TEACHER)
+                .map(User::getId)
+                .orElse(null);
     }
 }

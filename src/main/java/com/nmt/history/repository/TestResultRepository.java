@@ -16,13 +16,15 @@ public interface TestResultRepository extends JpaRepository<TestResult, Long> {
     List<TestResult> findByStudentIdOrderByCompletedAtDesc(Long studentId);
 
     @EntityGraph(attributePaths = {"student", "test"})
-    List<TestResult> findAllByOrderByCompletedAtDesc();
+    List<TestResult> findByStudentTeacherIdOrderByCompletedAtDesc(Long teacherId);
+
+    List<TestResult> findByTestIdAndStudentTeacherId(Long testId, Long teacherId);
 
     List<TestResult> findByTestId(Long testId);
 
     @Query("select r.student.id as studentId, count(r) as attempts, max(r.nmtScore) as bestNmtScore "
-            + "from TestResult r group by r.student.id")
-    List<StudentStats> findStudentStats();
+            + "from TestResult r where r.student.teacherId = :teacherId group by r.student.id")
+    List<StudentStats> findStudentStats(@Param("teacherId") Long teacherId);
 
     @Modifying
     @Query("delete from TestResult r where r.test.id = :testId")

@@ -37,6 +37,21 @@ app:
     username: ${BOOTSTRAP_TEACHER_USERNAME:teacher}
     email: ${BOOTSTRAP_TEACHER_EMAIL:teacher@nmt-history.local}
     password: ${BOOTSTRAP_TEACHER_PASSWORD:Teacher123!}
+  legacy:
+    # Власник даних, створених до запровадження власності матеріалів (див. LegacyOwnershipInitializer).
+    # Лише явна конфігурація: login існуючого користувача з роллю TEACHER. Без неї власники не призначаються.
+    teacher-username: ${LEGACY_TEACHER_USERNAME:}
+    # Підтвердження прив'язки всіх неприв'язаних учнів до цього вчителя, якщо в БД є кілька вчителів.
+    assign-all-students: ${LEGACY_ASSIGN_ALL_STUDENTS:false}
+    # true: за недостатньої конфігурації застосунок не стартує (production); false: лише попередження.
+    strict: ${LEGACY_STRICT:false}
+  admin:
+    # Окремий акаунт адміністратора. Пароль лише зі змінної середовища/сховища секретів, значення за замовчуванням немає.
+    username: ${ADMIN_USERNAME:}
+    password: ${ADMIN_PASSWORD:}
+    promote-existing: ${ADMIN_PROMOTE_EXISTING:false}
+  images:
+    url-ttl-minutes: ${IMAGE_URL_TTL_MINUTES:360}
   login:
     # Обмеження спроб входу: після max-failures невдалих спроб вхід блокується на window-minutes хвилин.
     max-failures: ${LOGIN_MAX_FAILURES:5}

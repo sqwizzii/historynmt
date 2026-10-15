@@ -42,11 +42,12 @@ public class PracticeService {
     private final TestService testService;
     private final ScoringService scoringService;
     private final ReviewService reviewService;
+    private final AccessPolicy accessPolicy;
 
     @Transactional(readOnly = true)
     public MistakesResponse mistakes(String username) {
         User student = findStudent(username);
-        List<Long> ids = openMistakeIds(student.getId());
+        List<Long> ids = openMistakeIds(student);
         List<Question> questions = loadQuestions(ids.stream().limit(SESSION_SIZE).toList());
         List<QuestionResponse> responses = questions.stream().map(testService::toQuestionResponse).toList();
         return new MistakesResponse(ids.size(), responses);
@@ -55,7 +56,7 @@ public class PracticeService {
     @Transactional
     public PracticeResultResponse check(String username, TestSubmitRequest request) {
         User student = findStudent(username);
-        Set<Long> allowed = new HashSet<>(openMistakeIds(student.getId()));
+        Set<Long> allowed = new HashSet<>(openMistakeIds(student));
         Map<Long, AnswerRequest> answers = new LinkedHashMap<>();
         for (AnswerRequest answer : request.answers()) {
             if (answer == null || !allowed.contains(answer.questionId()) || answers.put(answer.questionId(), answer) != null) {
@@ -78,10 +79,11 @@ public class PracticeService {
                 fixRepository.save(fix);
             }
         }
-        return new PracticeResultResponse(fixed, review.size(), review);
+        return new PracticeResultResponse(fixed, review.size(), reviewService.withSignedImages(review));
     }
 
-    private List<Long> openMistakeIds(Long studentId) {
+    private List<Long> openMistakeIds(User student) {
+        Long studentId = student.getId();
         Map<Long, LocalDateTime> fixedAt = new HashMap<>();
         fixRepository.findByStudentId(studentId).forEach(f -> fixedAt.put(f.getQuestionId(), f.getFixedAt()));
 
@@ -104,7 +106,9 @@ public class PracticeService {
             }
         }
         Set<Long> existing = new HashSet<>();
-        questionRepository.findAllById(open).forEach(q -> existing.add(q.getId()));
+        questionRepository.findAllById(open).stream()
+                .filter(q -> accessPolicy.canView(q.getTest().getOwner() == null ? null : q.getTest().getOwner().getId(), student))
+                .forEach(q -> existing.add(q.getId()));
         return open.stream().filter(existing::contains).toList();
     }
 

@@ -3,7 +3,6 @@ package com.nmt.history.controller;
 import com.nmt.history.dto.StudentResponse;
 import com.nmt.history.dto.TestResultResponse;
 import com.nmt.history.dto.TopicStat;
-import com.nmt.history.model.Role;
 import com.nmt.history.service.ResultService;
 import com.nmt.history.service.TopicStatsService;
 import java.util.List;
@@ -33,29 +32,27 @@ public class ResultController {
     }
 
     @GetMapping("/teacher/students/{studentId}/topics")
-    public List<TopicStat> getStudentTopics(@PathVariable Long studentId) {
-        return topicStatsService.forStudent(studentId);
+    public List<TopicStat> getStudentTopics(@PathVariable Long studentId, Authentication authentication) {
+        return topicStatsService.forStudent(studentId, authentication.getName());
     }
 
     @GetMapping("/results/{resultId}")
     public TestResultResponse getResult(@PathVariable Long resultId, Authentication authentication) {
-        boolean teacher = authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_" + Role.TEACHER.name()));
-        return resultService.getResult(resultId, authentication.getName(), teacher);
+        return resultService.getResult(resultId, authentication.getName());
     }
 
     @GetMapping("/teacher/results")
-    public List<TestResultResponse> getAllResults() {
-        return resultService.getAllResults();
+    public List<TestResultResponse> getAllResults(Authentication authentication) {
+        return resultService.getAllResults(authentication.getName());
     }
 
     @GetMapping("/teacher/students")
-    public List<StudentResponse> getStudents() {
-        return resultService.getStudents();
+    public List<StudentResponse> getStudents(Authentication authentication) {
+        return resultService.getStudents(authentication.getName());
     }
 
     @GetMapping("/teacher/students/{studentId}/results")
-    public List<TestResultResponse> getStudentResults(@PathVariable Long studentId) {
-        return resultService.getStudentResults(studentId);
+    public List<TestResultResponse> getStudentResults(@PathVariable Long studentId, Authentication authentication) {
+        return resultService.getStudentResults(studentId, authentication.getName());
     }
 }

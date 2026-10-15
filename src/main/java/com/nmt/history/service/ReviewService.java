@@ -25,6 +25,7 @@ public class ReviewService {
     private static final TypeReference<List<QuestionReview>> REVIEW_LIST = new TypeReference<>() { };
 
     private final ObjectMapper objectMapper;
+    private final ImageUrlSigner imageUrlSigner;
 
     public QuestionReview build(Question question, AnswerRequest answer, int earned, int max) {
         return new QuestionReview(
@@ -38,6 +39,18 @@ public class ReviewService {
                 correctAnswer(question),
                 question.getExplanation(),
                 question.getTopic());
+    }
+
+    /** У БД зберігаються непідписані посилання; клієнту віддаємо їх зі свіжим підписом. */
+    public List<QuestionReview> withSignedImages(List<QuestionReview> review) {
+        if (review == null) {
+            return null;
+        }
+        return review.stream()
+                .map(r -> new QuestionReview(r.questionId(), r.questionText(), imageUrlSigner.sign(r.imageUrl()),
+                        r.questionType(), r.earned(), r.max(), r.yourAnswer(), r.correctAnswer(), r.explanation(),
+                        r.topic()))
+                .toList();
     }
 
     public String toJson(List<QuestionReview> review) {

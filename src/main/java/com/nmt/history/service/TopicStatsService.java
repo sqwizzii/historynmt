@@ -4,7 +4,6 @@ import com.nmt.history.dto.QuestionReview;
 import com.nmt.history.dto.TopicStat;
 import com.nmt.history.exception.ResourceNotFoundException;
 import com.nmt.history.model.Question;
-import com.nmt.history.model.Role;
 import com.nmt.history.model.TestResult;
 import com.nmt.history.model.User;
 import com.nmt.history.repository.QuestionRepository;
@@ -29,6 +28,7 @@ public class TopicStatsService {
     private final TestResultRepository testResultRepository;
     private final QuestionRepository questionRepository;
     private final ReviewService reviewService;
+    private final AccessPolicy accessPolicy;
 
     private static final class Sum {
         int answered;
@@ -44,10 +44,8 @@ public class TopicStatsService {
     }
 
     @Transactional(readOnly = true)
-    public List<TopicStat> forStudent(Long studentId) {
-        userRepository.findById(studentId)
-                .filter(user -> user.getRole() == Role.STUDENT)
-                .orElseThrow(() -> new ResourceNotFoundException("Учня не знайдено: " + studentId));
+    public List<TopicStat> forStudent(Long studentId, String teacherUsername) {
+        accessPolicy.requireOwnStudent(accessPolicy.requireTeacher(teacherUsername), studentId);
         return compute(studentId);
     }
 

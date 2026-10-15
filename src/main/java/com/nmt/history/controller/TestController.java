@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -32,56 +33,64 @@ public class TestController {
     private final TestService testService;
 
     @GetMapping
-    public List<TestSummaryResponse> getAllTests() {
-        return testService.getAllTests();
+    public List<TestSummaryResponse> getAllTests(Authentication authentication) {
+        return testService.getAllTests(name(authentication));
     }
 
     @GetMapping("/{testId}")
-    public TestDetailResponse getTest(@PathVariable Long testId) {
-        return testService.getTest(testId);
+    public TestDetailResponse getTest(@PathVariable Long testId, Authentication authentication) {
+        return testService.getTest(testId, name(authentication));
     }
 
     @PostMapping("/create")
-    public ResponseEntity<TestSummaryResponse> createTest(@Valid @RequestBody CreateTestRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(testService.createTest(request));
+    public ResponseEntity<TestSummaryResponse> createTest(@Valid @RequestBody CreateTestRequest request,
+                                                         Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(testService.createTest(request, name(authentication)));
     }
 
     @PostMapping("/questions/create")
-    public ResponseEntity<QuestionEditResponse> createQuestion(@Valid @RequestBody CreateQuestionRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(testService.createQuestion(request));
+    public ResponseEntity<QuestionEditResponse> createQuestion(@Valid @RequestBody CreateQuestionRequest request,
+                                                             Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(testService.createQuestion(request, name(authentication)));
     }
 
     @PutMapping("/{testId}")
-    public TestSummaryResponse updateTest(@PathVariable Long testId, @Valid @RequestBody CreateTestRequest request) {
-        return testService.updateTest(testId, request);
+    public TestSummaryResponse updateTest(@PathVariable Long testId, @Valid @RequestBody CreateTestRequest request,
+                                         Authentication authentication) {
+        return testService.updateTest(testId, request, name(authentication));
     }
 
     @DeleteMapping("/{testId}")
-    public ResponseEntity<Void> deleteTest(@PathVariable Long testId) {
-        testService.deleteTest(testId);
+    public ResponseEntity<Void> deleteTest(@PathVariable Long testId, Authentication authentication) {
+        testService.deleteTest(testId, name(authentication));
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/questions/{questionId}")
     public QuestionEditResponse updateQuestion(@PathVariable Long questionId,
-                                               @Valid @RequestBody CreateQuestionRequest request) {
-        return testService.updateQuestion(questionId, request);
+                                               @Valid @RequestBody CreateQuestionRequest request,
+                                               Authentication authentication) {
+        return testService.updateQuestion(questionId, request, name(authentication));
     }
 
     @DeleteMapping("/questions/{questionId}")
-    public ResponseEntity<Void> deleteQuestion(@PathVariable Long questionId) {
-        testService.deleteQuestion(questionId);
+    public ResponseEntity<Void> deleteQuestion(@PathVariable Long questionId, Authentication authentication) {
+        testService.deleteQuestion(questionId, name(authentication));
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/questions/{questionId}/image")
-    public ResponseEntity<byte[]> questionImage(@PathVariable Long questionId) {
-        return testService.questionImage(questionId);
+    public ResponseEntity<byte[]> questionImage(@PathVariable Long questionId,
+                                                @RequestParam(required = false) String exp,
+                                                @RequestParam(required = false) String sig) {
+        return testService.questionImage(questionId, exp, sig);
     }
 
     @GetMapping("/options/{optionId}/image")
-    public ResponseEntity<byte[]> optionImage(@PathVariable Long optionId) {
-        return testService.optionImage(optionId);
+    public ResponseEntity<byte[]> optionImage(@PathVariable Long optionId,
+                                              @RequestParam(required = false) String exp,
+                                              @RequestParam(required = false) String sig) {
+        return testService.optionImage(optionId, exp, sig);
     }
 
     @PostMapping("/{testId}/start")
@@ -99,5 +108,9 @@ public class TestController {
                                          @Valid @RequestBody TestSubmitRequest request,
                                          Authentication authentication) {
         return testService.submitTest(testId, authentication.getName(), request);
+    }
+
+    private static String name(Authentication authentication) {
+        return authentication == null ? null : authentication.getName();
     }
 }

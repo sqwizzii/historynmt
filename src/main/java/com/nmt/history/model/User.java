@@ -48,6 +48,15 @@ public class User {
     @Column(nullable = false, length = 20)
     private Role role;
 
+    /** Для учня: вчитель, до якого він прив'язаний. Для решти NULL. */
+    @Column(name = "teacher_id")
+    private Long teacherId;
+
+    /** Позначка тимчасового безкоштовного доступу для користувачів, що були до запровадження підписок. */
+    @Column(name = "legacy_free_access", nullable = false)
+    @Builder.Default
+    private boolean legacyFreeAccess = false;
+
     /** «Прізвище Ім'я»; для акаунтів без імені повертає username. */
     public String getFullName() {
         String name = ((lastName == null ? "" : lastName) + " " + (firstName == null ? "" : firstName)).trim();

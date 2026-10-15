@@ -3,9 +3,13 @@ package com.nmt.history.service;
 import com.nmt.history.dto.QuestionReview;
 import com.nmt.history.dto.TestStatsResponse;
 import com.nmt.history.dto.TestStatsResponse.QuestionStat;
+import com.nmt.history.exception.ResourceNotFoundException;
 import com.nmt.history.model.Question;
+import com.nmt.history.model.Test;
 import com.nmt.history.model.TestResult;
+import com.nmt.history.model.User;
 import com.nmt.history.repository.QuestionRepository;
+import com.nmt.history.repository.TestRepository;
 import com.nmt.history.repository.TestResultRepository;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -23,6 +27,8 @@ public class TestStatsService {
     private final TestResultRepository testResultRepository;
     private final QuestionRepository questionRepository;
     private final ReviewService reviewService;
+    private final AccessPolicy accessPolicy;
+    private final TestRepository testRepository;
 
     private static final class Counter {
         int answered;
@@ -32,8 +38,12 @@ public class TestStatsService {
     }
 
     @Transactional(readOnly = true)
-    public TestStatsResponse stats(Long testId) {
-        List<TestResult> results = testResultRepository.findByTestId(testId);
+    public TestStatsResponse stats(Long testId, String username) {
+        User teacher = accessPolicy.requireTeacher(username);
+        Test test = testRepository.findById(testId)
+                .orElseThrow(() -> new ResourceNotFoundException("Тест не знайдено: " + testId));
+        accessPolicy.requireView(test.getOwner() == null ? null : test.getOwner().getId(), teacher);
+        List<TestResult> results = testResultRepository.findByTestIdAndStudentTeacherId(testId, teacher.getId());
         Map<Long, Counter> counters = new HashMap<>();
         for (TestResult result : results) {
             List<QuestionReview> review = reviewService.fromJson(result.getReviewJson());

@@ -32,6 +32,7 @@ public class SecurityConfig {
 
     private static final String STUDENT = Role.STUDENT.name();
     private static final String TEACHER = Role.TEACHER.name();
+    private static final String ADMIN = Role.ADMIN.name();
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -44,6 +45,7 @@ public class SecurityConfig {
                 .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/subjects").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/tests", "/api/tests/*", "/api/tests/questions/*/image", "/api/tests/options/*/image").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/quizlet", "/api/quizlet/**").permitAll()
@@ -54,11 +56,11 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/api/results/*").hasAnyRole(STUDENT, TEACHER)
 
-                        .requestMatchers(HttpMethod.POST, "/api/tests/create", "/api/tests/questions/create").hasRole(TEACHER)
-                        .requestMatchers(HttpMethod.POST, "/api/quizlet/**").hasRole(TEACHER)
-                        .requestMatchers(HttpMethod.PUT, "/api/tests/**", "/api/quizlet/**").hasRole(TEACHER)
-                        .requestMatchers(HttpMethod.DELETE, "/api/tests/**", "/api/quizlet/**").hasRole(TEACHER)
-                        .requestMatchers("/api/teacher/**").hasRole(TEACHER)
+                        .requestMatchers(HttpMethod.POST, "/api/tests/create", "/api/tests/questions/create").hasAnyRole(TEACHER, ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/api/quizlet/**").hasAnyRole(TEACHER, ADMIN)
+                        .requestMatchers(HttpMethod.PUT, "/api/tests/**", "/api/quizlet/**").hasAnyRole(TEACHER, ADMIN)
+                        .requestMatchers(HttpMethod.DELETE, "/api/tests/**", "/api/quizlet/**").hasAnyRole(TEACHER, ADMIN)
+                        .requestMatchers("/api/teacher/**").hasAnyRole(TEACHER, ADMIN)
 
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtils, userDetailsService),
