@@ -34,13 +34,13 @@ export default function Account() {
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-md">
       <h1 className="text-2xl font-bold tracking-tight text-slate-900">Профіль</h1>
       <p className="mt-1 text-sm text-slate-600">
         Акаунт: <span className="font-semibold text-slate-800">{user.username}</span>
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-5 rounded-none border border-black bg-white p-6 shadow-card" noValidate>
+      <form onSubmit={handleSubmit} className="mt-6 space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-card" noValidate>
         <h2 className="text-base font-semibold text-slate-900">Зміна пароля</h2>
         <ErrorAlert message={error} />
         {success && (

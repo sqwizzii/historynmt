@@ -139,7 +139,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 rounded-none border border-black bg-white p-5 shadow-card sm:p-6" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-slate-200 bg-white p-5 shadow-card sm:p-6" noValidate>
       <h3 className="text-base font-semibold text-slate-900">{isEdit ? 'Редагування питання' : 'Нове питання'}</h3>
       <ErrorAlert message={error} />
       {success && (
@@ -160,7 +160,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
             </option>
           ))}
         </select>
-        {isEdit && type !== initial.questionType && <p className="mt-1 text-xs text-black">Після зміни типу варіанти потрібно ввести заново.</p>}
+        {isEdit && type !== initial.questionType && <p className="mt-1 text-xs text-slate-900">Після зміни типу варіанти потрібно ввести заново.</p>}
       </div>
 
       <div>

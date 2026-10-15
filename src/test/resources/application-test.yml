@@ -11,6 +11,9 @@ spring:
       ddl-auto: create-drop
 
 app:
+  bootstrap-teacher:
+    enabled: true
+    password: Teacher123!
   legacy:
     teacher-username: teacher
     strict: true

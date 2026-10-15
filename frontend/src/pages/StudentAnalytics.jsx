@@ -1,4 +1,6 @@
 import { Award, ClipboardList, TrendingUp } from 'lucide-react'
+import PageHeader from '../components/PageHeader.jsx'
+import StatCard from '../components/StatCard.jsx'
 import { Link } from 'react-router-dom'
 import { EmptyState, ErrorState, LoadingState } from '../components/PageState.jsx'
 import TopicProgress from '../components/TopicProgress.jsx'
@@ -7,33 +9,19 @@ import { primaryButtonClass } from '../components/styles.js'
 import { useAsyncData } from '../hooks/useAsyncData.js'
 import { getErrorMessage, resultService } from '../services/api.js'
 
-function StatCard({ icon: Icon, label, value }) {
-  return (
-    <div className="rounded-none border border-black bg-white p-5 shadow-card">
-      <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-        <Icon className="h-5 w-5" aria-hidden="true" />
-      </span>
-      <div className="text-2xl font-bold tabular-nums text-slate-900">{value}</div>
-      <div className="mt-0.5 text-sm text-slate-500">{label}</div>
-    </div>
-  )
-}
-
 export default function StudentAnalytics() {
   const { data: results, error, reload } = useAsyncData(resultService.getMy)
 
   if (error) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
   if (!results) return <LoadingState label="Завантажуємо результати…" />
 
-  const best = results.length ? Math.max(...results.map((r) => r.nmtScore)) : null
-  const average = results.length ? Math.round(results.reduce((sum, r) => sum + r.nmtScore, 0) / results.length) : null
+  const scored = results.filter((r) => r.nmtScore != null)
+  const best = scored.length ? Math.max(...scored.map((r) => r.nmtScore)) : '—'
+  const average = scored.length ? Math.round(scored.reduce((sum, r) => sum + r.nmtScore, 0) / scored.length) : '—'
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Мої результати</h1>
-        <p className="mt-1 text-sm text-slate-600">Історія пройдених тестів з орієнтовними балами за лінійною шкалою 100–200 (це не офіційна таблиця НМТ).</p>
-      </header>
+    <div className="mx-auto max-w-6xl">
+      <PageHeader title="Мої результати" description="Історія пройдених тестів. Для тестів зі шкалою НМТ показано орієнтовний бал 100–200 (це не офіційна таблиця НМТ)." />
 
       {results.length === 0 ? (
         <div className="flex flex-col items-center">
@@ -45,9 +33,9 @@ export default function StudentAnalytics() {
       ) : (
         <>
           <section className="mb-6 grid gap-4 sm:grid-cols-3">
-            <StatCard icon={ClipboardList} label="Пройдено спроб" value={results.length} />
-            <StatCard icon={Award} label="Найкращий орієнт. бал" value={best} />
-            <StatCard icon={TrendingUp} label="Середній орієнт. бал" value={average} />
+            <StatCard Icon={ClipboardList} label="Пройдено спроб" value={results.length} />
+            <StatCard Icon={Award} label="Найкращий орієнт. бал" value={best} />
+            <StatCard Icon={TrendingUp} label="Середній орієнт. бал" value={average} />
           </section>
           <TopicProgress fetcher={resultService.getMyTopics} dependency={results.length} />
           <ResultsTable results={results} />

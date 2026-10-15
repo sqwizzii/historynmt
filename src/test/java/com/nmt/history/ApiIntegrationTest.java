@@ -31,10 +31,16 @@ class ApiIntegrationTest extends AbstractApiTest {
     }
 
     private String teacherToken() throws Exception {
+        grantSubscription("teacher");
         ResultActions result = send(post("/api/auth/login"), null, Map.of("username", "teacher", "password", "Teacher123!"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.role", is("TEACHER")));
         return body(result).get("token").asText();
+    }
+
+    @Test
+    void healthEndpointIsPublicAndDoesNotNeedTheDatabase() throws Exception {
+        send(get("/api/health"), null, null).andExpect(status().isOk()).andExpect(jsonPath("$.status", is("UP")));
     }
 
     @Test

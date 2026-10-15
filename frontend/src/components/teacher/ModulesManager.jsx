@@ -1,7 +1,7 @@
-import { Plus } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 import { useState } from 'react'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
-import { primaryButtonClass } from '../styles.js'
+import { inputClass, primaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, quizletService } from '../../services/api.js'
 import ModuleEditor from './ModuleEditor.jsx'
@@ -11,23 +11,29 @@ export default function ModulesManager() {
   const { data: allModules, error, reload } = useAsyncData(quizletService.getModules, null, { keepPrevious: true })
   const [selectedId, setSelectedId] = useState(null)
   const [creating, setCreating] = useState(false)
+  const [query, setQuery] = useState('')
 
   const modules = allModules ? allModules.filter((module) => module.editable) : null
 
   if (error && !modules) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
   if (!modules) return <LoadingState />
 
+  const shown = modules.filter((m) => m.title.toLowerCase().includes(query.trim().toLowerCase()))
   const activeId = creating ? null : (selectedId ?? modules[0]?.id ?? null)
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
       <aside className="space-y-3 self-start">
         <button type="button" onClick={() => setCreating(true)} className={`${primaryButtonClass} w-full`}>
           <Plus className="h-4 w-4" aria-hidden="true" />
           Новий модуль
         </button>
-        <ul className="space-y-1 rounded-none border border-black bg-white p-2 shadow-card">
-          {modules.map((module) => {
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+          <input type="search" aria-label="Пошук модулів" placeholder="Пошук за назвою" value={query} onChange={(e) => setQuery(e.target.value)} className={`${inputClass} pl-9`} />
+        </div>
+        <ul className="space-y-1 rounded-xl border border-slate-200 bg-white p-2 shadow-card">
+          {shown.map((module) => {
             const active = module.id === activeId
             return (
               <li key={module.id}>
@@ -48,7 +54,7 @@ export default function ModulesManager() {
               </li>
             )
           })}
-          {modules.length === 0 && <li className="px-3 py-4 text-center text-sm text-slate-500">Модулів ще немає</li>}
+          {shown.length === 0 && <li className="px-3 py-4 text-center text-sm text-slate-500">{modules.length === 0 ? 'Модулів ще немає' : 'Нічого не знайдено'}</li>}
         </ul>
       </aside>
 

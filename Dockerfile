@@ -10,5 +10,7 @@ WORKDIR /app
 RUN useradd --system --uid 1001 app
 COPY --from=build /app/target/nmt-history-*.jar app.jar
 USER app
+# Профіль prod за замовчуванням: усі секрети обов'язкові, демо-акаунти не створюються. Порт береться зі змінної PORT (Render).
+ENV SPRING_PROFILES_ACTIVE=prod
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=70", "-XX:+UseSerialGC", "-jar", "/app/app.jar"]

@@ -8,7 +8,7 @@ export default function FormField({ label, icon: Icon, type = 'text', hint, ...i
 
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-700">
+      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-slate-700">
         {label}
       </label>
       <div className="relative">
@@ -16,7 +16,7 @@ export default function FormField({ label, icon: Icon, type = 'text', hint, ...i
         <input
           id={id}
           type={isPassword && revealed ? 'text' : type}
-          className={`block w-full rounded-none border border-black/30 bg-white py-3 text-sm text-black placeholder:text-slate-400 transition focus:border-black focus:outline-none focus:ring-1 focus:ring-black ${Icon ? 'pl-10' : 'pl-3'} ${isPassword ? 'pr-11' : 'pr-3'}`}
+          className={`block w-full rounded-lg border border-slate-300 bg-white py-2.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 ${Icon ? 'pl-10' : 'pl-3'} ${isPassword ? 'pr-11' : 'pr-3'}`}
           {...inputProps}
         />
         {isPassword && (

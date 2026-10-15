@@ -37,6 +37,7 @@ public class TeacherController {
     private final TestStatsService statsService;
     private final FormImportService formImportService;
     private final AccessPolicy accessPolicy;
+    private final com.nmt.history.service.AssignmentService assignmentService;
 
     @GetMapping("/tests/{testId}")
     public TestEditResponse getTestForEdit(@PathVariable Long testId, Authentication authentication) {
@@ -48,6 +49,18 @@ public class TeacherController {
         return statsService.stats(testId, authentication.getName());
     }
 
+    @GetMapping("/tests/{testId}/assignments")
+    public Map<String, java.util.List<Long>> assignments(@PathVariable Long testId, Authentication authentication) {
+        return Map.of("studentIds", assignmentService.assignedStudentIds(testId, authentication.getName()));
+    }
+
+    @PutMapping("/tests/{testId}/assignments")
+    public Map<String, java.util.List<Long>> assign(@PathVariable Long testId,
+                                                    @RequestBody Map<String, java.util.List<Long>> body,
+                                                    Authentication authentication) {
+        return Map.of("studentIds", assignmentService.replace(testId, body.get("studentIds"), authentication.getName()));
+    }
+
     @PostMapping("/import/google-form")
     public FormImportResponse importGoogleForm(@Valid @RequestBody FormImportRequest request,
                                                  Authentication authentication) {
@@ -56,21 +69,18 @@ public class TeacherController {
 
     @GetMapping("/invite-code")
     public Map<String, String> inviteCode(Authentication authentication) {
-        requireInviteManager(authentication);
-        return Map.of("code", inviteCodeService.current());
+        return Map.of("code", inviteCodeService.current(accessPolicy.requireTeacher(authentication.getName())));
     }
 
     @PutMapping("/invite-code")
     public Map<String, String> setInviteCode(@Valid @RequestBody InviteCodeRequest request,
                                              Authentication authentication) {
-        requireInviteManager(authentication);
-        return Map.of("code", inviteCodeService.set(request.code()));
+        return Map.of("code", inviteCodeService.set(accessPolicy.requireTeacher(authentication.getName()), request.code()));
     }
 
     @PostMapping("/invite-code/regenerate")
     public Map<String, String> regenerateInviteCode(Authentication authentication) {
-        requireInviteManager(authentication);
-        return Map.of("code", inviteCodeService.regenerate());
+        return Map.of("code", inviteCodeService.regenerate(accessPolicy.requireTeacher(authentication.getName())));
     }
 
     @PutMapping("/students/{studentId}/password")
@@ -85,9 +95,5 @@ public class TeacherController {
     public ResponseEntity<Void> deleteStudent(@PathVariable Long studentId, Authentication authentication) {
         userService.deleteStudent(studentId, authentication.getName());
         return ResponseEntity.noContent().build();
-    }
-
-    private void requireInviteManager(Authentication authentication) {
-        accessPolicy.requireInviteCodeManager(accessPolicy.requireActor(authentication.getName()));
     }
 }

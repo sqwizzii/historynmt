@@ -1,8 +1,9 @@
 import { Save } from 'lucide-react'
 import { useState } from 'react'
 import ErrorAlert from '../ErrorAlert.jsx'
-import { inputClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
-import { getErrorMessage, testService } from '../../services/api.js'
+import { inputClass, labelClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
+import { useAsyncData } from '../../hooks/useAsyncData.js'
+import { getErrorMessage, subjectService, testService } from '../../services/api.js'
 
 export default function TestForm({ initial, onSaved, onCancel }) {
   const isEdit = Boolean(initial)
@@ -10,7 +11,11 @@ export default function TestForm({ initial, onSaved, onCancel }) {
     title: initial?.title ?? '',
     description: initial?.description ?? '',
     timeLimitMinutes: String(initial?.timeLimitMinutes ?? 60),
+    subjectId: String(initial?.subjectId ?? ''),
+    grade: String(initial?.grade ?? ''),
+    scoringScale: initial?.scoringScale ?? 'NMT',
   })
+  const subjects = useAsyncData(subjectService.getAll).data ?? []
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -23,10 +28,13 @@ export default function TestForm({ initial, onSaved, onCancel }) {
     if (!Number.isInteger(minutes) || minutes < 1 || minutes > 300) return setError('Час на тест має бути від 1 до 300 хвилин.')
     setError('')
     setLoading(true)
-    const payload = { title: form.title.trim(), description: form.description.trim() || null, timeLimitMinutes: minutes }
+    const payload = { title: form.title.trim(), description: form.description.trim() || null, timeLimitMinutes: minutes,
+      subjectId: form.subjectId ? Number(form.subjectId) : null,
+      grade: form.grade ? Number(form.grade) : null,
+      scoringScale: form.scoringScale }
     try {
       const saved = isEdit ? await testService.update(initial.id, payload) : await testService.create(payload)
-      if (!isEdit) setForm({ title: '', description: '', timeLimitMinutes: '60' })
+      if (!isEdit) setForm({ title: '', description: '', timeLimitMinutes: '60', subjectId: '', grade: '', scoringScale: 'NMT' })
       onSaved(saved)
     } catch (err) {
       setError(getErrorMessage(err))
@@ -50,6 +58,29 @@ export default function TestForm({ initial, onSaved, onCancel }) {
             Час, хв
           </label>
           <input id="test-time" type="number" min="1" max="300" className={inputClass} value={form.timeLimitMinutes} onChange={update('timeLimitMinutes')} />
+        </div>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div>
+          <label htmlFor="test-subject" className={labelClass}>Предмет</label>
+          <select id="test-subject" className={inputClass} value={form.subjectId} onChange={update('subjectId')}>
+            <option value="">Без предмета</option>
+            {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="test-grade" className={labelClass}>Клас</label>
+          <select id="test-grade" className={inputClass} value={form.grade} onChange={update('grade')}>
+            <option value="">Не вказано</option>
+            {Array.from({ length: 11 }, (_, i) => i + 1).map((g) => <option key={g} value={g}>{g} клас</option>)}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="test-scale" className={labelClass}>Шкала оцінювання</label>
+          <select id="test-scale" className={inputClass} value={form.scoringScale} onChange={update('scoringScale')}>
+            <option value="NMT">НМТ (100–200)</option>
+            <option value="PERCENT">Відсотки</option>
+          </select>
         </div>
       </div>
       <div>

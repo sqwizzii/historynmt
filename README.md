@@ -30,7 +30,7 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-Сайт буде доступний на `https://<DOMAIN>`. Вхід вчителя: логін `teacher`, пароль із `BOOTSTRAP_TEACHER_PASSWORD`
+Сайт буде доступний на `https://<DOMAIN>`. Вхід початкового вчителя (лише якщо `BOOTSTRAP_TEACHER_ENABLED=true`): логін `teacher`, пароль із `BOOTSTRAP_TEACHER_PASSWORD`
 (змінити в «Профілі» після першого входу). Застосунок у production-профілі **не стартує**, якщо не задано секрети.
 
 Важливо: початковий вчитель створюється лише якщо його ще немає. Для нового клієнта використовуйте порожню БД
@@ -73,7 +73,7 @@ docker compose -f docker-compose.dev.yml up -d
 
 Без Docker встановіть PostgreSQL і створіть базу `nmt_history_db`.
 
-**2. Бекенд** (API на :8080, вчитель `teacher` / `Teacher123!`), у корені проєкту:
+**2. Бекенд** (API на :8080), у корені проєкту. Локальні акаунти (адмін, демо-вчитель, демо-учень) створюються з `config/application.yml` (див. нижче):
 
 ```bash
 ./mvnw spring-boot:run          # macOS, Linux, WSL, Git Bash
@@ -81,6 +81,20 @@ mvnw.cmd spring-boot:run        # Windows PowerShell / cmd
 ```
 
 Якщо пароль PostgreSQL інший, задайте `DB_USERNAME` і `DB_PASSWORD` (PowerShell: `$env:DB_PASSWORD="..."`).
+
+**Локальні акаунти.** Файл `config/application.yml` (у `.gitignore`, у репозиторій не потрапляє) підхоплюється автоматично, якщо бекенд запускати з кореня проєкту:
+
+```yaml
+app:
+  admin:            # ADMIN, створюється AdminBootstrap
+    username: admin123
+    password: <ваш пароль, від 12 символів>
+  demo:             # необов'язково: teacher_demo та student_demo (ігноруються в профілі prod)
+    teacher-password: <пароль від 8 символів>
+    student-password: <пароль від 8 символів>
+```
+
+Акаунти створюються при старті й не дублюються. Вчителі також реєструються самі (`/register/teacher`), але створювати матеріали можуть лише з активною підпискою, яку вручну активує адміністратор (розділ «Користувачі»); учні реєструються за особистим кодом вчителя.
 
 **3. Фронтенд** (http://localhost:45173), в іншому терміналі:
 

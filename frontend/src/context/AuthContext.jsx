@@ -38,6 +38,8 @@ export function AuthProvider({ children }) {
       user,
       isAuthenticated: Boolean(user),
       isTeacher: user?.role === 'TEACHER',
+      isAdmin: user?.role === 'ADMIN',
+      isStudent: user?.role === 'STUDENT',
       login,
       logout,
     }),

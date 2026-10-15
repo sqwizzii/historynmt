@@ -23,6 +23,11 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.FORBIDDEN, ex.getMessage(), null);
     }
 
+    @ExceptionHandler(SubscriptionRequiredException.class)
+    public ResponseEntity<ApiError> handleSubscriptionRequired(SubscriptionRequiredException ex) {
+        return build(HttpStatus.PAYMENT_REQUIRED, ex.getMessage(), null);
+    }
+
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiError> handleBadRequest(BadRequestException ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), null);

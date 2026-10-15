@@ -21,6 +21,8 @@ public class UserService {
     private final com.nmt.history.repository.TestAttemptRepository attemptRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccessPolicy accessPolicy;
+    private final com.nmt.history.repository.PracticeFixRepository practiceFixRepository;
+    private final com.nmt.history.repository.TestAssignmentRepository assignmentRepository;
 
     @Transactional
     public void changePassword(String username, ChangePasswordRequest request) {
@@ -42,6 +44,8 @@ public class UserService {
         User student = findOwnStudent(studentId, teacherUsername);
         testResultRepository.deleteByStudentId(studentId);
         attemptRepository.deleteByStudentId(studentId);
+        practiceFixRepository.deleteByStudentId(studentId);
+        assignmentRepository.deleteByStudentId(studentId);
         userRepository.delete(student);
     }
 

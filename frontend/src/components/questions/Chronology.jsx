@@ -26,7 +26,7 @@ export default function Chronology({ question, value, onChange }) {
             key={id}
             className={`flex items-center gap-3 rounded-xl border p-3 ${touched ? 'border-blue-200 bg-blue-50/50' : 'border-slate-200'}`}
           >
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-none bg-slate-100 text-xs font-bold text-slate-700">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-xs font-bold text-slate-700">
               {index + 1}
             </span>
             <span className="flex-1 text-sm text-slate-800">

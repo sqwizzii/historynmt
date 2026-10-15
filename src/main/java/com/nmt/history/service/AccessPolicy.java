@@ -2,11 +2,11 @@ package com.nmt.history.service;
 
 import com.nmt.history.exception.ForbiddenException;
 import com.nmt.history.exception.ResourceNotFoundException;
+import com.nmt.history.exception.SubscriptionRequiredException;
 import com.nmt.history.model.Role;
 import com.nmt.history.model.User;
 import com.nmt.history.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,9 +22,8 @@ import org.springframework.stereotype.Component;
 public class AccessPolicy {
 
     private final UserRepository userRepository;
+    private final SubscriptionService subscriptionService;
 
-    @Value("${app.legacy.teacher-username:}")
-    private String legacyTeacherUsername;
 
     /** Користувач запиту або {@code null} для анонімного. */
     public User actor(String username) {
@@ -85,6 +84,14 @@ public class AccessPolicy {
         if (!canEdit(ownerId, actor)) {
             throw new ForbiddenException("Загальноплатформні матеріали змінює лише адміністратор");
         }
+        requireSubscription(actor);
+    }
+
+    /** Змінювати власні матеріали вчитель може лише з активною підпискою; перегляд наявних даних лишається доступним. */
+    public void requireSubscription(User actor) {
+        if (actor != null && actor.getRole() == Role.TEACHER && !subscriptionService.hasAccess(actor)) {
+            throw new SubscriptionRequiredException("Потрібна активна підписка. Зверніться до адміністратора платформи.");
+        }
     }
 
     public void requireView(Long ownerId, User actor) {
@@ -99,24 +106,10 @@ public class AccessPolicy {
             return null;
         }
         if (actor.getRole() == Role.TEACHER) {
+            requireSubscription(actor);
             return actor;
         }
         throw new ForbiddenException("Створювати матеріали може лише вчитель або адміністратор");
-    }
-
-    /**
-     * Поки коди запрошення спільні (до етапу 3), керувати ними можуть лише адміністратор і вчитель, до якого
-     * прив'язуються нові учні; інакше один вчитель міг би змінити код для іншого.
-     */
-    public void requireInviteCodeManager(User actor) {
-        if (actor.getRole() == Role.ADMIN) {
-            return;
-        }
-        if (actor.getRole() == Role.TEACHER && !legacyTeacherUsername.isBlank()
-                && actor.getUsername().equals(legacyTeacherUsername)) {
-            return;
-        }
-        throw new ForbiddenException("Керувати кодом запрошення не дозволено");
     }
 
     /** Учень цього вчителя, інакше 404 (підміна id не розкриває існування чужих учнів). */

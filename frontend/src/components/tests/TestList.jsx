@@ -12,7 +12,7 @@ export default function TestList() {
   if (!tests) return <LoadingState label="Завантажуємо тести…" />
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-6xl">
       <header className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Тести</h1>
         <p className="mt-1 text-sm text-slate-600">Оберіть тест. Після завершення ви побачите результат і розбір відповідей.</p>
@@ -26,7 +26,7 @@ export default function TestList() {
             <li key={test.id}>
               <Link
                 to={`/tests/${test.id}`}
-                className="group flex h-full flex-col rounded-none border border-black bg-white p-6 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-lift"
+                className="group flex h-full flex-col rounded-xl border border-slate-200 bg-white p-6 transition-all hover:-translate-y-0.5 hover:shadow-lift"
               >
                 <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
                   <ClipboardList className="h-5 w-5" aria-hidden="true" />

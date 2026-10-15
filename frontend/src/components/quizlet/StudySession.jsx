@@ -37,7 +37,7 @@ export default function StudySession({ moduleId }) {
 
   if (total === 0) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-3xl">
         {backLink}
         <EmptyState title="У цьому модулі ще немає карток" text="Спробуйте обрати інший модуль." />
       </div>
@@ -48,7 +48,7 @@ export default function StudySession({ moduleId }) {
   const progress = ((index + 1) / total) * 100
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-2xl">
       <header className="mb-6">
         {backLink}
         <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">{module.title}</h1>
@@ -61,13 +61,13 @@ export default function StudySession({ moduleId }) {
             <span>{Math.round(progress)}%</span>
           </div>
           <div
-            className="h-2 overflow-hidden rounded-none bg-slate-200"
+            className="h-2 overflow-hidden rounded-xl bg-slate-200"
             role="progressbar"
             aria-valuemin={1}
             aria-valuemax={total}
             aria-valuenow={index + 1}
           >
-            <div className="h-full rounded-none bg-slate-500 transition-all duration-300" style={{ width: `${progress}%` }} />
+            <div className="h-full rounded-xl bg-slate-500 transition-all duration-300" style={{ width: `${progress}%` }} />
           </div>
         </div>
       </header>

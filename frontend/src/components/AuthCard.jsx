@@ -1,30 +1,32 @@
-import { Landmark } from 'lucide-react'
-import { BRAND_NAME, BRAND_TAGLINE } from '../config/brand.js'
+import { CheckCircle2 } from 'lucide-react'
+import { BRAND_TAGLINE } from '../config/brand.js'
+import Brand from './Brand.jsx'
+
+const POINTS = ['Тести з таймером і автоматичною перевіркою', 'Картки та модулі за предметами й класами', 'Статистика по учнях і темах']
 
 export default function AuthCard({ title, subtitle, children, footer }) {
   return (
-    <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-stretch gap-0 px-4 py-8 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:py-12">
-      <aside className="bg-hero ornament relative hidden overflow-hidden border border-black p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <span className="flex h-12 w-12 items-center justify-center border border-white/60">
-          <Landmark className="h-6 w-6" aria-hidden="true" />
-        </span>
+    <div className="grid min-h-[calc(100vh-4rem)] lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+      <aside className="bg-hero hidden flex-col justify-between p-12 lg:flex">
+        <Brand light />
         <div>
-          <p className="font-display text-5xl font-semibold uppercase leading-[1.02]">
-            {BRAND_NAME}
-          </p>
-          <p className="mt-5 text-xs uppercase tracking-[0.2em] text-slate-400">{BRAND_TAGLINE}</p>
+          <p className="max-w-md text-3xl font-semibold leading-tight tracking-tight">{BRAND_TAGLINE}</p>
+          <ul className="mt-8 space-y-3 text-sm text-indigo-100">
+            {POINTS.map((point) => (
+              <li key={point} className="flex items-start gap-2.5">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-indigo-300" aria-hidden="true" />
+                {point}
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className="space-y-2 border-t border-white/30 pt-5 text-xs uppercase tracking-[0.14em] text-slate-300">
-          <li>/ Тести з таймером і розбором відповідей</li>
-          <li>/ Картки з фото для запам&apos;ятовування</li>
-          <li>/ Автоматична робота над помилками</li>
-        </ul>
+        <p className="text-xs text-indigo-200">Для вчителів та їхніх учнів</p>
       </aside>
-      <div className="flex items-center justify-center border border-black bg-white p-6 sm:p-10 lg:border-l-0">
-        <div className="w-full max-w-md">
-          <div className="mb-7">
-            <h1 className="text-5xl text-black">{title}</h1>
-            <p className="mt-3 text-sm text-slate-600">{subtitle}</p>
+      <div className="grid-lines flex items-center justify-center px-4 py-10 sm:px-8">
+        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-lift sm:p-8">
+          <div className="mb-6">
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{title}</h1>
+            <p className="mt-1.5 text-sm text-slate-600">{subtitle}</p>
           </div>
           {children}
           {footer && <p className="mt-6 text-center text-sm text-slate-600">{footer}</p>}

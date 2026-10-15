@@ -50,6 +50,21 @@ abstract class AbstractApiTest {
         return json.readTree(actions.andReturn().getResponse().getContentAsString());
     }
 
+    @Autowired
+    protected com.nmt.history.repository.UserRepository userRepository;
+
+    @Autowired
+    protected com.nmt.history.service.SubscriptionService subscriptionService;
+
+    /** Підписку активує адміністратор вручну; тут це робиться напряму для тестових вчителів. */
+    protected void grantSubscription(String teacherUsername) {
+        com.nmt.history.model.User teacher = userRepository.findByUsername(teacherUsername).orElseThrow();
+        if (!subscriptionService.hasAccess(teacher)) {
+            subscriptionService.grant(teacher, com.nmt.history.model.SubscriptionPlan.YEARLY,
+                    userRepository.findByUsername(ADMIN_USERNAME).orElseThrow());
+        }
+    }
+
     protected String login(String username, String password) throws Exception {
         ResultActions result = send(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/auth/login"),
                 null, Map.of("username", username, "password", password));

@@ -3,6 +3,7 @@ package com.nmt.history.service;
 import com.nmt.history.dto.JwtResponse;
 import com.nmt.history.dto.LoginRequest;
 import com.nmt.history.dto.RegisterRequest;
+import com.nmt.history.dto.RegisterTeacherRequest;
 import com.nmt.history.exception.BadRequestException;
 import com.nmt.history.exception.ConflictException;
 import com.nmt.history.model.Role;
@@ -29,14 +30,10 @@ public class AuthService {
     private final LoginAttemptService loginAttemptService;
     private final InviteCodeService inviteCodeService;
 
-    @org.springframework.beans.factory.annotation.Value("${app.legacy.teacher-username:}")
-    private String legacyTeacherUsername;
-
     @Transactional
     public JwtResponse register(RegisterRequest request) {
-        if (!inviteCodeService.matches(request.inviteCode())) {
-            throw new BadRequestException("Невірний код запрошення. Запитайте його у вчителя.");
-        }
+        Long teacherId = inviteCodeService.resolveTeacherId(request.inviteCode())
+                .orElseThrow(() -> new BadRequestException("Невірний код запрошення. Запитайте його у вчителя."));
         String username = request.username().trim();
 
         if (userRepository.existsByUsername(username)) {
@@ -49,7 +46,7 @@ public class AuthService {
                 .lastName(request.lastName().trim())
                 .password(passwordEncoder.encode(request.password()))
                 .role(Role.STUDENT)
-                .teacherId(inviteTeacherId())
+                .teacherId(teacherId)
                 .build());
 
         return JwtResponse.bearer(jwtUtils.generateToken(user.getUsername(), user.getRole()),
@@ -75,14 +72,26 @@ public class AuthService {
                 user.getUsername(), user.getRole());
     }
 
-    /** Спільний код запрошення належить вчителю з LEGACY_TEACHER_USERNAME; без нього учень лишається неприв'язаним. */
-    private Long inviteTeacherId() {
-        if (legacyTeacherUsername.isBlank()) {
-            return null;
+    /** Самостійна реєстрація вчителя: роль завжди TEACHER, платного доступу немає, поки адміністратор не активує підписку. */
+    @Transactional
+    public JwtResponse registerTeacher(RegisterTeacherRequest request) {
+        String username = request.username().trim();
+        String email = request.email() == null || request.email().isBlank() ? null : request.email().trim().toLowerCase();
+        if (userRepository.existsByUsername(username)) {
+            throw new ConflictException("Username уже зайнятий");
         }
-        return userRepository.findByUsername(legacyTeacherUsername)
-                .filter(user -> user.getRole() == Role.TEACHER)
-                .map(User::getId)
-                .orElse(null);
+        if (email != null && userRepository.existsByEmail(email)) {
+            throw new ConflictException("Email уже використовується");
+        }
+        User user = userRepository.save(User.builder()
+                .username(username)
+                .email(email)
+                .firstName(request.firstName().trim())
+                .lastName(request.lastName().trim())
+                .password(passwordEncoder.encode(request.password()))
+                .role(Role.TEACHER)
+                .build());
+        return JwtResponse.bearer(jwtUtils.generateToken(user.getUsername(), user.getRole()),
+                user.getUsername(), user.getRole());
     }
 }

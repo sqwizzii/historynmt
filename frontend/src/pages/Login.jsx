@@ -37,7 +37,7 @@ export default function Login() {
 
   return (
     <AuthCard
-      title="З поверненням!"
+      title="Вхід до кабінету"
       subtitle="Увійдіть, щоб продовжити навчання."
       footer={
         <>
@@ -45,6 +45,7 @@ export default function Login() {
           <Link to="/register" className="font-semibold text-blue-700 hover:underline">
             Зареєструватися
           </Link>
+          <span className="mt-1 block text-xs text-slate-500">Вчитель? <Link to="/register/teacher" className="font-semibold text-indigo-700 hover:underline">Реєстрація вчителя</Link></span>
         </>
       }
     >

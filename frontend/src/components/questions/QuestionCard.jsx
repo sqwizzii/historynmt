@@ -16,12 +16,12 @@ export default function QuestionCard({ question, number, total, value, onChange 
   const Input = type?.Component
 
   return (
-    <article className="rounded-none border border-black bg-white p-5 shadow-card sm:p-7">
+    <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-card sm:p-7">
       <div className="mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold">
-        <span className="rounded-none bg-blue-100 px-2.5 py-1 text-blue-800">
+        <span className="rounded-xl bg-blue-100 px-2.5 py-1 text-blue-800">
           Питання {number} з {total}
         </span>
-        {type && <span className="rounded-none bg-slate-100 px-2.5 py-1 text-slate-700">{type.label}</span>}
+        {type && <span className="rounded-xl bg-slate-100 px-2.5 py-1 text-slate-700">{type.label}</span>}
       </div>
 
       <QuestionImage src={question.imageUrl} />

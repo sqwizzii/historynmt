@@ -65,6 +65,7 @@ public class TestService {
     private final AccessPolicy accessPolicy;
     private final SubjectRepository subjectRepository;
     private final ImageUrlSigner imageUrlSigner;
+    private final com.nmt.history.repository.TestAssignmentRepository assignmentRepository;
 
     private static final int DEFAULT_TIME_LIMIT_MINUTES = 60;
 
@@ -75,6 +76,13 @@ public class TestService {
         List<Test> tests = ownerId == null
                 ? testRepository.findByOwnerIsNullOrderByCreatedAtDesc()
                 : testRepository.findVisible(ownerId);
+        if (actor != null && actor.getRole() == com.nmt.history.model.Role.STUDENT) {
+            java.util.Set<Long> restricted = assignmentRepository.findRestrictedTestIds();
+            java.util.Set<Long> mine = assignmentRepository.findTestIdsByStudent(actor.getId());
+            tests = tests.stream()
+                    .filter(t -> ownerId(t) == null || !restricted.contains(t.getId()) || mine.contains(t.getId()))
+                    .toList();
+        }
         Map<Long, Long> counts = new HashMap<>();
         testRepository.countQuestions().forEach(c -> counts.put(c.getTestId(), c.getTotal()));
         return tests.stream()
@@ -86,7 +94,9 @@ public class TestService {
     @Transactional(readOnly = true)
     public TestDetailResponse getTest(Long testId, String username) {
         Test test = findTest(testId);
-        accessPolicy.requireView(ownerId(test), accessPolicy.actor(username));
+        User viewer = accessPolicy.actor(username);
+        accessPolicy.requireView(ownerId(test), viewer);
+        requireAssigned(test, viewer);
         List<QuestionResponse> questions = questionRepository.findByTestIdOrderByIdAsc(testId).stream()
                 .map(this::toQuestionResponse)
                 .toList();
@@ -148,7 +158,19 @@ public class TestService {
         Test test = findTest(testId);
         accessPolicy.requireEdit(ownerId(test), accessPolicy.actor(username));
         testResultRepository.deleteByTestId(testId);
+        assignmentRepository.deleteByTestId(testId);
         testRepository.delete(test);
+    }
+
+    /** Тест із призначеннями бачать лише призначені учні (власник і адміністратор не обмежуються); для решти він не існує. */
+    private void requireAssigned(Test test, User actor) {
+        if (actor == null || actor.getRole() != com.nmt.history.model.Role.STUDENT || ownerId(test) == null) {
+            return;
+        }
+        if (assignmentRepository.existsByTestId(test.getId())
+                && !assignmentRepository.existsByTestIdAndStudentId(test.getId(), actor.getId())) {
+            throw new ResourceNotFoundException("Тест не знайдено: " + test.getId());
+        }
     }
 
     private Subject resolveSubject(Long subjectId) {
@@ -241,6 +263,7 @@ public class TestService {
         Test test = findTest(testId);
         User student = findStudent(username);
         accessPolicy.requireView(ownerId(test), student);
+        requireAssigned(test, student);
         if (questionRepository.findByTestIdOrderByIdAsc(testId).isEmpty()) {
             throw new BadRequestException("У тесті немає питань");
         }
@@ -258,7 +281,9 @@ public class TestService {
     @Transactional
     public AttemptResponse recordLeave(Long testId, String username) {
         User student = findStudent(username);
-        accessPolicy.requireView(ownerId(findTest(testId)), student);
+        Test viewed = findTest(testId);
+        accessPolicy.requireView(ownerId(viewed), student);
+        requireAssigned(viewed, student);
         TestAttempt attempt = attemptRepository.findFirstByStudentIdAndTestIdOrderByIdDesc(student.getId(), testId)
                 .orElseThrow(() -> new BadRequestException("Тест не розпочато"));
         attempt.setLeaveCount(attempt.getLeaveCount() + 1);
@@ -286,6 +311,7 @@ public class TestService {
         Test test = findTest(testId);
         User student = findStudent(username);
         accessPolicy.requireView(ownerId(test), student);
+        requireAssigned(test, student);
         TestAttempt attempt = attemptRepository.findFirstByStudentIdAndTestIdOrderByIdDesc(student.getId(), testId)
                 .orElseThrow(() -> new BadRequestException("Тест не розпочато. Відкрийте його заново."));
 

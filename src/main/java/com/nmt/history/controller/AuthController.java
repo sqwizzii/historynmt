@@ -3,6 +3,7 @@ package com.nmt.history.controller;
 import com.nmt.history.dto.JwtResponse;
 import com.nmt.history.dto.LoginRequest;
 import com.nmt.history.dto.RegisterRequest;
+import com.nmt.history.dto.RegisterTeacherRequest;
 import com.nmt.history.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,11 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
+    }
+
+    @PostMapping("/register-teacher")
+    public ResponseEntity<JwtResponse> registerTeacher(@Valid @RequestBody RegisterTeacherRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerTeacher(request));
     }
 
     @PostMapping("/login")

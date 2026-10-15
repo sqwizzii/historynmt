@@ -13,7 +13,7 @@ export function LoadingState({ label = 'Завантаження…' }) {
 export function ErrorState({ message, onRetry }) {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-3 py-20 text-center" role="alert">
-      <span className="flex h-12 w-12 items-center justify-center rounded-none bg-red-100 text-red-700">
+      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-100 text-red-700">
         <AlertCircle className="h-6 w-6" aria-hidden="true" />
       </span>
       <p className="text-sm text-slate-700">{message}</p>
@@ -29,7 +29,7 @@ export function ErrorState({ message, onRetry }) {
 export function EmptyState({ title, text }) {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-2 py-20 text-center">
-      <span className="flex h-12 w-12 items-center justify-center rounded-none bg-slate-100 text-slate-500">
+      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
         <Inbox className="h-6 w-6" aria-hidden="true" />
       </span>
       <h2 className="text-base font-semibold text-slate-900">{title}</h2>

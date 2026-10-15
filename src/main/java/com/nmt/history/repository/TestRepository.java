@@ -31,4 +31,8 @@ public interface TestRepository extends org.springframework.data.jpa.repository.
 
         long getTotal();
     }
+
+    long countByOwnerId(Long ownerId);
+
+    long countBySubjectId(Long subjectId);
 }

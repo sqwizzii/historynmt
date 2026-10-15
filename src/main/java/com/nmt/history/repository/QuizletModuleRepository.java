@@ -23,4 +23,8 @@ public interface QuizletModuleRepository extends JpaRepository<QuizletModule, Lo
     @org.springframework.data.jpa.repository.Modifying
     @Query("update QuizletModule m set m.owner = :owner where m.owner is null")
     int assignOwnerToUnowned(@Param("owner") com.nmt.history.model.User owner);
+
+    long countByOwnerId(Long ownerId);
+
+    long countBySubjectId(Long subjectId);
 }

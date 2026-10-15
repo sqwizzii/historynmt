@@ -44,7 +44,9 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/health", "/error").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/subscription/plans").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.GET, "/api/subjects").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/tests", "/api/tests/*", "/api/tests/questions/*/image", "/api/tests/options/*/image").permitAll()

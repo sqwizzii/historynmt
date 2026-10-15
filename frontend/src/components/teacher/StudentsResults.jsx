@@ -25,7 +25,7 @@ function StudentList({ selectedId, onSelect, version }) {
     }`
 
   return (
-    <div className="rounded-none border border-black bg-white p-4 shadow-card">
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
       <div className="relative mb-3">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
         <input className={`${inputClass} pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Пошук учня" aria-label="Пошук учня" />
@@ -162,10 +162,10 @@ function InviteCodeCard() {
   if (error) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
 
   return (
-    <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-none border border-blue-100 bg-blue-50 p-4">
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
       <div>
-        <div className="text-xs font-semibold uppercase tracking-wide text-blue-800">Код запрошення для реєстрації учнів</div>
-        <div className="mt-1 font-mono text-2xl font-bold tracking-widest text-slate-900">{shown ?? '…'}</div>
+        <div className="text-xs font-semibold text-blue-800">Код запрошення для реєстрації учнів</div>
+        <div className="mt-1 font-mono text-2xl font-boldst text-slate-900">{shown ?? '…'}</div>
         <p className="mt-1 text-xs text-slate-600">Передайте його учням. Після зміни коду старий перестає працювати; вже створені акаунти це не зачіпає.</p>
         {actionError && <p className="mt-1 text-xs text-red-700">{actionError}</p>}
       </div>
@@ -209,13 +209,13 @@ export default function StudentsResults() {
   return (
     <>
     <InviteCodeCard />
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
       <div className="self-start">
         <StudentList selectedId={student?.id ?? null} onSelect={setStudent} version={version} />
       </div>
       <div className="space-y-4">
         {student && (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-none border border-black bg-white p-4 shadow-card">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-card">
             <div className="min-w-0">
               <div className="truncate font-semibold text-slate-900">{student.fullName}</div>
               <div className="truncate text-xs text-slate-500">логін: {student.username}</div>

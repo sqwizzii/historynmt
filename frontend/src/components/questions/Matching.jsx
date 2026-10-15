@@ -18,7 +18,7 @@ export default function Matching({ question, value, onChange }) {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <div>
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Варіанти для підбору</h3>
+        <h3 className="mb-2 text-xs font-semibold text-slate-500">Варіанти для підбору</h3>
         <ul className="space-y-2">
           {choices.map((choice, index) => (
             <li key={choice} className="flex items-start gap-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-800">
@@ -30,7 +30,7 @@ export default function Matching({ question, value, onChange }) {
       </div>
 
       <div>
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Встановіть відповідність</h3>
+        <h3 className="mb-2 text-xs font-semibold text-slate-500">Встановіть відповідність</h3>
         <ul className="space-y-3">
           {question.options.map((option, index) => (
             <li key={option.id} className="rounded-xl border border-slate-200 p-3">

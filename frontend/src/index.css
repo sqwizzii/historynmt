@@ -1,52 +1,25 @@
 @import "@fontsource-variable/inter";
-@import "@fontsource-variable/oswald";
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  --font-display: "Oswald Variable", "Oswald", "Arial Narrow", Impact, sans-serif;
+  --font-display: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: #000000;
-  --color-ink-soft: #111111;
-  --color-gold: #ffffff;
-  --color-gold-soft: #d4d4d4;
+  --color-blue-50: #eef2ff;
+  --color-blue-100: #e0e7ff;
+  --color-blue-200: #c7d2fe;
+  --color-blue-300: #a5b4fc;
+  --color-blue-400: #818cf8;
+  --color-blue-500: #6366f1;
+  --color-blue-600: #4f46e5;
+  --color-blue-700: #4338ca;
+  --color-blue-800: #3730a3;
+  --color-blue-900: #312e81;
+  --color-blue-950: #1e1b4b;
 
-  --color-blue-50: #f5f5f5;
-  --color-blue-100: #ebebeb;
-  --color-blue-200: #d4d4d4;
-  --color-blue-300: #a3a3a3;
-  --color-blue-400: #737373;
-  --color-blue-500: #404040;
-  --color-blue-600: #171717;
-  --color-blue-700: #0a0a0a;
-  --color-blue-800: #000000;
-  --color-blue-900: #000000;
-  --color-blue-950: #000000;
-
-  --color-slate-50: #fafafa;
-  --color-slate-100: #f0f0f0;
-  --color-slate-200: #dcdcdc;
-  --color-slate-300: #bdbdbd;
-  --color-slate-400: #8f8f8f;
-  --color-slate-500: #6b6b6b;
-  --color-slate-600: #4f4f4f;
-  --color-slate-700: #333333;
-  --color-slate-800: #1c1c1c;
-  --color-slate-900: #0a0a0a;
-  --color-slate-950: #000000;
-
-  --radius-xs: 0;
-  --radius-sm: 0;
-  --radius-md: 0;
-  --radius-lg: 0;
-  --radius-xl: 0;
-  --radius-2xl: 0;
-  --radius-3xl: 0;
-  --radius-4xl: 0;
-
-  --shadow-card: none;
-  --shadow-lift: 6px 6px 0 0 #000;
-  --animate-fade-up: fade-up 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.06);
+  --shadow-lift: 0 10px 30px -10px rgb(49 46 129 / 0.25), 0 2px 6px rgb(15 23 42 / 0.06);
+  --animate-fade-up: fade-up 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 @keyframes fade-up {
@@ -65,50 +38,36 @@ html {
 }
 
 body {
-  @apply text-slate-900 antialiased;
-  background-color: #f4f4f4;
+  @apply bg-slate-50 text-slate-900 antialiased;
 }
 
 h1,
 h2,
-h3.font-display {
-  font-family: var(--font-display);
-  font-weight: 600 !important;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
-  line-height: 1.08;
+h3 {
+  letter-spacing: -0.015em;
 }
 
 ::selection {
-  background: #000;
-  color: #fff;
+  background: #c7d2fe;
+  color: #1e1b4b;
+}
+
+:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
 }
 
 .bg-hero {
-  background-color: #000;
+  background-color: #312e81;
+  background-image: radial-gradient(circle at 20% 0%, #4f46e5 0%, transparent 55%), radial-gradient(circle at 100% 100%, #3730a3 0%, transparent 50%);
   color: #fff;
-}
-
-.ornament {
-  background-image:
-    linear-gradient(to right, rgb(255 255 255 / 0.1) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(255 255 255 / 0.1) 1px, transparent 1px);
-  background-size: 64px 64px;
 }
 
 .grid-lines {
   background-image:
-    linear-gradient(to right, rgb(0 0 0 / 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(0 0 0 / 0.08) 1px, transparent 1px);
-  background-size: 64px 64px;
-}
-
-.text-gold-gradient {
-  color: #fff;
-}
-
-.btn-shine {
-  position: relative;
+    linear-gradient(to right, rgb(79 70 229 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(79 70 229 / 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
 .stagger > * {
@@ -116,15 +75,15 @@ h3.font-display {
 }
 
 .stagger > *:nth-child(2) {
-  animation-delay: 0.08s;
+  animation-delay: 0.06s;
 }
 
 .stagger > *:nth-child(3) {
-  animation-delay: 0.16s;
+  animation-delay: 0.12s;
 }
 
 .stagger > *:nth-child(4) {
-  animation-delay: 0.24s;
+  animation-delay: 0.18s;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -4,7 +4,7 @@ export const TOKEN_KEY = 'token'
 export const USER_KEY = 'user'
 export const AUTH_EXPIRED_EVENT = 'auth:expired'
 
-export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api'
+export const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:8080/api' : '/api')
 
 const api = axios.create({
   baseURL: API_URL,
@@ -45,6 +45,7 @@ export function getErrorMessage(error, fallback = 'Сталася помилка
 }
 
 export const authService = {
+  registerTeacher: (payload) => api.post('/auth/register-teacher', payload).then((r) => r.data),
   register: (payload) => api.post('/auth/register', payload).then((r) => r.data),
   login: (payload) => api.post('/auth/login', payload).then((r) => r.data),
 }
@@ -64,6 +65,33 @@ export const testService = {
   start: (testId) => api.post(`/tests/${testId}/start`).then((r) => r.data),
   recordLeave: (testId) => api.post(`/tests/${testId}/leave`).then((r) => r.data),
   submit: (testId, answers, endReason = 'MANUAL') => api.post(`/tests/${testId}/submit`, { answers, endReason }).then((r) => r.data),
+}
+
+export const subjectService = {
+  getAll: () => api.get('/subjects').then((r) => r.data),
+}
+
+export const subscriptionService = {
+  plans: () => api.get('/subscription/plans').then((r) => r.data),
+  me: () => api.get('/subscription/me').then((r) => r.data),
+}
+
+export const assignmentService = {
+  get: (testId) => api.get(`/teacher/tests/${testId}/assignments`).then((r) => r.data.studentIds),
+  save: (testId, studentIds) => api.put(`/teacher/tests/${testId}/assignments`, { studentIds }).then((r) => r.data.studentIds),
+}
+
+export const adminService = {
+  stats: () => api.get('/admin/stats').then((r) => r.data),
+  users: (params) => api.get('/admin/users', { params }).then((r) => r.data),
+  changeRole: (id, role) => api.put(`/admin/users/${id}/role`, { role }).then((r) => r.data),
+  removeUser: (id) => api.delete(`/admin/users/${id}`),
+  grant: (id, plan) => api.post(`/admin/users/${id}/subscription`, { plan }).then((r) => r.data),
+  cancel: (id) => api.delete(`/admin/users/${id}/subscription`).then((r) => r.data),
+  subjects: () => api.get('/admin/subjects').then((r) => r.data),
+  createSubject: (payload) => api.post('/admin/subjects', payload).then((r) => r.data),
+  updateSubject: (id, payload) => api.put(`/admin/subjects/${id}`, payload).then((r) => r.data),
+  removeSubject: (id) => api.delete(`/admin/subjects/${id}`),
 }
 
 export const quizletService = {

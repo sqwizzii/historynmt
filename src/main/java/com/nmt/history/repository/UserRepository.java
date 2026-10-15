@@ -25,4 +25,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
+
+    @org.springframework.data.jpa.repository.Query("select u from User u where u.role in :roles and (:q = '' or lower(u.username) like concat('%', :q, '%') or lower(coalesce(u.firstName, '')) like concat('%', :q, '%') or lower(coalesce(u.lastName, '')) like concat('%', :q, '%')) order by u.id")
+    org.springframework.data.domain.Page<User> search(@org.springframework.data.repository.query.Param("roles") java.util.Collection<Role> roles, @org.springframework.data.repository.query.Param("q") String q, org.springframework.data.domain.Pageable pageable);
+
+    long countByTeacherId(Long teacherId);
 }

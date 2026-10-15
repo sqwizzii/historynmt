@@ -3,13 +3,17 @@ import { useState } from 'react'
 import ImagePicker from '../ImagePicker.jsx'
 import ErrorAlert from '../ErrorAlert.jsx'
 import { inputClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
-import { getErrorMessage, quizletService } from '../../services/api.js'
+import { useAsyncData } from '../../hooks/useAsyncData.js'
+import { getErrorMessage, quizletService, subjectService } from '../../services/api.js'
 
 const emptyCard = () => ({ termOrQuestion: '', answerOrDate: '', imageUrl: null })
 
 export default function ModuleForm({ onCreated, onCancel }) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [subjectId, setSubjectId] = useState('')
+  const [grade, setGrade] = useState('')
+  const subjects = useAsyncData(subjectService.getAll).data ?? []
   const [cards, setCards] = useState([emptyCard(), emptyCard(), emptyCard()])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -35,6 +39,8 @@ export default function ModuleForm({ onCreated, onCancel }) {
       const created = await quizletService.createModule({
         title: title.trim(),
         description: description.trim() || null,
+        subjectId: subjectId ? Number(subjectId) : null,
+        grade: grade ? Number(grade) : null,
         flashcards: filled.map((c) => ({ termOrQuestion: c.termOrQuestion.trim(), answerOrDate: c.answerOrDate.trim(), imageUrl: c.imageUrl })),
       })
       onCreated(created)
@@ -46,7 +52,7 @@ export default function ModuleForm({ onCreated, onCancel }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 rounded-none border border-black bg-white p-5 shadow-card sm:p-6" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-slate-200 bg-white p-5 shadow-card sm:p-6" noValidate>
       <h2 className="text-base font-semibold text-slate-900">Новий модуль карток</h2>
       <ErrorAlert message={error} />
       <div className="grid gap-4 sm:grid-cols-2">
@@ -61,6 +67,23 @@ export default function ModuleForm({ onCreated, onCancel }) {
             Опис
           </label>
           <input id="m-description" className={inputClass} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Необов'язково" />
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="m-subject" className="mb-1.5 block text-sm font-medium text-slate-700">Предмет</label>
+          <select id="m-subject" className={inputClass} value={subjectId} onChange={(e) => setSubjectId(e.target.value)}>
+            <option value="">Без предмета</option>
+            {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="m-grade" className="mb-1.5 block text-sm font-medium text-slate-700">Клас</label>
+          <select id="m-grade" className={inputClass} value={grade} onChange={(e) => setGrade(e.target.value)}>
+            <option value="">Не вказано</option>
+            {Array.from({ length: 11 }, (_, i) => i + 1).map((g) => <option key={g} value={g}>{g} клас</option>)}
+          </select>
         </div>
       </div>
 

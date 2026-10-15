@@ -9,4 +9,8 @@ import org.springframework.stereotype.Repository;
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     List<Subject> findByActiveTrueOrderBySortOrderAscNameAsc();
+
+    boolean existsBySlug(String slug);
+
+    java.util.List<Subject> findAllByOrderBySortOrderAscNameAsc();
 }

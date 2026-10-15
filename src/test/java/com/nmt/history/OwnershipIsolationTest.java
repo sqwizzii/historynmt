@@ -55,6 +55,8 @@ class OwnershipIsolationTest extends AbstractApiTest {
         teacherBUser = users.save(User.builder().username("teacher_b_" + suffix)
                 .password(encoder.encode(PASSWORD)).role(Role.TEACHER).build());
         teacherB = login(teacherBUser.getUsername(), PASSWORD);
+        grantSubscription("teacher");
+        grantSubscription(teacherBUser.getUsername());
 
         studentA = register("stud_a_" + suffix);
         studentAId = users.findByUsername("stud_a_" + suffix).orElseThrow().getId();
@@ -318,11 +320,25 @@ class OwnershipIsolationTest extends AbstractApiTest {
     }
 
     @Test
-    void inviteCodeCanBeManagedOnlyByTheTeacherWhoReceivesNewStudents() throws Exception {
-        send(get("/api/teacher/invite-code"), teacherA, null).andExpect(status().isOk());
-        send(get("/api/teacher/invite-code"), teacherB, null).andExpect(status().isForbidden());
-        send(put("/api/teacher/invite-code"), teacherB, Map.of("code", "HACKED99")).andExpect(status().isForbidden());
-        send(post("/api/teacher/invite-code/regenerate"), teacherB, null).andExpect(status().isForbidden());
+    void everyTeacherHasAnIndependentInviteCodeAndStudentsJoinTheRightTeacher() throws Exception {
+        String codeA = body(send(get("/api/teacher/invite-code"), teacherA, null).andExpect(status().isOk())).get("code").asText();
+        String codeB = body(send(get("/api/teacher/invite-code"), teacherB, null).andExpect(status().isOk())).get("code").asText();
+        org.junit.jupiter.api.Assertions.assertNotEquals(codeA, codeB);
+        send(get("/api/teacher/invite-code"), studentA, null).andExpect(status().isForbidden());
+        send(put("/api/teacher/invite-code"), teacherB, Map.of("code", codeA)).andExpect(status().isConflict());
+
+        String joined = "joined_" + UUID.randomUUID().toString().substring(0, 6);
+        send(post("/api/auth/register"), null, Map.of("username", joined, "firstName", "А", "lastName", "Б",
+                "password", "secret1", "inviteCode", codeB)).andExpect(status().isCreated());
+        org.junit.jupiter.api.Assertions.assertEquals(teacherBUser.getId(), users.findByUsername(joined).orElseThrow().getTeacherId());
+        JsonNode studentsB = body(send(get("/api/teacher/students"), teacherB, null));
+        org.junit.jupiter.api.Assertions.assertTrue(studentsB.toString().contains(joined));
+        org.junit.jupiter.api.Assertions.assertFalse(body(send(get("/api/teacher/students"), teacherA, null)).toString().contains(joined));
+
+        String regenerated = body(send(post("/api/teacher/invite-code/regenerate"), teacherB, null)).get("code").asText();
+        org.junit.jupiter.api.Assertions.assertNotEquals(codeB, regenerated);
+        send(post("/api/auth/register"), null, Map.of("username", joined + "x", "firstName", "А", "lastName", "Б",
+                "password", "secret1", "inviteCode", codeB)).andExpect(status().isBadRequest());
     }
 
     @Test

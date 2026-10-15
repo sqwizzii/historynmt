@@ -1,4 +1,4 @@
-import { BarChart3, ImageIcon, Pencil, Plus, Trash2 } from 'lucide-react'
+import { BarChart3, ImageIcon, Pencil, Plus, Trash2, UserCheck } from 'lucide-react'
 import { useState } from 'react'
 import ConfirmDialog from '../ConfirmDialog.jsx'
 import { ErrorState, LoadingState } from '../PageState.jsx'
@@ -6,6 +6,7 @@ import { primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, testService } from '../../services/api.js'
 import QuestionForm from './QuestionForm.jsx'
+import AssignModal from './AssignModal.jsx'
 import TestForm from './TestForm.jsx'
 
 const TYPE_LABELS = {
@@ -22,7 +23,7 @@ function QuestionStats({ testId }) {
   if (!stats) return null
 
   return (
-    <section className="rounded-none border border-black bg-white p-5 shadow-card sm:p-6">
+    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-card sm:p-6">
       <h2 className="mb-1 flex items-center gap-2 text-base font-semibold text-slate-900">
         <BarChart3 className="h-4 w-4 text-blue-700" aria-hidden="true" />
         Статистика по питаннях
@@ -42,9 +43,9 @@ function QuestionStats({ testId }) {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-2 flex-1 overflow-hidden rounded-none bg-slate-100">
+                  <div className="h-2 flex-1 overflow-hidden rounded-xl bg-slate-100">
                     <div
-                      className={`h-full rounded-none ${q.correctPercent < 40 ? 'bg-red-500' : q.correctPercent < 70 ? 'bg-slate-500' : 'bg-emerald-500'}`}
+                      className={`h-full rounded-xl ${q.correctPercent < 40 ? 'bg-red-500' : q.correctPercent < 70 ? 'bg-slate-500' : 'bg-emerald-500'}`}
                       style={{ width: `${q.correctPercent}%` }}
                     />
                   </div>
@@ -62,6 +63,7 @@ function QuestionStats({ testId }) {
 export default function TestEditor({ testId, onChanged, onDeleted }) {
   const { data: test, error, reload } = useAsyncData(() => testService.getForEdit(testId), testId, { keepPrevious: true })
   const [editing, setEditing] = useState(null)
+  const [assigning, setAssigning] = useState(false)
   const [toDelete, setToDelete] = useState(null)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState('')
@@ -95,9 +97,14 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-none border border-black bg-white p-5 shadow-card sm:p-6">
+      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-card sm:p-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-base font-semibold text-slate-900">Параметри тесту</h2>
+          <div className="flex items-center gap-1">
+          <button type="button" onClick={() => setAssigning(true)} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-50">
+            <UserCheck className="h-4 w-4" aria-hidden="true" />
+            Призначити учням
+          </button>
           <button
             type="button"
             onClick={() => setToDelete({ kind: 'test' })}
@@ -106,8 +113,9 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
             <Trash2 className="h-4 w-4" aria-hidden="true" />
             Видалити тест
           </button>
+          </div>
         </div>
-        <TestForm key={`${test.id}-${test.title}-${test.timeLimitMinutes}-${test.description}`} initial={test} onSaved={refreshQuestions} />
+        <TestForm key={`${test.id}-${test.title}-${test.timeLimitMinutes}-${test.description}-${test.subjectId}-${test.grade}-${test.scoringScale}`} initial={test} onSaved={refreshQuestions} />
       </section>
 
       <QuestionStats testId={testId} />
@@ -130,7 +138,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
         )}
 
         {test.questions.length === 0 && editing !== 'new' && (
-          <p className="rounded-none border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm text-slate-500">
+          <p className="rounded-xl border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm text-slate-500">
             У цьому тесті ще немає питань.
           </p>
         )}
@@ -150,14 +158,14 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
                 />
               </li>
             ) : (
-              <li key={question.id} className="flex items-start gap-3 rounded-none border border-black bg-white p-4 shadow-card">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-none bg-slate-100 text-xs font-bold text-slate-600">
+              <li key={question.id} className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-card">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-xs font-bold text-slate-600">
                   {index + 1}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="line-clamp-2 text-sm font-medium text-slate-900">{question.questionText}</p>
                   <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                    <span className="rounded-none bg-slate-100 px-2 py-0.5 font-medium text-slate-700">{TYPE_LABELS[question.questionType]}</span>
+                    <span className="rounded-xl bg-slate-100 px-2 py-0.5 font-medium text-slate-700">{TYPE_LABELS[question.questionType]}</span>
                     <span>Варіантів: {question.options.length}</span>
                     {question.imageUrl && (
                       <span className="inline-flex items-center gap-1">
@@ -208,6 +216,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
           }}
         />
       )}
+      {assigning && <AssignModal testId={testId} onClose={() => setAssigning(false)} />}
     </div>
   )
 }

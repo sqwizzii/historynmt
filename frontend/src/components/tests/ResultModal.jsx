@@ -12,16 +12,16 @@ export default function ResultModal({ result, autoReason = null, onReview, onRet
   return (
     <Modal title="Тест завершено" onClose={onClose}>
       <p className="mt-1 text-sm text-slate-600">{result.testTitle}</p>
-      {autoReason === 'TIMEOUT' && <p className="mt-1 text-sm font-medium text-black">Час вичерпано: відповіді надіслано автоматично.</p>}
-      {autoReason === 'LEFT_PAGE' && <p className="mt-1 text-sm font-medium text-black">Ви залишили сторінку: тест завершено автоматично.</p>}
+      {autoReason === 'TIMEOUT' && <p className="mt-1 text-sm font-medium text-slate-900">Час вичерпано: відповіді надіслано автоматично.</p>}
+      {autoReason === 'LEFT_PAGE' && <p className="mt-1 text-sm font-medium text-slate-900">Ви залишили сторінку: тест завершено автоматично.</p>}
 
-      <div className="mt-6 flex flex-col items-center rounded-none bg-black px-4 py-6 text-white">
+      <div className="mt-6 flex flex-col items-center rounded-xl bg-indigo-600 px-4 py-6 text-white">
         <Award className="mb-2 h-7 w-7 text-white" aria-hidden="true" />
-        <span className="text-xs font-semibold uppercase tracking-wider text-blue-100">Орієнтовний бал НМТ (лінійна шкала)</span>
+        <span className="text-xs font-semibold text-blue-100">Орієнтовний бал НМТ (лінійна шкала)</span>
         <span className="mt-1 text-5xl font-extrabold tabular-nums">{result.nmtScore}</span>
         <div className="mt-4 w-full">
-          <div className="h-2 overflow-hidden rounded-none bg-white/20">
-            <div className="h-full rounded-none bg-white transition-all" style={{ width: `${nmtPosition}%` }} />
+          <div className="h-2 overflow-hidden rounded-xl bg-white/20">
+            <div className="h-full rounded-xl bg-white transition-all" style={{ width: `${nmtPosition}%` }} />
           </div>
           <div className="mt-1 flex justify-between text-xs text-blue-100">
             <span>{NMT_MIN}</span>

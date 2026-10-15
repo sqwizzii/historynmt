@@ -5,6 +5,12 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+    hikari:
+      # Невеликий пул і коротший max-lifetime для керованих БД (Neon): вони закривають неактивні з'єднання, а після
+      # «засинання» першому підключенню потрібен час.
+      maximum-pool-size: ${DB_POOL_SIZE:5}
+      max-lifetime: 240000
+      connection-timeout: 30000
   jpa:
     show-sql: false
     properties:
@@ -15,7 +21,7 @@ app:
   jwt:
     secret: ${JWT_SECRET}
   bootstrap-teacher:
-    password: ${BOOTSTRAP_TEACHER_PASSWORD}
+    password: ${BOOTSTRAP_TEACHER_PASSWORD:}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
   legacy:

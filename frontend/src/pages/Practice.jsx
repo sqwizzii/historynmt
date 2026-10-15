@@ -33,7 +33,7 @@ function Session({ questions, onFinish }) {
   if (result) {
     return (
       <div>
-        <div className="rounded-none border border-blue-100 bg-blue-50 p-5 text-center">
+        <div className="rounded-xl border border-blue-100 bg-blue-50 p-5 text-center">
           <PartyPopper className="mx-auto h-8 w-8 text-blue-700" aria-hidden="true" />
           <p className="mt-2 text-lg font-bold text-slate-900">
             Виправлено: {result.fixed} з {result.total}
@@ -110,7 +110,7 @@ export default function Practice() {
     )
   } else if (!started) {
     content = (
-      <div className="rounded-none border border-black bg-white p-6 text-center shadow-card">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 text-center shadow-card">
         <CheckCircle2 className="mx-auto h-8 w-8 text-blue-700" aria-hidden="true" />
         <p className="mt-3 text-lg font-bold text-slate-900">Питань для повторення: {data.total}</p>
         <p className="mt-1 text-sm text-slate-600">
@@ -134,7 +134,7 @@ export default function Practice() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-3xl">
       <Link to="/results" className="mb-3 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         До моїх результатів

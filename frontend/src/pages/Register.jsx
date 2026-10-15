@@ -65,13 +65,18 @@ export default function Register() {
 
   return (
     <AuthCard
-      title="Створіть акаунт"
+      title="Реєстрація учня"
       subtitle="Створіть акаунт за кодом від вашого вчителя, щоб проходити призначені тести."
       footer={
         <>
           Вже зареєстровані?{' '}
           <Link to="/login" className="font-semibold text-blue-700 hover:underline">
             Увійти
+          </Link>
+          <br />
+          Ви вчитель?{' '}
+          <Link to="/register/teacher" className="font-semibold text-indigo-700 hover:underline">
+            Створити акаунт вчителя
           </Link>
         </>
       }

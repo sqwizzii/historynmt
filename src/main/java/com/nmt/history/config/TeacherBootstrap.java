@@ -11,7 +11,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Створює початковий акаунт вчителя, якщо його ще немає в БД.
+ * Створює початковий акаунт вчителя, якщо його ще немає в БД, лише за явного BOOTSTRAP_TEACHER_ENABLED=true.
+ * Вчителі зазвичай реєструються самостійно, тому за замовчуванням акаунт не створюється.
  * Реєстрація через API видає лише роль STUDENT.
  */
 @Slf4j
@@ -24,12 +25,15 @@ public class TeacherBootstrap implements CommandLineRunner {
     private final String username;
     private final String email;
     private final String password;
+    private final boolean enabled;
 
     public TeacherBootstrap(UserRepository userRepository,
                             PasswordEncoder passwordEncoder,
                             @Value("${app.bootstrap-teacher.username}") String username,
                             @Value("${app.bootstrap-teacher.email}") String email,
-                            @Value("${app.bootstrap-teacher.password}") String password) {
+                            @Value("${app.bootstrap-teacher.password:}") String password,
+                            @Value("${app.bootstrap-teacher.enabled:false}") boolean enabled) {
+        this.enabled = enabled;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.username = username;
@@ -39,6 +43,12 @@ public class TeacherBootstrap implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        if (!enabled) {
+            return;
+        }
+        if (password.length() < 8) {
+            throw new IllegalStateException("BOOTSTRAP_TEACHER_PASSWORD має містити щонайменше 8 символів");
+        }
         if (userRepository.existsByUsername(username)) {
             return;
         }

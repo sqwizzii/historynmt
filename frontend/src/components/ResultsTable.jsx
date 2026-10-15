@@ -3,9 +3,9 @@ import { formatDate } from '../utils/format.js'
 
 export default function ResultsTable({ results, showStudent = false }) {
   return (
-    <div className="overflow-x-auto rounded-none border border-black bg-white shadow-card">
+    <div className="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-card">
       <table className="min-w-full divide-y divide-slate-200 text-sm">
-        <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <thead className="bg-slate-50 text-left text-xs font-semibold text-slate-500">
           <tr>
             {showStudent && <th className="px-4 py-3">Учень</th>}
             <th className="px-4 py-3">Тест</th>
@@ -22,14 +22,14 @@ export default function ResultsTable({ results, showStudent = false }) {
               {showStudent && <td className="px-4 py-3 font-medium text-slate-900">{r.studentName}</td>}
               <td className="px-4 py-3 text-slate-700">{r.testTitle}</td>
               <td className="px-4 py-3 tabular-nums text-slate-700">{r.score}</td>
-              <td className="px-4 py-3 font-semibold tabular-nums text-blue-700">{r.nmtScore}</td>
+              <td className="px-4 py-3 font-semibold tabular-nums text-blue-700">{r.nmtScore ?? '—'}</td>
               <td className="whitespace-nowrap px-4 py-3 text-slate-500">{formatDate(r.completedAt)}</td>
               <td className="px-4 py-3 text-xs">
                 <div className="flex flex-wrap gap-1">
-                  {r.leaveCount > 0 && <span className="rounded-none bg-amber-100 px-2 py-0.5 font-medium text-black">виходів: {r.leaveCount}</span>}
-                  {r.endReason === 'LEFT_PAGE' && <span className="rounded-none bg-red-100 px-2 py-0.5 font-medium text-red-700">покинув сторінку</span>}
-                  {r.endReason === 'TIMEOUT' && <span className="rounded-none bg-slate-100 px-2 py-0.5 font-medium text-slate-600">час вичерпано</span>}
-                  {r.late && <span className="rounded-none bg-red-100 px-2 py-0.5 font-medium text-red-700">прострочено</span>}
+                  {r.leaveCount > 0 && <span className="rounded-xl bg-amber-100 px-2 py-0.5 font-medium text-slate-900">виходів: {r.leaveCount}</span>}
+                  {r.endReason === 'LEFT_PAGE' && <span className="rounded-xl bg-red-100 px-2 py-0.5 font-medium text-red-700">покинув сторінку</span>}
+                  {r.endReason === 'TIMEOUT' && <span className="rounded-xl bg-slate-100 px-2 py-0.5 font-medium text-slate-600">час вичерпано</span>}
+                  {r.late && <span className="rounded-xl bg-red-100 px-2 py-0.5 font-medium text-red-700">прострочено</span>}
                 </div>
               </td>
               <td className="whitespace-nowrap px-4 py-3 text-right">
