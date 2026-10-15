@@ -28,6 +28,10 @@ ALTER TABLE users
     ADD COLUMN teacher_id BIGINT REFERENCES users (id),
     ADD COLUMN legacy_free_access BOOLEAN NOT NULL DEFAULT FALSE;
 
+-- На базах, колись створених Hibernate, є обмеження users_role_check лише з STUDENT/TEACHER; на базах лише з Flyway його немає.
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
+ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('STUDENT', 'TEACHER', 'ADMIN'));
+
 ALTER TABLE tests
     ADD COLUMN owner_id BIGINT REFERENCES users (id),
     ADD COLUMN subject_id BIGINT REFERENCES subjects (id),

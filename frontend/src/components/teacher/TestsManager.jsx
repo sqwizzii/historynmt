@@ -9,10 +9,12 @@ import TestEditor from './TestEditor.jsx'
 import TestForm from './TestForm.jsx'
 
 export default function TestsManager() {
-  const { data: tests, error, reload } = useAsyncData(testService.getAll, null, { keepPrevious: true })
+  const { data: allTests, error, reload } = useAsyncData(testService.getAll, null, { keepPrevious: true })
   const [selectedId, setSelectedId] = useState(null)
   const [creating, setCreating] = useState(false)
   const [importing, setImporting] = useState(false)
+
+  const tests = allTests ? allTests.filter((test) => test.editable) : null
 
   if (error && !tests) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
   if (!tests) return <LoadingState />

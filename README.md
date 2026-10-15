@@ -58,6 +58,9 @@ git pull && docker compose up -d --build
 
 Схема БД оновлюється міграціями Flyway (`src/main/resources/db/migration`) автоматично при старті.
 
+> **Перше оновлення до моделі власності матеріалів (етап 2)** вимагає резервної копії та явних змінних
+> `LEGACY_TEACHER_USERNAME`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`. Без них production-профіль не стартує. Покроково: [docs/stage2-migration.md](docs/stage2-migration.md).
+
 ## Локальна розробка
 
 Потрібні JDK 17+, Node 22+ і PostgreSQL (найпростіше через Docker Desktop).

@@ -8,9 +8,11 @@ import ModuleEditor from './ModuleEditor.jsx'
 import ModuleForm from './ModuleForm.jsx'
 
 export default function ModulesManager() {
-  const { data: modules, error, reload } = useAsyncData(quizletService.getModules, null, { keepPrevious: true })
+  const { data: allModules, error, reload } = useAsyncData(quizletService.getModules, null, { keepPrevious: true })
   const [selectedId, setSelectedId] = useState(null)
   const [creating, setCreating] = useState(false)
+
+  const modules = allModules ? allModules.filter((module) => module.editable) : null
 
   if (error && !modules) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
   if (!modules) return <LoadingState />

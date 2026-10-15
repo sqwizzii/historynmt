@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 const ROLE_LABELS = {
   STUDENT: { label: 'Учень', Icon: GraduationCap, className: 'border border-black text-black' },
   TEACHER: { label: 'Вчитель', Icon: Presentation, className: 'bg-black text-white' },
+  ADMIN: { label: 'Адміністратор', Icon: Presentation, className: 'bg-black text-white' },
 }
 
 function navLinkClass({ isActive }) {
@@ -24,7 +25,7 @@ export default function Header() {
   const links = [
     { to: '/tests', label: 'Тести', Icon: ClipboardList },
     { to: '/quizlet', label: 'Картки', Icon: BookOpen },
-    ...(isAuthenticated && !isTeacher
+    ...(isAuthenticated && user?.role === 'STUDENT'
       ? [
           { to: '/practice', label: 'Помилки', Icon: RotateCcw },
           { to: '/results', label: 'Мої результати', Icon: BarChart3 },
