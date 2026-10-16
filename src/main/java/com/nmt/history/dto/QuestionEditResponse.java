@@ -11,5 +11,7 @@ public record QuestionEditResponse(
         QuestionType questionType,
         String explanation,
         String topic,
-        List<OptionEditResponse> options) {
+        List<OptionEditResponse> options,
+        List<String> extraImageUrls,
+        List<String> extraMatchChoices) {
 }

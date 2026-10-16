@@ -202,6 +202,7 @@ public class TestService {
         Test test = findTest(request.testId());
         accessPolicy.requireEdit(ownerId(test), accessPolicy.actor(username));
         validateOptions(request.questionType(), request.options());
+        validateExtras(request);
 
         Question question = Question.builder().test(test).build();
         applyQuestion(question, request, Map.of());
@@ -213,6 +214,7 @@ public class TestService {
         Question question = findQuestion(questionId);
         accessPolicy.requireEdit(ownerId(question.getTest()), accessPolicy.actor(username));
         validateOptions(request.questionType(), request.options());
+        validateExtras(request);
 
         Map<Long, String> previousImages = new HashMap<>();
         question.getOptions().stream().filter(o -> o.getImageUrl() != null)
@@ -238,6 +240,24 @@ public class TestService {
         question.setExplanation(blankToNull(request.explanation()));
         question.setTopic(blankToNull(request.topic()));
         question.setQuestionType(request.questionType());
+        if (request.extraImageUrls() != null) {
+            question.getExtraImages().clear();
+            int position = 1;
+            for (String url : request.extraImageUrls()) {
+                question.getExtraImages().add(com.nmt.history.model.QuestionImage.builder().question(question)
+                        .position(position++).imageUrl(url.trim()).build());
+            }
+        }
+        if (request.questionType() != QuestionType.MATCHING) {
+            question.getExtraMatchChoices().clear();
+        } else if (request.extraMatchChoices() != null) {
+            question.getExtraMatchChoices().clear();
+            int position = 1;
+            for (String choice : request.extraMatchChoices()) {
+                question.getExtraMatchChoices().add(com.nmt.history.model.QuestionMatchChoice.builder().question(question)
+                        .position(position++).text(choice.trim()).build());
+            }
+        }
         for (OptionRequest o : request.options()) {
             question.addOption(Option.builder()
                     .optionText(o.optionText().trim())
@@ -487,6 +507,48 @@ public class TestService {
         }
     }
 
+    private static final int MAX_EXTRA_ITEMS = 10;
+    private static final java.util.regex.Pattern HTTPS_URL = java.util.regex.Pattern.compile("^https://\\S{1,2000}$");
+
+    /** Додаткові зображення лише за https; зайві варіанти правої колонки лише для MATCHING, унікальні й не збігаються з відповідниками. */
+    private void validateExtras(CreateQuestionRequest request) {
+        List<String> images = request.extraImageUrls();
+        if (images != null) {
+            if (images.size() > MAX_EXTRA_ITEMS) {
+                throw new BadRequestException("Забагато додаткових зображень (максимум " + MAX_EXTRA_ITEMS + ")");
+            }
+            for (String url : images) {
+                if (url == null || !HTTPS_URL.matcher(url.trim()).matches()) {
+                    throw new BadRequestException("Додаткові зображення дозволені лише за https-посиланням");
+                }
+            }
+        }
+        List<String> choices = request.extraMatchChoices();
+        if (choices == null || choices.isEmpty()) {
+            return;
+        }
+        if (request.questionType() != QuestionType.MATCHING) {
+            throw new BadRequestException("Зайві варіанти відповідності доступні лише для питань на відповідність");
+        }
+        if (choices.size() > MAX_EXTRA_ITEMS) {
+            throw new BadRequestException("Забагато зайвих варіантів (максимум " + MAX_EXTRA_ITEMS + ")");
+        }
+        Set<String> seen = new HashSet<>();
+        request.options().forEach(o -> seen.add(normalizeChoice(o.matchKey())));
+        for (String choice : choices) {
+            if (choice == null || choice.isBlank() || choice.length() > 2000) {
+                throw new BadRequestException("Зайвий варіант відповідності не може бути порожнім");
+            }
+            if (!seen.add(normalizeChoice(choice))) {
+                throw new BadRequestException("Зайвий варіант збігається з іншим варіантом правої колонки: " + choice.trim());
+            }
+        }
+    }
+
+    private static String normalizeChoice(String value) {
+        return value == null ? "" : value.trim().toLowerCase();
+    }
+
     QuestionResponse toQuestionResponse(Question question) {
         List<Option> options = new ArrayList<>(question.getOptions());
         options.sort(Comparator.comparing(Option::getId, Comparator.nullsLast(Comparator.naturalOrder())));
@@ -498,6 +560,7 @@ public class TestService {
                     .filter(Objects::nonNull)
                     .distinct()
                     .collect(Collectors.toCollection(ArrayList::new));
+            matchChoices.addAll(question.extraMatchChoiceTexts());
             Collections.shuffle(matchChoices);
         } else if (question.getQuestionType() == QuestionType.CHRONOLOGY) {
             Collections.shuffle(options);
@@ -507,7 +570,8 @@ public class TestService {
                 .map(o -> new OptionResponse(o.getId(), o.getOptionText(), imageUrlSigner.sign(QuestionImages.publicUrl(o))))
                 .toList();
         return new QuestionResponse(question.getId(), question.getQuestionText(),
-                imageUrlSigner.sign(QuestionImages.publicUrl(question)), question.getQuestionType(), optionResponses, matchChoices);
+                imageUrlSigner.sign(QuestionImages.publicUrl(question)), question.extraImageUrls(),
+                question.getQuestionType(), optionResponses, matchChoices);
     }
 
     private QuestionEditResponse toQuestionEditResponse(Question question) {
@@ -518,7 +582,8 @@ public class TestService {
                 .toList();
         return new QuestionEditResponse(question.getId(), question.getQuestionText(),
                 imageUrlSigner.sign(QuestionImages.publicUrl(question)),
-                question.getQuestionType(), question.getExplanation(), question.getTopic(), options);
+                question.getQuestionType(), question.getExplanation(), question.getTopic(), options,
+                question.extraImageUrls(), question.extraMatchChoiceTexts());
     }
 
     /** Системні зображення публічні; зображення приватних матеріалів потребують чинного підпису (інакше 404). */

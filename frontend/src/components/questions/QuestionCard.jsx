@@ -1,4 +1,4 @@
-import QuestionImage from '../QuestionImage.jsx'
+import QuestionImages from '../QuestionImages.jsx'
 import Chronology from './Chronology.jsx'
 import Matching from './Matching.jsx'
 import MultipleChoice from './MultipleChoice.jsx'
@@ -24,7 +24,7 @@ export default function QuestionCard({ question, number, total, value, onChange,
         {type && <span className="rounded-xl bg-slate-100 px-2.5 py-1 text-slate-700">{type.label}</span>}
       </div>
 
-      <QuestionImage src={question.imageUrl} />
+      <QuestionImages main={question.imageUrl} extra={question.extraImageUrls} />
 
       <h2 className="mb-5 text-lg font-semibold leading-snug text-slate-900">{question.questionText}</h2>
 

@@ -18,5 +18,11 @@ public record CreateQuestionRequest(
         @NotNull QuestionType questionType,
         String explanation,
         @Size(max = 100) String topic,
-        @NotEmpty @Valid List<OptionRequest> options) {
+        @NotEmpty @Valid List<OptionRequest> options,
+        List<String> extraImageUrls,
+        List<String> extraMatchChoices) {
+    public CreateQuestionRequest(Long testId, String questionText, String imageUrl, QuestionType questionType,
+                                 String explanation, String topic, List<OptionRequest> options) {
+        this(testId, questionText, imageUrl, questionType, explanation, topic, options, null, null);
+    }
 }

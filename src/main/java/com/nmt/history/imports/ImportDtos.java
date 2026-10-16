@@ -24,7 +24,12 @@ public final class ImportDtos {
 
     /** status: OK, NEEDS_REVIEW (відповідь не визначено надійно) або UNSUPPORTED (тип не підтримується; questionType = null). */
     public record ImportedQuestion(String questionText, String imageUrl, QuestionType questionType, String topic,
-                                   String explanation, List<ImportedOption> options, String status, String note) {
+                                   String explanation, List<ImportedOption> options, String status, String note,
+                                   List<String> extraImageUrls, List<String> extraMatchChoices) {
+        public ImportedQuestion(String questionText, String imageUrl, QuestionType questionType, String topic,
+                                String explanation, List<ImportedOption> options, String status, String note) {
+            this(questionText, imageUrl, questionType, topic, explanation, options, status, note, List.of(), List.of());
+        }
     }
 
     public record Preview(String title, String description, String source, String notice,

@@ -54,6 +54,9 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
   const [type, setType] = useState(initial?.questionType ?? 'SINGLE_CHOICE')
   const [text, setText] = useState(initial?.questionText ?? '')
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? '')
+  const [extraImages, setExtraImages] = useState(initial?.extraImageUrls ?? [])
+  const [newExtraImage, setNewExtraImage] = useState('')
+  const [distractors, setDistractors] = useState(initial?.extraMatchChoices ?? [])
   const [explanation, setExplanation] = useState(initial?.explanation ?? '')
   const [topic, setTopic] = useState(initial?.topic ?? '')
   const fileInput = useRef(null)
@@ -117,6 +120,8 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
       explanation: explanation.trim(),
       topic: topic.trim(),
       options: buildOptions(type, rows),
+      extraImageUrls: extraImages,
+      extraMatchChoices: type === 'MATCHING' ? distractors.map((d) => d.trim()).filter(Boolean) : [],
     }
     try {
       if (isEdit) {
@@ -125,6 +130,8 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
         await testService.createQuestion(payload)
         setText('')
         setImageUrl('')
+        setExtraImages([])
+        setDistractors([])
         setExplanation('')
         setTopic('')
         setRows(emptyRows(type))
@@ -208,6 +215,39 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
         )}
       </div>
 
+      <div>
+        <p className="mb-1.5 text-sm font-medium text-slate-700">
+          Додаткові зображення <span className="font-normal text-slate-400">(необов&apos;язково, показуються після головного в зазначеному порядку)</span>
+        </p>
+        {extraImages.length > 0 && (
+          <ol className="mb-2 space-y-1.5">
+            {extraImages.map((url, i) => (
+              <li key={`${url}-${i}`} className="flex items-center gap-2 text-sm">
+                <span className="w-6 shrink-0 text-center font-semibold text-slate-400">{i + 2}</span>
+                <span className="min-w-0 flex-1 truncate text-slate-600">{url}</span>
+                <button type="button" onClick={() => setExtraImages((prev) => prev.filter((_, j) => j !== i))} className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label={`Прибрати додаткове зображення ${i + 1}`}>
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </li>
+            ))}
+          </ol>
+        )}
+        <div className="flex gap-2">
+          <input aria-label="Посилання на додаткове зображення" className={inputClass} placeholder="https://…" value={newExtraImage} onChange={(e) => setNewExtraImage(e.target.value)} />
+          <button
+            type="button"
+            className={secondaryButtonClass}
+            disabled={!/^https:\/\/\S+$/.test(newExtraImage.trim())}
+            onClick={() => {
+              setExtraImages((prev) => [...prev, newExtraImage.trim()])
+              setNewExtraImage('')
+            }}
+          >
+            Додати
+          </button>
+        </div>
+      </div>
+
       <fieldset className="space-y-2.5">
         <legend className="mb-1 text-sm font-medium text-slate-700">
           {type === 'CHRONOLOGY' ? 'Події в правильному хронологічному порядку (від ранньої до пізньої)' : 'Варіанти'}
@@ -260,6 +300,26 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
           Додати рядок
         </button>
       </fieldset>
+
+      {type === 'MATCHING' && (
+        <fieldset className="space-y-2.5">
+          <legend className="mb-1 text-sm font-medium text-slate-700">
+            Зайві варіанти правої колонки <span className="font-normal text-slate-400">(не є відповідником жодного елемента)</span>
+          </legend>
+          {distractors.map((choice, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <input aria-label={`Зайвий варіант ${i + 1}`} className={inputClass} value={choice} onChange={(e) => setDistractors((prev) => prev.map((d, j) => (j === i ? e.target.value : d)))} />
+              <button type="button" onClick={() => setDistractors((prev) => prev.filter((_, j) => j !== i))} className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label={`Видалити зайвий варіант ${i + 1}`}>
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+          <button type="button" onClick={() => setDistractors((prev) => [...prev, ''])} className={secondaryButtonClass}>
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            Додати зайвий варіант
+          </button>
+        </fieldset>
+      )}
 
       <div>
         <label htmlFor="q-topic" className="mb-1.5 block text-sm font-medium text-slate-700">

@@ -16,6 +16,7 @@ function questionProblem(q) {
   if (q.questionType === 'MULTIPLE_CHOICE' && correct < 1) return 'Позначте правильні відповіді'
   if (q.status === 'NEEDS_REVIEW' && (q.questionType === 'MATCHING' || q.questionType === 'CHRONOLOGY')) return 'Пари чи порядок не визначено надійно: видаліть питання або додайте його вручну'
   if (q.options.some((o) => !o.optionText.trim())) return 'Є порожній варіант'
+  if (q.extraMatchChoices?.some((c) => !c.trim())) return 'Є порожній зайвий варіант'
   return ''
 }
 
@@ -34,6 +35,7 @@ function QuestionEditor({ q, index, onChange, onRemove }) {
       {problem && <p className="mb-2 text-xs text-amber-800">{q.note || problem}</p>}
       <textarea aria-label={`Текст питання ${index + 1}`} rows={2} className={inputClass} value={q.questionText} onChange={(e) => onChange({ ...q, questionText: e.target.value })} />
       {q.imageUrl && <p className="mt-1 truncate text-xs text-slate-500">Зображення: {q.imageUrl}</p>}
+      {q.extraImageUrls?.length > 0 && <p className="mt-1 text-xs text-slate-500">Додаткових зображень: {q.extraImageUrls.length} (збережуться в тому самому порядку)</p>}
       <ul className="mt-3 space-y-2">
         {q.options.map((o, i) => (
           <li key={i} className="flex items-center gap-2">
@@ -46,6 +48,19 @@ function QuestionEditor({ q, index, onChange, onRemove }) {
           </li>
         ))}
       </ul>
+      {q.questionType === 'MATCHING' && q.extraMatchChoices?.length > 0 && (
+        <div className="mt-3">
+          <p className="mb-1.5 text-xs font-semibold text-slate-500">Зайві варіанти правої колонки (не є відповідником жодного елемента)</p>
+          <ul className="space-y-2">
+            {q.extraMatchChoices.map((choice, i) => (
+              <li key={i} className="flex items-center gap-2">
+                <input aria-label={`Зайвий варіант ${i + 1}`} className={`${inputClass} py-1.5`} value={choice} onChange={(e) => onChange({ ...q, extraMatchChoices: q.extraMatchChoices.map((c, j) => (j === i ? e.target.value : c)) })} />
+                <button type="button" onClick={() => onChange({ ...q, extraMatchChoices: q.extraMatchChoices.filter((_, j) => j !== i) })} className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label={`Видалити зайвий варіант ${i + 1}`}><Trash2 className="h-4 w-4" /></button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </li>
   )
 }

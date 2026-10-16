@@ -107,7 +107,12 @@ public class TestImportService {
                         o.orderIndex(), image(o.imageUrl())))
                 .toList();
         return new CreateQuestionRequest(testId, q.questionText().trim(), image(q.imageUrl()), q.questionType(),
-                q.explanation() == null || q.explanation().isBlank() ? null : q.explanation().trim(), q.topic(), options);
+                q.explanation() == null || q.explanation().isBlank() ? null : q.explanation().trim(), q.topic(), options,
+                images(q.extraImageUrls()), q.extraMatchChoices() == null ? List.of() : q.extraMatchChoices());
+    }
+
+    private List<String> images(List<String> urls) {
+        return urls == null ? List.of() : urls.stream().map(this::image).toList();
     }
 
     private String image(String url) {

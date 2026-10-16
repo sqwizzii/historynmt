@@ -14,5 +14,6 @@ public record QuestionReview(
         List<String> yourAnswer,
         List<String> correctAnswer,
         String explanation,
-        String topic) {
+        String topic,
+        List<String> extraImageUrls) {
 }

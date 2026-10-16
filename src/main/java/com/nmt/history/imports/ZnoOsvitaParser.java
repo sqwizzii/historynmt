@@ -66,10 +66,10 @@ public final class ZnoOsvitaParser {
         Matcher qm = QUESTION.matcher(card);
         String questionHtml = qm.find() ? qm.group(1) : "";
         String text = clean(questionHtml);
-        String image = firstImage(questionHtml);
-        if (IMG.matcher(questionHtml).results().count() > 1) {
-            warnings.add(prefix + "у тексті кілька зображень, імпортовано лише перше");
-        }
+        List<String> images = allImages(questionHtml);
+        String image = images.isEmpty() ? null : images.get(0);
+        List<String> extraImages = images.size() > 1 ? images.subList(1, images.size()) : List.of();
+        boolean imagesLost = IMG.matcher(questionHtml).results().count() > images.size();
         List<List<Item>> blocks = answerBlocks(card);
         String result = RESULT.matcher(card).results().map(r -> r.group(1)).findFirst().orElse("");
 
@@ -77,13 +77,17 @@ public final class ZnoOsvitaParser {
             return unsupported(prefix + "не вдалося визначити текст завдання", text, image);
         }
         try {
-            return switch (tip) {
+            ImportedQuestion parsed = switch (tip) {
                 case "1" -> single(text, image, blocks, result, prefix, warnings);
                 case "7" -> multiple(text, image, blocks, result, prefix, warnings);
                 case "4" -> matching(text, image, blocks, result, prefix, warnings);
                 case "5" -> chronology(text, image, blocks, result, prefix);
                 default -> unsupported("Тип завдання (код " + tip + ") не підтримується: додайте питання вручну", text, image);
             };
+            return new ImportedQuestion(parsed.questionText(), parsed.imageUrl(), parsed.questionType(), parsed.topic(),
+                    parsed.explanation(), parsed.options(), imagesLost && ImportDtos.OK.equals(parsed.status()) ? ImportDtos.NEEDS_REVIEW : parsed.status(),
+                    imagesLost && parsed.note() == null ? prefix + "частину зображень не вдалося імпортувати (недозволене джерело): перевірте завдання" : parsed.note(),
+                    extraImages, parsed.extraMatchChoices());
         } catch (RuntimeException e) {
             return unsupported("Не вдалося розібрати завдання: додайте його вручну", text, image);
         }
@@ -143,13 +147,18 @@ public final class ZnoOsvitaParser {
             reliable &= keys.add(key);
             options.add(new ImportedOption(label(l), false, key, null, l.image()));
         }
-        if (used.size() < right.size()) {
-            warnings.add(prefix + "зайві варіанти правої колонки (" + (right.size() - used.size())
-                    + ") не імпортовано: модель питання на відповідність їх не підтримує");
+        List<String> distractors = new ArrayList<>();
+        for (int i = 0; i < right.size(); i++) {
+            if (!used.contains(i)) {
+                String label = label(right.get(i));
+                reliable &= keys.add(label);
+                distractors.add(label);
+            }
         }
         return new ImportedQuestion(text, image, QuestionType.MATCHING, null, null, options,
                 reliable ? ImportDtos.OK : ImportDtos.NEEDS_REVIEW,
-                reliable ? null : prefix + "пари не вдалося визначити надійно");
+                reliable ? null : prefix + "пари не вдалося визначити надійно",
+                List.of(), distractors);
     }
 
     private static ImportedQuestion chronology(String text, String image, List<List<Item>> blocks, String result, String prefix) {
@@ -235,13 +244,22 @@ public final class ZnoOsvitaParser {
     }
 
     private static String firstImage(String html) {
+        List<String> all = allImages(html);
+        return all.isEmpty() ? null : all.get(0);
+    }
+
+    /** Усі дозволені зображення у порядку появи; зображення з інших доменів відкидаються (про це сигналізує викликач). */
+    private static List<String> allImages(String html) {
+        List<String> result = new ArrayList<>();
         Matcher m = IMG.matcher(html);
-        if (!m.find()) {
-            return null;
+        while (m.find()) {
+            String src = m.group(1).trim();
+            String absolute = src.startsWith("/") ? BASE + src : src;
+            if (absolute.startsWith(BASE + "/") && absolute.length() <= 2000 && !absolute.contains(" ")) {
+                result.add(absolute);
+            }
         }
-        String src = m.group(1).trim();
-        String absolute = src.startsWith("/") ? BASE + src : src;
-        return absolute.startsWith(BASE + "/") && absolute.length() <= 2000 && !absolute.contains(" ") ? absolute : null;
+        return result;
     }
 
     static String clean(String html) {

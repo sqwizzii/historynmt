@@ -12,6 +12,7 @@ public record QuestionResponse(
         Long id,
         String questionText,
         String imageUrl,
+        List<String> extraImageUrls,
         QuestionType questionType,
         List<OptionResponse> options,
         List<String> matchChoices) {

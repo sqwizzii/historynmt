@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"test", "options"})
+@ToString(exclude = {"test", "options", "extraImages", "extraMatchChoices"})
 public class Question {
 
     @Id
@@ -59,6 +60,26 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Option> options = new ArrayList<>();
+
+    /** Додаткові зображення після головного imageUrl, у порядку position. */
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("position ASC")
+    @Builder.Default
+    private List<QuestionImage> extraImages = new ArrayList<>();
+
+    /** Зайві варіанти правої колонки завдання на відповідність (не є відповідником жодного рядка). */
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("position ASC")
+    @Builder.Default
+    private List<QuestionMatchChoice> extraMatchChoices = new ArrayList<>();
+
+    public List<String> extraImageUrls() {
+        return extraImages.stream().map(QuestionImage::getImageUrl).toList();
+    }
+
+    public List<String> extraMatchChoiceTexts() {
+        return extraMatchChoices.stream().map(QuestionMatchChoice::getText).toList();
+    }
 
     public void addOption(Option option) {
         options.add(option);

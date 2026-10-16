@@ -38,7 +38,8 @@ public class ReviewService {
                 yourAnswer(question, answer),
                 correctAnswer(question),
                 question.getExplanation(),
-                question.getTopic());
+                question.getTopic(),
+                question.extraImageUrls());
     }
 
     /** У БД зберігаються непідписані посилання; клієнту віддаємо їх зі свіжим підписом. */
@@ -49,7 +50,7 @@ public class ReviewService {
         return review.stream()
                 .map(r -> new QuestionReview(r.questionId(), r.questionText(), imageUrlSigner.sign(r.imageUrl()),
                         r.questionType(), r.earned(), r.max(), r.yourAnswer(), r.correctAnswer(), r.explanation(),
-                        r.topic()))
+                        r.topic(), r.extraImageUrls()))
                 .toList();
     }
 
@@ -60,7 +61,7 @@ public class ReviewService {
         }
         return review.stream()
                 .map(r -> new QuestionReview(r.questionId(), r.questionText(), r.imageUrl(), r.questionType(), r.earned(),
-                        r.max(), r.yourAnswer(), List.of(), null, r.topic()))
+                        r.max(), r.yourAnswer(), List.of(), null, r.topic(), r.extraImageUrls()))
                 .toList();
     }
 

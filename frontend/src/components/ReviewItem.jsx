@@ -1,6 +1,6 @@
 import { CheckCircle2, Lightbulb, MinusCircle, XCircle } from 'lucide-react'
 import QuestionExplanation, { NO_EXPLANATION } from './QuestionExplanation.jsx'
-import QuestionImage from './QuestionImage.jsx'
+import QuestionImages from './QuestionImages.jsx'
 
 function statusOf(item) {
   if (item.earned === item.max) return { label: 'Правильно', Icon: CheckCircle2, className: 'bg-emerald-100 text-emerald-800' }
@@ -36,7 +36,7 @@ export default function ReviewItem({ item, number, testId }) {
                     {status.label}: {item.earned} з {item.max}
                   </span>
                 </div>
-                <QuestionImage src={item.imageUrl} />
+                <QuestionImages main={item.imageUrl} extra={item.extraImageUrls} />
                 <p className="mb-4 font-semibold leading-snug text-slate-900">{item.questionText}</p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <AnswerBlock
