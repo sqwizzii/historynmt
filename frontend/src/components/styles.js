@@ -1,19 +1,20 @@
 const focusRing =
-  'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F3F4F8]'
+  'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)]'
 
 export const inputClass =
-  `block w-full rounded-lg border border-[#E2E4EC] bg-white px-3.5 py-2.5 text-sm text-[#14151C] placeholder:text-[#6B6E7B]/75 shadow-[0_1px_0_rgb(20_21_28/0.02)] transition hover:border-[#C9CCD8] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:bg-[#F3F4F8] disabled:text-[#6B6E7B]`
+  `block w-full rounded-lg border border-[var(--color-line)] bg-white px-3.5 py-2.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-mute-soft)] shadow-[inset_0_1px_0_rgb(11_12_16/0.02)] transition hover:border-[#c5cad6] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:bg-[var(--color-surface-muted)] disabled:text-[var(--color-mute)]`
 
 const buttonBase =
-  `inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold tracking-tight transition ${focusRing} disabled:cursor-not-allowed disabled:opacity-45`
+  `inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold tracking-tight transition duration-150 ${focusRing} disabled:cursor-not-allowed disabled:opacity-45`
 
 export const primaryButtonClass =
-  `${buttonBase} bg-indigo-600 text-white shadow-[0_1px_0_rgb(0_0_0/0.05),0_1px_2px_rgb(57_48_184/0.25)] hover:bg-indigo-700 active:bg-indigo-800`
+  `${buttonBase} bg-indigo-600 text-white shadow-[0_1px_0_rgb(0_0_0/0.06),0_1px_2px_rgb(57_48_184/0.28)] hover:bg-indigo-700 active:translate-y-px active:bg-indigo-800`
 
 export const secondaryButtonClass =
-  `${buttonBase} border border-[#E2E4EC] bg-white text-[#14151C] shadow-[0_1px_0_rgb(20_21_28/0.03)] hover:bg-[#F3F4F8] hover:border-[#C9CCD8] active:bg-[#EBECEF]`
+  `${buttonBase} border border-[var(--color-line)] bg-white text-[var(--color-ink)] shadow-[0_1px_0_rgb(11_12_16/0.03)] hover:border-[#c5cad6] hover:bg-[var(--color-surface-muted)] active:translate-y-px`
 
-export const ghostButtonClass = `${buttonBase} text-[#6B6E7B] hover:bg-[#EBECEF] hover:text-[#14151C]`
+export const ghostButtonClass =
+  `${buttonBase} text-[var(--color-mute)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-ink)]`
 
 export const softButtonClass = `${buttonBase} bg-indigo-50 text-indigo-700 hover:bg-indigo-100`
 
@@ -22,33 +23,36 @@ export const dangerButtonClass = `${buttonBase} bg-red-600 text-white hover:bg-r
 export const dangerGhostButtonClass = `${buttonBase} text-red-600 hover:bg-red-50`
 
 export const cardClass =
-  'rounded-xl border border-[#E2E4EC] bg-white shadow-card'
+  'rounded-xl border border-[var(--color-line)] bg-white shadow-card'
 
 export const cardInteractiveClass =
-  `${cardClass} transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-lift`
+  `${cardClass} transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200/80 hover:shadow-lift`
 
 export const panelClass = cardClass
 
-export const sectionTitleClass = 'text-base font-semibold tracking-tight text-[#14151C]'
+export const sectionTitleClass = 'text-[15px] font-semibold tracking-tight text-[var(--color-ink)]'
 
-export const mutedTextClass = 'text-sm text-[#6B6E7B]'
+export const mutedTextClass = 'text-sm text-[var(--color-mute)]'
 
-export const labelClass = 'mb-1.5 block text-sm font-medium text-[#3A3C48]'
+export const labelClass = 'mb-1.5 block text-sm font-medium text-[#2f313c]'
 
 export const badgeClass = (tone = 'slate') =>
   ({
-    slate: 'bg-[#F0F1F5] text-[#3A3C48]',
+    slate: 'bg-[var(--color-surface-muted)] text-[#2f313c]',
     indigo: 'bg-indigo-50 text-indigo-700',
     green: 'bg-emerald-50 text-emerald-700',
     amber: 'bg-amber-50 text-amber-900',
     red: 'bg-red-50 text-red-700',
-  })[tone] + ' inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold tracking-tight'
+  })[tone] + ' inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold tracking-tight'
 
 export const iconTileClass =
-  'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600'
+  'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600'
 
-export const navActiveClass = 'bg-indigo-50 text-indigo-700'
-export const navIdleClass = 'text-[#6B6E7B] hover:bg-[#F0F1F5] hover:text-[#14151C]'
+export const navActiveClass = 'bg-white/10 text-white'
+export const navIdleClass = 'text-white/55 hover:bg-white/[0.06] hover:text-white'
 
 export const tableWrapClass =
-  'relative overflow-x-auto rounded-xl border border-[#E2E4EC] bg-white shadow-card'
+  'relative overflow-x-auto rounded-xl border border-[var(--color-line)] bg-white shadow-card'
+
+export const listRowActiveClass = 'bg-indigo-50 text-indigo-950'
+export const listRowIdleClass = 'hover:bg-[var(--color-surface-muted)]'

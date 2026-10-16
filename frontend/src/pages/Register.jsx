@@ -70,7 +70,7 @@ export default function Register() {
       footer={
         <>
           Вже зареєстровані?{' '}
-          <Link to="/login" className="font-semibold text-blue-700 hover:underline">
+          <Link to="/login" className="font-semibold text-indigo-700 hover:underline">
             Увійти
           </Link>
           <br />

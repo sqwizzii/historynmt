@@ -6,6 +6,16 @@
   --font-sans: "DM Sans Variable", "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Cormorant Variable", "Cormorant", Georgia, "Times New Roman", serif;
 
+  --color-ink: #0b0c10;
+  --color-ink-soft: #1a1c24;
+  --color-mute: #5c5f6b;
+  --color-mute-soft: #8b8e9c;
+  --color-line: #dce0e8;
+  --color-line-soft: #e8ebf2;
+  --color-canvas: #eef0f4;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f6f7fa;
+
   --color-indigo-50: #eef0ff;
   --color-indigo-100: #dde1ff;
   --color-indigo-200: #c3c8ff;
@@ -30,15 +40,38 @@
   --color-blue-900: #221e72;
   --color-blue-950: #16144a;
 
-  --shadow-card: 0 0 0 1px rgb(20 21 28 / 0.04), 0 1px 2px rgb(20 21 28 / 0.04);
-  --shadow-lift: 0 0 0 1px rgb(20 21 28 / 0.05), 0 16px 40px -20px rgb(57 48 184 / 0.35), 0 8px 16px -8px rgb(20 21 28 / 0.08);
-  --animate-fade-up: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --shadow-card: 0 1px 0 rgb(11 12 16 / 0.04), 0 1px 2px rgb(11 12 16 / 0.04);
+  --shadow-lift: 0 1px 0 rgb(11 12 16 / 0.05), 0 18px 40px -24px rgb(11 12 16 / 0.28);
+  --shadow-dock: 0 0 0 1px rgb(255 255 255 / 0.06), 0 24px 48px -20px rgb(0 0 0 / 0.55);
+  --animate-fade-up: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in: fade-in 0.4s ease both;
+  --animate-rise: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
   }
   to {
     opacity: 1;
@@ -51,7 +84,7 @@ html {
 }
 
 body {
-  @apply bg-[#F3F4F8] text-[#14151C] antialiased;
+  @apply bg-[var(--color-canvas)] text-[var(--color-ink)] antialiased;
   font-feature-settings: "ss01" on, "cv11" on;
 }
 
@@ -63,7 +96,7 @@ h3 {
 
 ::selection {
   background: #dde1ff;
-  color: #14151c;
+  color: #0b0c10;
 }
 
 :focus-visible {
@@ -76,20 +109,28 @@ h3 {
 }
 
 .bg-hero {
-  background-color: #1a1740;
+  background-color: #0b0c10;
   background-image:
-    radial-gradient(ellipse 90% 70% at 10% -20%, #5146e5 0%, transparent 55%),
-    radial-gradient(ellipse 50% 40% at 90% 80%, #3930b8 0%, transparent 45%);
+    radial-gradient(ellipse 70% 55% at 15% 0%, rgb(81 70 229 / 0.45) 0%, transparent 58%),
+    radial-gradient(ellipse 45% 40% at 92% 88%, rgb(57 48 184 / 0.28) 0%, transparent 50%),
+    linear-gradient(180deg, #12131a 0%, #0b0c10 100%);
   color: #fff;
 }
 
 .bg-mesh {
-  background-color: #f3f4f8;
+  background-color: var(--color-canvas);
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgb(81 70 229 / 0.08), transparent 55%),
-    linear-gradient(to right, rgb(20 21 28 / 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(20 21 28 / 0.035) 1px, transparent 1px);
-  background-size: auto, 56px 56px, 56px 56px;
+    radial-gradient(ellipse 70% 45% at 50% -8%, rgb(81 70 229 / 0.07), transparent 55%),
+    linear-gradient(to right, rgb(11 12 16 / 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(11 12 16 / 0.03) 1px, transparent 1px);
+  background-size: auto, 48px 48px, 48px 48px;
+}
+
+.bg-auth-panel {
+  background-color: #0b0c10;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgb(81 70 229 / 0.4), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 90% 90%, rgb(57 48 184 / 0.25), transparent 50%);
 }
 
 .stagger > * {
@@ -97,15 +138,23 @@ h3 {
 }
 
 .stagger > *:nth-child(2) {
-  animation-delay: 0.06s;
+  animation-delay: 0.07s;
 }
 
 .stagger > *:nth-child(3) {
-  animation-delay: 0.12s;
+  animation-delay: 0.14s;
 }
 
 .stagger > *:nth-child(4) {
-  animation-delay: 0.18s;
+  animation-delay: 0.21s;
+}
+
+.animate-rise {
+  animation: var(--animate-rise);
+}
+
+.animate-fade-in {
+  animation: var(--animate-fade-in);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -151,5 +200,14 @@ h3 {
 }
 
 .nav-rail {
-  box-shadow: inset -1px 0 0 rgb(20 21 28 / 0.06);
+  background: #0b0c10;
+  box-shadow: inset -1px 0 0 rgb(255 255 255 / 0.06);
+}
+
+.surface {
+  @apply rounded-xl border border-[var(--color-line)] bg-white shadow-card;
+}
+
+.surface-quiet {
+  @apply rounded-xl border border-[var(--color-line-soft)] bg-[var(--color-surface-muted)];
 }

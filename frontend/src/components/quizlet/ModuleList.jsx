@@ -2,7 +2,6 @@ import { ArrowRight, Layers } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PageHeader from '../PageHeader.jsx'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
-import { cardInteractiveClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, quizletService } from '../../services/api.js'
 import { pluralize } from '../../utils/format.js'
@@ -25,16 +24,19 @@ export default function ModuleList() {
             const count = module.flashcards.length
             return (
               <li key={module.id}>
-                <Link to={`/quizlet/${module.id}`} className={`${cardInteractiveClass} group flex h-full flex-col p-5`}>
-                  <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-[#E2E4EC] text-[#14151C]">
+                <Link
+                  to={`/quizlet/${module.id}`}
+                  className="group flex h-full flex-col rounded-xl border border-[var(--color-line)] bg-white p-5 shadow-card transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200/80 hover:shadow-lift"
+                >
+                  <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white">
                     <Layers className="h-4 w-4" aria-hidden="true" />
                   </span>
-                  <h2 className="text-[15px] font-semibold text-[#14151C]">{module.title}</h2>
+                  <h2 className="text-[15px] font-semibold text-[var(--color-ink)]">{module.title}</h2>
                   {module.description && (
-                    <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-[#6B6E7B]">{module.description}</p>
+                    <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-[var(--color-mute)]">{module.description}</p>
                   )}
                   <div className="mt-auto flex items-center justify-between pt-4 text-[13px]">
-                    <span className="text-[11px] font-medium text-[#6B6E7B]">
+                    <span className="text-[11px] font-medium text-[var(--color-mute)]">
                       {count} {pluralize(count, 'картка', 'картки', 'карток')}
                     </span>
                     <span className="inline-flex items-center gap-1 font-semibold text-indigo-700">

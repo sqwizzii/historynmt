@@ -13,7 +13,7 @@ export default function SingleChoice({ question, value, onChange }) {
             className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-500/40 ${
               checked
                 ? 'border-indigo-500 bg-indigo-50'
-                : 'border-[#E2E4EC] bg-white hover:border-indigo-200 hover:bg-indigo-50/30'
+                : 'border-[var(--color-line)] bg-white hover:border-indigo-200 hover:bg-indigo-50/30'
             }`}
           >
             <input
@@ -25,12 +25,12 @@ export default function SingleChoice({ question, value, onChange }) {
             />
             <span
               className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border text-[11px] font-bold ${
-                checked ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-[#C9CCD8] text-[#6B6E7B]'
+                checked ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-[#c5cad6] text-[var(--color-mute)]'
               }`}
             >
               {String.fromCharCode(1040 + index)}
             </span>
-            <span className="pt-0.5 text-[14px] leading-relaxed text-[#14151C]">
+            <span className="pt-0.5 text-[14px] leading-relaxed text-[var(--color-ink)]">
               {option.optionText}
               <OptionImage src={option.imageUrl} />
             </span>

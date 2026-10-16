@@ -53,20 +53,24 @@ const linkClass = ({ isActive }) =>
     isActive ? navActiveClass : navIdleClass
   }`
 
-function Sidebar({ user, onNavigate }) {
+function Sidebar({ user, onNavigate, dark = true }) {
   return (
-    <nav aria-label="Основна навігація" className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
+    <nav aria-label="Основна навігація" className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
       {NAV[user.role].map((group) => (
         <div key={group.section}>
-          <p className="mb-1.5 px-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8B8E9C]">{group.section}</p>
+          <p className={`mb-1.5 px-2.5 text-[10px] font-semibold uppercase tracking-[0.1em] ${dark ? 'text-white/35' : 'text-[var(--color-mute-soft)]'}`}>
+            {group.section}
+          </p>
           <ul className="space-y-0.5">
             {group.items.map(({ to, label, Icon, end }) => (
               <li key={to}>
                 <NavLink to={to} end={end} onClick={onNavigate} className={linkClass}>
                   {({ isActive }) => (
                     <>
-                      {isActive && <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-indigo-600" aria-hidden="true" />}
-                      <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-600' : 'opacity-70'}`} aria-hidden="true" />
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-indigo-400" aria-hidden="true" />
+                      )}
+                      <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-300' : 'opacity-70'}`} aria-hidden="true" />
                       {label}
                     </>
                   )}
@@ -85,7 +89,7 @@ function SubscriptionBanner() {
   const location = useLocation()
   if (!data || data.active || location.pathname === '/subscription') return null
   return (
-    <div role="status" className="border-b border-amber-200/70 bg-[#FFF8EB] px-4 py-2.5 text-[13px] text-amber-950 sm:px-6">
+    <div role="status" className="border-b border-amber-200/80 bg-[#FFF8EB] px-4 py-2.5 text-[13px] text-amber-950 sm:px-6">
       <span className="font-semibold">Підписка не активна.</span>{' '}
       Перегляд доступний; створення й редагування — ні.{' '}
       <Link to="/subscription" className="font-semibold underline underline-offset-2">
@@ -97,14 +101,18 @@ function SubscriptionBanner() {
 
 function AccountMenu({ user, onLogout }) {
   return (
-    <div className="flex items-center gap-1.5">
-      <Link to="/account" className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition hover:bg-[#F0F1F5]" aria-label="Мій акаунт">
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
+    <div className="flex items-center gap-1">
+      <Link
+        to="/account"
+        className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition hover:bg-black/[0.04]"
+        aria-label="Мій акаунт"
+      >
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-[11px] font-bold text-white">
           {user.username.slice(0, 2).toUpperCase()}
         </span>
         <span className="hidden text-left leading-tight sm:block">
-          <span className="block text-[13px] font-semibold text-[#14151C]">{user.username}</span>
-          <span className="block text-[11px] text-[#6B6E7B]">{ROLE_LABEL[user.role]}</span>
+          <span className="block text-[13px] font-semibold text-[var(--color-ink)]">{user.username}</span>
+          <span className="block text-[11px] text-[var(--color-mute)]">{ROLE_LABEL[user.role]}</span>
         </span>
       </Link>
       <button type="button" onClick={onLogout} className={`${ghostButtonClass} !p-2`} aria-label="Вийти">
@@ -120,26 +128,26 @@ function AppShell() {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="min-h-screen lg:pl-[15.5rem]">
-      <aside className="nav-rail fixed inset-y-0 left-0 z-30 hidden w-[15.5rem] flex-col bg-white lg:flex">
+    <div className="min-h-screen lg:pl-[15.75rem]">
+      <aside className="nav-rail fixed inset-y-0 left-0 z-30 hidden w-[15.75rem] flex-col lg:flex">
         <div className="flex h-14 items-center px-4">
-          <Brand />
+          <Brand light />
         </div>
         <Sidebar user={user} />
         {user.role === 'ADMIN' && (
-          <p className="mx-3 mb-3 flex items-center gap-2 rounded-lg bg-[#F3F4F8] px-2.5 py-2 text-[11px] text-[#6B6E7B]">
-            <ShieldCheck className="h-3.5 w-3.5 text-indigo-600" aria-hidden="true" /> Адміністратор
+          <p className="mx-3 mb-4 flex items-center gap-2 rounded-lg bg-white/5 px-2.5 py-2 text-[11px] text-white/50">
+            <ShieldCheck className="h-3.5 w-3.5 text-indigo-300" aria-hidden="true" /> Адміністратор
           </p>
         )}
       </aside>
 
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Меню">
-          <button type="button" className="absolute inset-0 bg-[#14151C]/40" onClick={() => setOpen(false)} aria-label="Закрити меню" />
-          <div className="absolute inset-y-0 left-0 flex w-72 max-w-[88%] flex-col bg-white shadow-lift">
+          <button type="button" className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} aria-label="Закрити меню" />
+          <div className="nav-rail absolute inset-y-0 left-0 flex w-72 max-w-[88%] flex-col shadow-dock">
             <div className="flex h-14 items-center justify-between px-4">
-              <Brand onClick={() => setOpen(false)} />
-              <button type="button" onClick={() => setOpen(false)} className={`${ghostButtonClass} !p-2`} aria-label="Закрити">
+              <Brand light onClick={() => setOpen(false)} />
+              <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-2 text-white/60 hover:bg-white/10 hover:text-white" aria-label="Закрити">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -148,7 +156,7 @@ function AppShell() {
         </div>
       )}
 
-      <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-[#E2E4EC] bg-[#F3F4F8]/85 px-4 backdrop-blur-md sm:px-6">
+      <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-[var(--color-line)] bg-[color-mix(in_srgb,var(--color-canvas)_88%,white)] px-4 backdrop-blur-md sm:px-6">
         <button type="button" onClick={() => setOpen(true)} className={`${ghostButtonClass} !p-2 lg:hidden`} aria-label="Відкрити меню">
           <Menu className="h-5 w-5" />
         </button>
@@ -183,11 +191,11 @@ function PublicLayout() {
     { to: '/subscription', label: 'Тарифи' },
   ]
   const navClass = ({ isActive }) =>
-    `rounded-lg px-3 py-2 text-[13px] font-medium transition ${isActive ? 'text-indigo-700' : 'text-[#6B6E7B] hover:text-[#14151C]'}`
+    `rounded-lg px-3 py-2 text-[13px] font-medium transition ${isActive ? 'text-indigo-700' : 'text-[var(--color-mute)] hover:text-[var(--color-ink)]'}`
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-30 border-b border-[#E2E4EC]/80 bg-white/80 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-[var(--color-line)]/70 bg-white/75 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
           <Brand />
           <nav className="hidden items-center gap-0.5 md:flex" aria-label="Основна навігація">
@@ -212,7 +220,7 @@ function PublicLayout() {
           </button>
         </div>
         {open && (
-          <div className="space-y-1 border-t border-[#E2E4EC] bg-white px-4 py-3 md:hidden">
+          <div className="space-y-1 border-t border-[var(--color-line)] bg-white px-4 py-3 md:hidden">
             {links.map((l) => (
               <NavLink key={l.to} to={l.to} className={`${navClass({ isActive: false })} block`} onClick={() => setOpen(false)}>
                 {l.label}

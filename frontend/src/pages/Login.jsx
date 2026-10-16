@@ -42,10 +42,10 @@ export default function Login() {
       footer={
         <>
           Ще немає акаунта?{' '}
-          <Link to="/register" className="font-semibold text-blue-700 hover:underline">
+          <Link to="/register" className="font-semibold text-indigo-700 hover:underline">
             Зареєструватися
           </Link>
-          <span className="mt-1 block text-xs text-slate-500">Вчитель? <Link to="/register/teacher" className="font-semibold text-indigo-700 hover:underline">Реєстрація вчителя</Link></span>
+          <span className="mt-1 block text-xs text-[var(--color-mute)]">Вчитель? <Link to="/register/teacher" className="font-semibold text-indigo-700 hover:underline">Реєстрація вчителя</Link></span>
         </>
       }
     >

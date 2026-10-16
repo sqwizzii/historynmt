@@ -1,7 +1,7 @@
 import { Download, FileUp, Plus, Search } from 'lucide-react'
 import { useState } from 'react'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
-import { inputClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
+import { inputClass, listRowActiveClass, listRowIdleClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, testService } from '../../services/api.js'
 import ImportFormModal from './ImportFormModal.jsx'
@@ -26,7 +26,7 @@ export default function TestsManager() {
   const activeId = creating ? null : (selectedId ?? tests[0]?.id ?? null)
 
   return (
-    <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)]">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,16.5rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,17.5rem)_minmax(0,1fr)]">
       <aside className="space-y-2.5 self-start lg:sticky lg:top-20">
         <button type="button" onClick={() => setCreating(true)} className={`${primaryButtonClass} w-full`}>
           <Plus className="h-4 w-4" aria-hidden="true" />
@@ -43,7 +43,7 @@ export default function TestsManager() {
           </button>
         </div>
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#8B8E9C]" aria-hidden="true" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-mute-soft)]" aria-hidden="true" />
           <input
             type="search"
             aria-label="Пошук тестів"
@@ -53,7 +53,7 @@ export default function TestsManager() {
             className={`${inputClass} !py-2 pl-9`}
           />
         </div>
-        <ul className="max-h-[min(55vh,26rem)] space-y-0.5 overflow-y-auto rounded-xl border border-[#E2E4EC] bg-white p-1.5 shadow-card lg:max-h-[calc(100vh-15rem)]">
+        <ul className="max-h-[min(55vh,26rem)] space-y-0.5 overflow-y-auto rounded-xl border border-[var(--color-line)] bg-white p-1.5 shadow-card lg:max-h-[calc(100vh-15rem)]">
           {shown.map((test) => {
             const active = test.id === activeId
             return (
@@ -65,12 +65,10 @@ export default function TestsManager() {
                     setSelectedId(test.id)
                   }}
                   aria-current={active ? 'true' : undefined}
-                  className={`w-full rounded-lg px-2.5 py-2 text-left transition ${
-                    active ? 'bg-indigo-50 text-indigo-900' : 'hover:bg-[#F8F8FB]'
-                  }`}
+                  className={`w-full rounded-lg px-2.5 py-2.5 text-left transition ${active ? listRowActiveClass : listRowIdleClass}`}
                 >
                   <span className="block truncate text-[13px] font-semibold">{test.title}</span>
-                  <span className="mt-0.5 block text-[11px] text-[#6B6E7B]">
+                  <span className="mt-0.5 block text-[11px] text-[var(--color-mute)]">
                     {test.questionCount} пит. · {test.timeLimitMinutes} хв
                   </span>
                 </button>
@@ -78,7 +76,7 @@ export default function TestsManager() {
             )
           })}
           {shown.length === 0 && (
-            <li className="px-2 py-6 text-center text-[13px] text-[#6B6E7B]">
+            <li className="px-2 py-6 text-center text-[13px] text-[var(--color-mute)]">
               {tests.length === 0 ? 'Тестів ще немає' : 'Нічого не знайдено'}
             </li>
           )}
@@ -87,9 +85,11 @@ export default function TestsManager() {
 
       <div className="min-w-0">
         {creating ? (
-          <section className="rounded-xl border border-[#E2E4EC] bg-white p-5 shadow-card sm:p-6">
-            <h2 className="text-[15px] font-semibold text-[#14151C]">Новий тест</h2>
-            <p className="mt-1 mb-5 text-[13px] text-[#6B6E7B]">Спочатку параметри, потім питання.</p>
+          <section className="rounded-xl border border-[var(--color-line)] bg-white p-5 shadow-card sm:p-6">
+            <div className="mb-5 border-b border-[var(--color-line-soft)] pb-4">
+              <h2 className="text-[15px] font-semibold text-[var(--color-ink)]">Новий тест</h2>
+              <p className="mt-1 text-[13px] text-[var(--color-mute)]">Спочатку параметри, потім питання.</p>
+            </div>
             <TestForm
               onSaved={(created) => {
                 setCreating(false)

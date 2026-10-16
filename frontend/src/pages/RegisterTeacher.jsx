@@ -65,7 +65,7 @@ export default function RegisterTeacher() {
         <FormField label="Пароль" icon={Lock} type="password" name="password" autoComplete="new-password" hint="Щонайменше 8 символів" value={form.password} onChange={handleChange} required />
         <FormField label="Повторіть пароль" icon={Lock} type="password" name="confirmPassword" autoComplete="new-password" value={form.confirmPassword} onChange={handleChange} required />
         <SubmitButton loading={loading}>{loading ? 'Створюємо…' : 'Створити акаунт'}</SubmitButton>
-        <p className="text-xs text-slate-500">Доступ до створення матеріалів відкривається після активації підписки адміністратором платформи.</p>
+        <p className="text-xs text-[var(--color-mute)]">Доступ до створення матеріалів відкривається після активації підписки адміністратором платформи.</p>
       </form>
     </AuthCard>
   )

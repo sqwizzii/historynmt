@@ -6,7 +6,7 @@ import Modal from '../Modal.jsx'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
 import TopicProgress from '../TopicProgress.jsx'
 import ResultsTable from '../ResultsTable.jsx'
-import { inputClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
+import { inputClass, listRowActiveClass, listRowIdleClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, resultService, userService } from '../../services/api.js'
 
@@ -20,24 +20,24 @@ function StudentList({ selectedId, onSelect, version }) {
   const needle = query.trim().toLowerCase()
   const visible = students.filter((s) => `${s.fullName} ${s.username}`.toLowerCase().includes(needle))
   const itemClass = (active) =>
-    `flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors ${
-      active ? 'bg-indigo-50 text-indigo-900' : 'hover:bg-[#F8F8FB]'
+    `flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2.5 text-left text-[13px] transition-colors ${
+      active ? listRowActiveClass : listRowIdleClass
     }`
 
   return (
-    <div className="rounded-xl border border-[#E2E4EC] bg-white p-3 shadow-card sm:p-4">
+    <div className="rounded-xl border border-[var(--color-line)] bg-white p-3 shadow-card sm:p-4">
       <div className="relative mb-2.5">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#8B8E9C]" aria-hidden="true" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-mute-soft)]" aria-hidden="true" />
         <input className={`${inputClass} !py-2 pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Пошук учня" aria-label="Пошук учня" />
       </div>
       <ul className="max-h-[28rem] space-y-0.5 overflow-y-auto">
         <li>
           <button type="button" onClick={() => onSelect(null)} className={itemClass(selectedId === null)}>
             <span className="flex items-center gap-2 font-semibold">
-              <Users className="h-3.5 w-3.5 text-[#6B6E7B]" aria-hidden="true" />
+              <Users className="h-3.5 w-3.5 text-[var(--color-mute)]" aria-hidden="true" />
               Усі учні
             </span>
-            <span className="text-[11px] text-[#6B6E7B]">{students.length}</span>
+            <span className="text-[11px] text-[var(--color-mute)]">{students.length}</span>
           </button>
         </li>
         {visible.map((student) => (
@@ -45,16 +45,16 @@ function StudentList({ selectedId, onSelect, version }) {
             <button type="button" onClick={() => onSelect(student)} className={itemClass(selectedId === student.id)}>
               <span className="min-w-0">
                 <span className="block truncate font-semibold">{student.fullName}</span>
-                <span className="block truncate text-[11px] text-[#6B6E7B]">логін: {student.username}</span>
+                <span className="block truncate text-[11px] text-[var(--color-mute)]">логін: {student.username}</span>
               </span>
-              <span className="shrink-0 text-right text-[11px] text-[#6B6E7B]">
+              <span className="shrink-0 text-right text-[11px] text-[var(--color-mute)]">
                 <span className="block">Спроб: {student.attempts}</span>
                 {student.bestNmtScore != null && <span className="block font-semibold text-indigo-700">Кращий: {student.bestNmtScore}</span>}
               </span>
             </button>
           </li>
         ))}
-        {visible.length === 0 && <li className="px-2 py-4 text-center text-[13px] text-[#6B6E7B]">Учнів не знайдено</li>}
+        {visible.length === 0 && <li className="px-2 py-4 text-center text-[13px] text-[var(--color-mute)]">Учнів не знайдено</li>}
       </ul>
     </div>
   )
@@ -84,7 +84,7 @@ function ResetPasswordModal({ student, onClose }) {
   return (
     <Modal title={`Новий пароль для ${student.username}`} onClose={onClose}>
       {done ? (
-        <div className="mt-3 space-y-4 text-sm text-slate-600">
+        <div className="mt-3 space-y-4 text-sm text-[var(--color-mute)]">
           <p>Пароль змінено. Передайте його учневі: після входу він може змінити пароль у своєму профілі.</p>
           <button type="button" onClick={onClose} className={`${primaryButtonClass} w-full`}>
             Готово
@@ -94,7 +94,7 @@ function ResetPasswordModal({ student, onClose }) {
         <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
           <ErrorAlert message={error} />
           <div>
-            <label htmlFor="reset-password" className="mb-1.5 block text-sm font-medium text-slate-700">
+            <label htmlFor="reset-password" className="mb-1.5 block text-sm font-medium text-[#2f313c]">
               Новий пароль
             </label>
             <input id="reset-password" className={inputClass} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="off" autoFocus />
@@ -162,22 +162,35 @@ function InviteCodeCard() {
   if (error) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
 
   return (
-    <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
-      <div>
-        <div className="text-xs font-semibold text-blue-800">Код запрошення для реєстрації учнів</div>
-        <div className="mt-1 font-mono text-2xl font-boldst text-slate-900">{shown ?? '…'}</div>
-        <p className="mt-1 text-xs text-slate-600">Передайте його учням. Після зміни коду старий перестає працювати; вже створені акаунти це не зачіпає.</p>
-        {actionError && <p className="mt-1 text-xs text-red-700">{actionError}</p>}
-      </div>
-      <div className="flex gap-2">
-        <button type="button" onClick={copy} disabled={!shown} className={secondaryButtonClass}>
-          {copied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
-          {copied ? 'Скопійовано' : 'Копіювати'}
-        </button>
-        <button type="button" onClick={regenerate} className={secondaryButtonClass}>
-          <RefreshCw className="h-4 w-4" aria-hidden="true" />
-          Новий код
-        </button>
+    <div className="mb-6 overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-ink)] p-5 text-white shadow-card sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/45">Код запрошення</p>
+          <p className="mt-2 font-mono text-3xl font-semibold tracking-wide text-white">{shown ?? '…'}</p>
+          <p className="mt-2 max-w-lg text-xs leading-relaxed text-white/50">
+            Передайте учням. Після зміни коду старий перестає працювати; вже створені акаунти це не зачіпає.
+          </p>
+          {actionError && <p className="mt-2 text-xs text-red-300">{actionError}</p>}
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={copy}
+            disabled={!shown}
+            className="inline-flex items-center gap-2 rounded-lg bg-white/10 px-3.5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15 disabled:opacity-40"
+          >
+            {copied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
+            {copied ? 'Скопійовано' : 'Копіювати'}
+          </button>
+          <button
+            type="button"
+            onClick={regenerate}
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-400"
+          >
+            <RefreshCw className="h-4 w-4" aria-hidden="true" />
+            Новий код
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -208,52 +221,52 @@ export default function StudentsResults() {
 
   return (
     <>
-    <InviteCodeCard />
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-      <div className="self-start">
-        <StudentList selectedId={student?.id ?? null} onSelect={setStudent} version={version} />
-      </div>
-      <div className="space-y-4">
-        {student && (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-card">
-            <div className="min-w-0">
-              <div className="truncate font-semibold text-slate-900">{student.fullName}</div>
-              <div className="truncate text-xs text-slate-500">логін: {student.username}</div>
+      <InviteCodeCard />
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+        <div className="self-start">
+          <StudentList selectedId={student?.id ?? null} onSelect={setStudent} version={version} />
+        </div>
+        <div className="space-y-4">
+          {student && (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--color-line)] bg-white p-4 shadow-card">
+              <div className="min-w-0">
+                <div className="truncate font-semibold text-[var(--color-ink)]">{student.fullName}</div>
+                <div className="truncate text-xs text-[var(--color-mute)]">логін: {student.username}</div>
+              </div>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => setResetting(true)} className={secondaryButtonClass}>
+                  <KeyRound className="h-4 w-4" aria-hidden="true" />
+                  Новий пароль
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDeleting(true)}
+                  className={`${secondaryButtonClass} hover:!border-red-200 hover:!bg-red-50 hover:!text-red-600`}
+                >
+                  <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  Видалити
+                </button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => setResetting(true)} className={secondaryButtonClass}>
-                <KeyRound className="h-4 w-4" aria-hidden="true" />
-                Новий пароль
-              </button>
-              <button
-                type="button"
-                onClick={() => setDeleting(true)}
-                className={`${secondaryButtonClass} hover:!border-red-200 hover:!bg-red-50 hover:!text-red-600`}
-              >
-                <Trash2 className="h-4 w-4" aria-hidden="true" />
-                Видалити
-              </button>
-            </div>
-          </div>
-        )}
-        <ResultsPanel student={student} version={version} />
-      </div>
+          )}
+          <ResultsPanel student={student} version={version} />
+        </div>
 
-      {resetting && <ResetPasswordModal student={student} onClose={() => setResetting(false)} />}
-      {deleting && (
-        <ConfirmDialog
-          title="Видалити учня?"
-          message={`Акаунт ${student.username} та всі його результати буде видалено безповоротно.`}
-          loading={busy}
-          error={deleteError}
-          onConfirm={deleteStudent}
-          onCancel={() => {
-            setDeleting(false)
-            setDeleteError('')
-          }}
-        />
-      )}
-    </div>
+        {resetting && <ResetPasswordModal student={student} onClose={() => setResetting(false)} />}
+        {deleting && (
+          <ConfirmDialog
+            title="Видалити учня?"
+            message={`Акаунт ${student.username} та всі його результати буде видалено безповоротно.`}
+            loading={busy}
+            error={deleteError}
+            onConfirm={deleteStudent}
+            onCancel={() => {
+              setDeleting(false)
+              setDeleteError('')
+            }}
+          />
+        )}
+      </div>
     </>
   )
 }

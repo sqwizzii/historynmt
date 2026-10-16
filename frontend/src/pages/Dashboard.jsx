@@ -12,15 +12,15 @@ import { formatDate } from '../utils/format.js'
 function QuickLink({ to, title, text, Icon }) {
   return (
     <Link to={to} className={`${cardInteractiveClass} group flex items-start gap-3.5 p-4`}>
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white">
         <Icon className="h-4 w-4" aria-hidden="true" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="flex items-center justify-between gap-2 text-[13px] font-semibold text-[#14151C]">
+        <span className="flex items-center justify-between gap-2 text-[13px] font-semibold text-[var(--color-ink)]">
           {title}
-          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[#8B8E9C] transition group-hover:translate-x-0.5 group-hover:text-indigo-600" aria-hidden="true" />
+          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[var(--color-mute-soft)] transition group-hover:translate-x-0.5 group-hover:text-indigo-600" aria-hidden="true" />
         </span>
-        <span className="mt-0.5 block text-[12px] leading-relaxed text-[#6B6E7B]">{text}</span>
+        <span className="mt-0.5 block text-[12px] leading-relaxed text-[var(--color-mute)]">{text}</span>
       </span>
     </Link>
   )
@@ -28,16 +28,16 @@ function QuickLink({ to, title, text, Icon }) {
 
 function ResultsList({ results, showStudent }) {
   if (results.length === 0) {
-    return <p className="px-4 py-10 text-center text-sm text-[#6B6E7B]">Результатів поки немає.</p>
+    return <p className="px-4 py-10 text-center text-sm text-[var(--color-mute)]">Результатів поки немає.</p>
   }
   return (
-    <ul className="divide-y divide-[#E2E4EC]">
+    <ul className="divide-y divide-[var(--color-line-soft)]">
       {results.slice(0, 5).map((r) => (
         <li key={r.id}>
-          <Link to={`/results/${r.id}`} className="flex items-center justify-between gap-3 px-4 py-3 transition hover:bg-[#F8F8FB]">
+          <Link to={`/results/${r.id}`} className="flex items-center justify-between gap-3 px-4 py-3.5 transition hover:bg-[var(--color-surface-muted)]">
             <span className="min-w-0">
-              <span className="block truncate text-[13px] font-medium text-[#14151C]">{r.testTitle}</span>
-              <span className="block text-[11px] text-[#6B6E7B]">
+              <span className="block truncate text-[13px] font-medium text-[var(--color-ink)]">{r.testTitle}</span>
+              <span className="block text-[11px] text-[var(--color-mute)]">
                 {showStudent ? `${r.studentName} · ` : ''}
                 {formatDate(r.completedAt)}
               </span>
@@ -63,9 +63,11 @@ function StudentDashboard() {
         <StatCard label="Пройдено спроб" value={results.data.length} Icon={BarChart3} />
         <StatCard label="Найкращий бал НМТ" value={best || '—'} Icon={GraduationCap} />
       </div>
-      <div className="mt-5 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <div className="mt-5 grid gap-4 lg:grid-cols-[1.45fr_1fr]">
         <section className={cardClass}>
-          <h2 className="border-b border-[#E2E4EC] px-4 py-3 text-[13px] font-semibold text-[#14151C]">Останні результати</h2>
+          <h2 className="border-b border-[var(--color-line-soft)] px-4 py-3.5 text-[13px] font-semibold text-[var(--color-ink)]">
+            Останні результати
+          </h2>
           <ResultsList results={results.data} />
         </section>
         <div className="space-y-3">
@@ -98,10 +100,10 @@ function TeacherDashboard() {
           Icon={CreditCard}
         />
       </div>
-      <div className="mt-5 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <div className="mt-5 grid gap-4 lg:grid-cols-[1.45fr_1fr]">
         <section className={cardClass}>
-          <div className="flex items-center justify-between border-b border-[#E2E4EC] px-4 py-3">
-            <h2 className="text-[13px] font-semibold text-[#14151C]">Останні результати учнів</h2>
+          <div className="flex items-center justify-between border-b border-[var(--color-line-soft)] px-4 py-3.5">
+            <h2 className="text-[13px] font-semibold text-[var(--color-ink)]">Останні результати учнів</h2>
             <Link to="/teacher/students" className="text-[12px] font-semibold text-indigo-700 hover:underline">
               Усі
             </Link>

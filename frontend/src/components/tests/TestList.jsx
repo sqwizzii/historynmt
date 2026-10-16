@@ -2,7 +2,6 @@ import { ArrowRight, CalendarDays, ClipboardList, Clock } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PageHeader from '../PageHeader.jsx'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
-import { cardInteractiveClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, testService } from '../../services/api.js'
 import { formatDate, pluralize } from '../../utils/format.js'
@@ -20,36 +19,41 @@ export default function TestList() {
       {tests.length === 0 ? (
         <EmptyState title="Тестів поки немає" text="Вчитель ще не додав жодного тесту." />
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="divide-y divide-[var(--color-line)] overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-card">
           {tests.map((test) => (
             <li key={test.id}>
-              <Link to={`/tests/${test.id}`} className={`${cardInteractiveClass} group flex h-full flex-col p-5`}>
-                <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-                  <ClipboardList className="h-4 w-4" aria-hidden="true" />
-                </span>
-                <h2 className="text-[15px] font-semibold leading-snug text-[#14151C]">{test.title}</h2>
-                <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium text-[#6B6E7B]">
-                  <span>
-                    {test.questionCount} {pluralize(test.questionCount, 'питання', 'питання', 'питань')}
+              <Link
+                to={`/tests/${test.id}`}
+                className="group flex flex-col gap-3 px-4 py-4 transition hover:bg-[var(--color-surface-muted)] sm:flex-row sm:items-center sm:justify-between sm:px-5"
+              >
+                <div className="flex min-w-0 items-start gap-3.5">
+                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white">
+                    <ClipboardList className="h-4 w-4" aria-hidden="true" />
                   </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Clock className="h-3 w-3" aria-hidden="true" />
-                    {test.timeLimitMinutes} хв
-                  </span>
-                </p>
-                {test.description && (
-                  <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-[#6B6E7B]">{test.description}</p>
-                )}
-                <div className="mt-auto flex items-center justify-between gap-3 pt-4">
-                  <span className="inline-flex items-center gap-1 text-[11px] text-[#8B8E9C]">
-                    <CalendarDays className="h-3 w-3" aria-hidden="true" />
-                    {formatDate(test.createdAt)}
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-indigo-700">
-                    Розпочати
-                    <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden="true" />
-                  </span>
+                  <div className="min-w-0">
+                    <h2 className="text-[15px] font-semibold leading-snug text-[var(--color-ink)]">{test.title}</h2>
+                    {test.description && (
+                      <p className="mt-1 line-clamp-1 text-[13px] text-[var(--color-mute)]">{test.description}</p>
+                    )}
+                    <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium text-[var(--color-mute)]">
+                      <span>
+                        {test.questionCount} {pluralize(test.questionCount, 'питання', 'питання', 'питань')}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Clock className="h-3 w-3" aria-hidden="true" />
+                        {test.timeLimitMinutes} хв
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <CalendarDays className="h-3 w-3" aria-hidden="true" />
+                        {formatDate(test.createdAt)}
+                      </span>
+                    </p>
+                  </div>
                 </div>
+                <span className="inline-flex items-center gap-1 self-start text-[13px] font-semibold text-indigo-700 sm:self-center">
+                  Розпочати
+                  <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden="true" />
+                </span>
               </Link>
             </li>
           ))}

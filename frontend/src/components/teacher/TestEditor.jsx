@@ -2,7 +2,7 @@ import { BarChart3, ImageIcon, Pencil, Plus, Trash2, UserCheck } from 'lucide-re
 import { useState } from 'react'
 import ConfirmDialog from '../ConfirmDialog.jsx'
 import { ErrorState, LoadingState } from '../PageState.jsx'
-import { primaryButtonClass, secondaryButtonClass } from '../styles.js'
+import { badgeClass, dangerGhostButtonClass, primaryButtonClass, secondaryButtonClass, softButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, testService } from '../../services/api.js'
 import QuestionForm from './QuestionForm.jsx'
@@ -23,33 +23,33 @@ function QuestionStats({ testId }) {
   if (!stats) return null
 
   return (
-    <section className="rounded-xl border border-[#E2E4EC] bg-white p-5 shadow-card sm:p-6">
-      <h2 className="mb-1 flex items-center gap-2 text-[15px] font-semibold text-[#14151C]">
+    <section className="rounded-xl border border-[var(--color-line)] bg-white p-5 shadow-card sm:p-6">
+      <h2 className="mb-1 flex items-center gap-2 text-[15px] font-semibold text-[var(--color-ink)]">
         <BarChart3 className="h-4 w-4 text-indigo-600" aria-hidden="true" />
         Статистика по питаннях
       </h2>
       {stats.questions.length === 0 ? (
-        <p className="text-sm text-slate-500">Тест ще ніхто не проходив.</p>
+        <p className="text-sm text-[var(--color-mute)]">Тест ще ніхто не проходив.</p>
       ) : (
         <>
-          <p className="mb-4 text-xs text-slate-500">Спроб: {stats.attempts}. Спочатку найскладніші питання.</p>
-          <ul className="space-y-3">
+          <p className="mb-4 text-xs text-[var(--color-mute)]">Спроб: {stats.attempts}. Спочатку найскладніші питання.</p>
+          <ul className="space-y-3.5">
             {stats.questions.map((q) => (
               <li key={q.questionId}>
-                <div className="mb-1 flex items-start justify-between gap-3 text-sm">
-                  <span className="min-w-0 text-slate-800">{q.questionText}</span>
-                  <span className="shrink-0 whitespace-nowrap text-xs text-slate-500">
+                <div className="mb-1.5 flex items-start justify-between gap-3 text-sm">
+                  <span className="min-w-0 text-[var(--color-ink)]">{q.questionText}</span>
+                  <span className="shrink-0 whitespace-nowrap text-xs text-[var(--color-mute)]">
                     помилок: {q.wrong} з {q.answered}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-2 flex-1 overflow-hidden rounded-xl bg-slate-100">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[var(--color-surface-muted)]">
                     <div
-                      className={`h-full rounded-xl ${q.correctPercent < 40 ? 'bg-red-500' : q.correctPercent < 70 ? 'bg-slate-500' : 'bg-emerald-500'}`}
+                      className={`h-full rounded-full ${q.correctPercent < 40 ? 'bg-red-500' : q.correctPercent < 70 ? 'bg-[var(--color-mute)]' : 'bg-emerald-500'}`}
                       style={{ width: `${q.correctPercent}%` }}
                     />
                   </div>
-                  <span className="w-10 text-right text-xs font-semibold tabular-nums text-slate-700">{q.correctPercent}%</span>
+                  <span className="w-10 text-right text-xs font-semibold tabular-nums text-[var(--color-ink)]">{q.correctPercent}%</span>
                 </div>
               </li>
             ))}
@@ -96,33 +96,31 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
   }
 
   return (
-    <div className="space-y-6">
-      <section className="rounded-xl border border-[#E2E4EC] bg-white p-5 shadow-card sm:p-6">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-[15px] font-semibold text-[#14151C]">Параметри тесту</h2>
+    <div className="space-y-5">
+      <section className="rounded-xl border border-[var(--color-line)] bg-white shadow-card">
+        <div className="flex flex-col gap-3 border-b border-[var(--color-line-soft)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <h2 className="text-[15px] font-semibold text-[var(--color-ink)]">Параметри тесту</h2>
           <div className="flex flex-wrap items-center gap-1">
-          <button type="button" onClick={() => setAssigning(true)} className="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-50">
-            <UserCheck className="h-4 w-4" aria-hidden="true" />
-            Призначити учням
-          </button>
-          <button
-            type="button"
-            onClick={() => setToDelete({ kind: 'test' })}
-            className="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50"
-          >
-            <Trash2 className="h-4 w-4" aria-hidden="true" />
-            Видалити тест
-          </button>
+            <button type="button" onClick={() => setAssigning(true)} className={softButtonClass}>
+              <UserCheck className="h-4 w-4" aria-hidden="true" />
+              Призначити учням
+            </button>
+            <button type="button" onClick={() => setToDelete({ kind: 'test' })} className={dangerGhostButtonClass}>
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
+              Видалити тест
+            </button>
           </div>
         </div>
-        <TestForm key={`${test.id}-${test.title}-${test.timeLimitMinutes}-${test.description}-${test.subjectId}-${test.grade}-${test.scoringScale}-${test.answerVisibilityMode}`} initial={test} onSaved={refreshQuestions} />
+        <div className="p-5 sm:p-6">
+          <TestForm key={`${test.id}-${test.title}-${test.timeLimitMinutes}-${test.description}-${test.subjectId}-${test.grade}-${test.scoringScale}-${test.answerVisibilityMode}`} initial={test} onSaved={refreshQuestions} />
+        </div>
       </section>
 
       <QuestionStats testId={testId} />
 
       <section>
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-[15px] font-semibold text-[#14151C]">Питання ({test.questions.length})</h2>
+          <h2 className="text-[15px] font-semibold text-[var(--color-ink)]">Питання ({test.questions.length})</h2>
           {editing !== 'new' && (
             <button type="button" onClick={() => setEditing('new')} className={primaryButtonClass}>
               <Plus className="h-4 w-4" aria-hidden="true" />
@@ -138,12 +136,12 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
         )}
 
         {test.questions.length === 0 && editing !== 'new' && (
-          <p className="rounded-xl border border-dashed border-[#D5D8E2] bg-white px-4 py-10 text-center text-[13px] text-[#6B6E7B]">
+          <p className="rounded-xl border border-dashed border-[#c9ced9] bg-white px-4 py-10 text-center text-[13px] text-[var(--color-mute)]">
             У цьому тесті ще немає питань. Натисніть «Додати питання».
           </p>
         )}
 
-        <ol className="space-y-2.5">
+        <ol className="space-y-2">
           {test.questions.map((question, index) =>
             editing === question.id ? (
               <li key={question.id}>
@@ -158,14 +156,14 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
                 />
               </li>
             ) : (
-              <li key={question.id} className="flex flex-col gap-3 rounded-xl border border-[#E2E4EC] bg-white p-3.5 shadow-card sm:flex-row sm:items-start sm:p-4">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-indigo-50 text-[11px] font-bold text-indigo-700">
+              <li key={question.id} className="flex flex-col gap-3 rounded-xl border border-[var(--color-line)] bg-white p-3.5 shadow-card sm:flex-row sm:items-start sm:p-4">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--color-ink)] text-[11px] font-bold text-white">
                   {index + 1}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="line-clamp-2 text-[13px] font-medium text-[#14151C]">{question.questionText}</p>
-                  <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[11px] text-[#6B6E7B]">
-                    <span className="rounded-md bg-[#F0F1F5] px-2 py-0.5 font-semibold text-[#3A3C48]">{TYPE_LABELS[question.questionType]}</span>
+                  <p className="line-clamp-2 text-[13px] font-medium text-[var(--color-ink)]">{question.questionText}</p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[11px] text-[var(--color-mute)]">
+                    <span className={badgeClass('slate')}>{TYPE_LABELS[question.questionType]}</span>
                     <span>Варіантів: {question.options.length}</span>
                     {question.imageUrl && (
                       <span className="inline-flex items-center gap-1">

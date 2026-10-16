@@ -18,11 +18,11 @@ export default function PlanCards({ plans, highlight }) {
         return (
           <article
             key={plan.plan}
-            className={`${cardClass} relative flex flex-col p-6 ${
+            className={`${cardClass} relative flex flex-col overflow-hidden p-6 ${
               highlight === plan.plan
-                ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-[#F3F4F8]'
+                ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-[var(--color-canvas)]'
                 : featured
-                  ? 'border-indigo-200'
+                  ? 'border-indigo-200 bg-gradient-to-b from-indigo-50/40 to-white'
                   : ''
             }`}
           >
@@ -30,14 +30,16 @@ export default function PlanCards({ plans, highlight }) {
               <span className={`${badgeClass('indigo')} absolute right-4 top-4`}>Найкраще на рік</span>
             )}
             <div className="flex items-center justify-between gap-2 pr-24">
-              <h3 className="text-lg font-semibold text-[#14151C]">{plan.name}</h3>
+              <h3 className="text-lg font-semibold text-[var(--color-ink)]">{plan.name}</h3>
               {highlight === plan.plan && <span className={badgeClass('green')}>Ваш план</span>}
             </div>
-            <p className="mt-1 text-sm text-[#6B6E7B]">
+            <p className="mt-1 text-sm text-[var(--color-mute)]">
               Доступ {PERIOD[plan.plan]} · {plan.periodDays} днів
             </p>
-            <p className="mt-5 text-sm font-medium text-[#3A3C48]">Вартість уточнюється</p>
-            <ul className="mt-5 space-y-2.5 text-sm text-[#3A3C48]">
+            <p className="mt-6 font-display text-3xl font-semibold tracking-tight text-[var(--color-ink)]">
+              Вартість уточнюється
+            </p>
+            <ul className="mt-6 space-y-2.5 border-t border-[var(--color-line-soft)] pt-5 text-sm text-[#2f313c]">
               {PLAN_FEATURES.map((feature) => (
                 <li key={feature} className="flex items-start gap-2.5">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" aria-hidden="true" />

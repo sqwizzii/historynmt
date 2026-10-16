@@ -33,12 +33,12 @@ function Session({ questions, onFinish }) {
   if (result) {
     return (
       <div>
-        <div className="rounded-xl border border-blue-100 bg-blue-50 p-5 text-center">
-          <PartyPopper className="mx-auto h-8 w-8 text-blue-700" aria-hidden="true" />
-          <p className="mt-2 text-lg font-bold text-slate-900">
+        <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-5 text-center">
+          <PartyPopper className="mx-auto h-8 w-8 text-indigo-700" aria-hidden="true" />
+          <p className="mt-2 text-lg font-semibold text-[var(--color-ink)]">
             Виправлено: {result.fixed} з {result.total}
           </p>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-[var(--color-mute)]">
             {result.fixed === result.total ? 'Усі помилки виправлено, так тримати!' : 'Питання, які не вдалися, залишаться в списку для наступного разу.'}
           </p>
           <button type="button" onClick={onFinish} className={`${primaryButtonClass} mt-4`}>

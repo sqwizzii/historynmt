@@ -5,8 +5,8 @@ import { badgeClass, tableWrapClass } from './styles.js'
 export default function ResultsTable({ results, showStudent = false }) {
   return (
     <div className={tableWrapClass}>
-      <table className="min-w-full divide-y divide-[#E2E4EC] text-sm">
-        <thead className="bg-[#F8F8FB] text-left text-[11px] font-semibold uppercase tracking-wide text-[#6B6E7B]">
+      <table className="min-w-full divide-y divide-[var(--color-line-soft)] text-sm">
+        <thead className="bg-[var(--color-surface-muted)] text-left text-[11px] font-semibold uppercase tracking-wide text-[var(--color-mute)]">
           <tr>
             {showStudent && <th className="px-4 py-3">Учень</th>}
             <th className="px-4 py-3">Тест</th>
@@ -21,14 +21,14 @@ export default function ResultsTable({ results, showStudent = false }) {
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#E2E4EC]">
+        <tbody className="divide-y divide-[var(--color-line-soft)]">
           {results.map((r) => (
-            <tr key={r.id} className="transition hover:bg-[#F8F8FB]">
-              {showStudent && <td className="px-4 py-3 font-medium text-[#14151C]">{r.studentName}</td>}
-              <td className="px-4 py-3 text-[#3A3C48]">{r.testTitle}</td>
-              <td className="px-4 py-3 tabular-nums text-[#3A3C48]">{r.score}</td>
+            <tr key={r.id} className="transition hover:bg-[var(--color-surface-muted)]">
+              {showStudent && <td className="px-4 py-3 font-medium text-[var(--color-ink)]">{r.studentName}</td>}
+              <td className="px-4 py-3 text-[#2f313c]">{r.testTitle}</td>
+              <td className="px-4 py-3 tabular-nums text-[#2f313c]">{r.score}</td>
               <td className="px-4 py-3 font-semibold tabular-nums text-indigo-700">{r.nmtScore ?? '—'}</td>
-              <td className="whitespace-nowrap px-4 py-3 text-[#6B6E7B]">{formatDate(r.completedAt)}</td>
+              <td className="whitespace-nowrap px-4 py-3 text-[var(--color-mute)]">{formatDate(r.completedAt)}</td>
               <td className="px-4 py-3 text-xs">
                 <div className="flex flex-wrap gap-1">
                   {r.leaveCount > 0 && <span className={badgeClass('amber')}>виходів: {r.leaveCount}</span>}
