@@ -24,7 +24,7 @@ export default function TestList() {
           as="ul"
           immediate
           className="divide-y divide-[var(--color-line)] overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-card"
-          step={55}
+          step={70}
         >
           {tests.map((test) => (
             <li key={test.id}>

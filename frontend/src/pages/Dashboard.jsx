@@ -59,7 +59,7 @@ function StudentDashboard() {
   const best = results.data.reduce((max, r) => Math.max(max, r.nmtScore ?? 0), 0)
   return (
     <>
-      <Stagger immediate className="grid gap-3 sm:grid-cols-3" step={65}>
+      <Stagger immediate className="grid gap-3 sm:grid-cols-3" step={80}>
         <StatCard label="Доступні тести" value={tests.data.length} Icon={ClipboardList} />
         <StatCard label="Пройдено спроб" value={results.data.length} Icon={BarChart3} />
         <StatCard label="Найкращий бал НМТ" value={best || '—'} Icon={GraduationCap} />
@@ -90,7 +90,7 @@ function TeacherDashboard() {
   const mine = tests.data.filter((t) => t.editable)
   return (
     <>
-      <Stagger immediate className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" step={55}>
+      <Stagger immediate className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" step={75}>
         <StatCard label="Мої тести" value={mine.length} Icon={ClipboardList} />
         <StatCard label="Учні" value={students.data.length} Icon={Users} />
         <StatCard label="Спроби" value={results.data.length} Icon={BarChart3} />
@@ -127,7 +127,7 @@ function AdminDashboard() {
   if (!data) return <LoadingState />
   return (
     <>
-      <Stagger immediate className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" step={50}>
+      <Stagger immediate className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" step={70}>
         <StatCard label="Користувачі" value={data.users} hint={`${data.admins} адмін. · ${data.teachers} вчителів · ${data.students} учнів`} Icon={Users} />
         <StatCard label="Тести" value={data.tests} hint={`${data.systemTests} системних`} Icon={ClipboardList} />
         <StatCard label="Модулі" value={data.modules} hint={`${data.systemModules} системних`} Icon={Layers} />

@@ -13,7 +13,7 @@ const PERIOD = { MONTHLY: 'на місяць', YEARLY: 'на рік' }
 
 export default function PlanCards({ plans, highlight }) {
   return (
-    <Stagger immediate className="grid gap-4 md:grid-cols-2" step={90}>
+    <Stagger immediate className="grid gap-4 md:grid-cols-2" step={100}>
       {plans.map((plan) => {
         const featured = plan.plan === 'YEARLY'
         return (

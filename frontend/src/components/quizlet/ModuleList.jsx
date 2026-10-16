@@ -20,7 +20,7 @@ export default function ModuleList() {
       {modules.length === 0 ? (
         <EmptyState title="Модулів поки немає" text="Вчитель ще не створив жодного модуля карток." />
       ) : (
-        <Stagger as="ul" immediate className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" step={60}>
+        <Stagger as="ul" immediate className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" step={75}>
           {modules.map((module) => {
             const count = module.flashcards.length
             return (

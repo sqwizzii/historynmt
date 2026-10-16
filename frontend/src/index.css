@@ -144,7 +144,7 @@
 @keyframes question-swap {
   from {
     opacity: 0;
-    transform: translateX(16px);
+    transform: translateX(20px);
   }
   to {
     opacity: 1;
@@ -260,7 +260,7 @@ h3 {
 @keyframes motion-enter-up {
   from {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(28px);
   }
   to {
     opacity: 1;
@@ -271,7 +271,7 @@ h3 {
 @keyframes motion-enter-left {
   from {
     opacity: 0;
-    transform: translateX(-22px);
+    transform: translateX(-26px);
   }
   to {
     opacity: 1;
@@ -282,7 +282,7 @@ h3 {
 @keyframes motion-enter-right {
   from {
     opacity: 0;
-    transform: translateX(22px);
+    transform: translateX(26px);
   }
   to {
     opacity: 1;
@@ -293,7 +293,7 @@ h3 {
 @keyframes motion-enter-scale {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.96);
+    transform: translateY(18px) scale(0.97);
   }
   to {
     opacity: 1;
@@ -301,21 +301,20 @@ h3 {
   }
 }
 
+/* Opacity-led route fade — avoids stacking translate with child Reveal/Stagger */
 @keyframes page-enter {
   from {
     opacity: 0;
-    transform: translateY(12px);
   }
   to {
     opacity: 1;
-    transform: none;
   }
 }
 
 @keyframes shell-enter {
   from {
     opacity: 0;
-    transform: translateX(-8px);
+    transform: translateX(-12px);
   }
   to {
     opacity: 1;
@@ -324,11 +323,11 @@ h3 {
 }
 
 .page-enter {
-  animation: page-enter 0.3s var(--ease-out-expo) both;
+  animation: page-enter 0.34s var(--ease-out-expo) both;
 }
 
 .shell-enter {
-  animation: shell-enter 0.4s var(--ease-out-expo) both;
+  animation: shell-enter 0.45s var(--ease-out-expo) both;
 }
 
 .motion-reveal {
@@ -337,7 +336,7 @@ h3 {
 }
 
 .motion-reveal.is-visible {
-  animation: motion-enter-up 0.5s var(--ease-out-expo) both;
+  animation: motion-enter-up 0.55s var(--ease-out-expo) both;
   animation-delay: var(--motion-delay);
 }
 
@@ -359,7 +358,7 @@ h3 {
 }
 
 .motion-stagger.is-visible .motion-stagger-item {
-  animation: motion-enter-up 0.45s var(--ease-out-expo) both;
+  animation: motion-enter-up 0.5s var(--ease-out-expo) both;
   animation-delay: var(--motion-delay);
 }
 
@@ -370,15 +369,15 @@ h3 {
 
 .page-header-enter > * {
   opacity: 0;
-  animation: motion-enter-up 0.42s var(--ease-out-expo) both;
+  animation: motion-enter-up 0.48s var(--ease-out-expo) both;
 }
 
 .page-header-enter > *:nth-child(1) {
-  animation-delay: 0.02s;
+  animation-delay: 0.04s;
 }
 
 .page-header-enter > *:nth-child(2) {
-  animation-delay: 0.08s;
+  animation-delay: 0.12s;
 }
 
 .hero-enter > * {
@@ -431,7 +430,7 @@ h3 {
 }
 
 .motion-question {
-  animation: question-swap 0.26s var(--ease-out-expo) both;
+  animation: question-swap 0.3s var(--ease-out-expo) both;
 }
 
 .motion-progress-fill {

@@ -200,9 +200,9 @@ function Landing() {
               Різниця лише в періоді. Учням підписка не потрібна.
             </p>
           </Reveal>
-          <Reveal className="mt-10" variant="scale" delay={80}>
+          <div className="mt-10">
             <PlanCards plans={PLANS} />
-          </Reveal>
+          </div>
           <Reveal className="mt-6 flex items-center justify-center gap-2 text-sm text-[var(--color-mute)]" delay={160}>
             <CheckCircle2 className="h-4 w-4 text-indigo-600" aria-hidden="true" />
             Підписку активує адміністратор платформи.

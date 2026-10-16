@@ -55,22 +55,20 @@ export default function Subscription() {
           </div>
         </section>
       )}
-      <Reveal>
-        <PlanCards plans={plans.data} highlight={status?.active ? status.plan : null} />
-      </Reveal>
-      <Reveal className="mt-5" delay={80}>
-      <section className={`${cardClass} p-5 text-[13px] leading-relaxed text-[var(--color-mute)] sm:p-6`}>
-        <h2 className="mb-1.5 text-[14px] font-semibold text-[var(--color-ink)]">Як активувати доступ</h2>
-        <p>
-          Онлайн-оплата поки не підключена. Підписку активує адміністратор платформи вручну; після цього доступ
-          відкривається автоматично.
-        </p>
-        {!isAuthenticated && (
-          <Link to="/register/teacher" className={`${primaryButtonClass} mt-4`}>
-            Створити акаунт вчителя
-          </Link>
-        )}
-      </section>
+      <PlanCards plans={plans.data} highlight={status?.active ? status.plan : null} />
+      <Reveal className="mt-5" delay={120}>
+        <section className={`${cardClass} p-5 text-[13px] leading-relaxed text-[var(--color-mute)] sm:p-6`}>
+          <h2 className="mb-1.5 text-[14px] font-semibold text-[var(--color-ink)]">Як активувати доступ</h2>
+          <p>
+            Онлайн-оплата поки не підключена. Підписку активує адміністратор платформи вручну; після цього доступ
+            відкривається автоматично.
+          </p>
+          {!isAuthenticated && (
+            <Link to="/register/teacher" className={`${primaryButtonClass} mt-4`}>
+              Створити акаунт вчителя
+            </Link>
+          )}
+        </section>
       </Reveal>
     </div>
   )
