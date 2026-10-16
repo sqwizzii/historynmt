@@ -31,7 +31,7 @@ app:
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   cors:
     # Дозволені origin-и фронтенду (через кому). У production задавайте через CORS_ALLOWED_ORIGINS.
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:45173,http://127.0.0.1:45173}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:45173,http://127.0.0.1:45173,http://localhost:43123,http://127.0.0.1:43123}
   bootstrap-teacher:
     # Необов'язковий початковий акаунт вчителя: створюється лише при BOOTSTRAP_TEACHER_ENABLED=true і заданому паролі.
     enabled: ${BOOTSTRAP_TEACHER_ENABLED:false}
