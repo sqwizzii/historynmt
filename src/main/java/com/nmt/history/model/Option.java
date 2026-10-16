@@ -49,7 +49,7 @@ public class Option {
     @Builder.Default
     private Boolean isCorrect = false;
 
-    @Column(name = "match_key", length = 100)
+    @Column(name = "match_key", columnDefinition = "TEXT")
     private String matchKey;
 
     @Column(name = "order_index")

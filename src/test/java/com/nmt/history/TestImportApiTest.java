@@ -92,4 +92,16 @@ class TestImportApiTest extends AbstractApiTest {
                 "password", "teacher-pass-1")).andExpect(status().isCreated())).get("token").asText();
         send(post("/api/teacher/import/preview"), fresh, Map.of("source", "TEXT", "text", TEXT)).andExpect(status().isPaymentRequired());
     }
+
+    @Test
+    void longMatchingKeysSurviveImport() throws Exception {
+        String longKey = "Довге формулювання відповідника, яке перевищує сто символів і раніше не вміщалося в колонку бази даних. ".repeat(2);
+        Map<String, Object> q = Map.of("questionText", "Поєднайте", "questionType", "MATCHING", "status", "OK", "options", List.of(
+                Map.of("optionText", "Ліве 1", "isCorrect", false, "matchKey", longKey),
+                Map.of("optionText", "Ліве 2", "isCorrect", false, "matchKey", "Коротке")));
+        long id = body(send(post("/api/teacher/import/create"), teacher, Map.of("title", "Довгі ключі", "questions", List.of(q)))
+                .andExpect(status().isCreated())).get("testId").asLong();
+        send(get("/api/teacher/tests/" + id), teacher, null).andExpect(status().isOk())
+                .andExpect(jsonPath("$.questions[0].options[0].matchKey", is(longKey)));
+    }
 }
