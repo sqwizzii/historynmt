@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 168 32" fill="none" role="img" aria-label="Masterly">
+  <rect width="32" height="32" rx="8" fill="#5146E5"/>
+  <path fill="#FFFFFF" d="M7 22.5h4.2V17H7v5.5Zm6.4 0h4.2V13h-4.2v9.5Zm6.4 0H24V8.5h-4.2v14Z"/>
+  <path fill="#EEF0FF" d="M7 8.5 16 5l9 3.5v2.2L16 7.7 7 10.7V8.5Z"/>
+  <text x="42" y="22" fill="#20212B" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="600" letter-spacing="-0.02em">Masterly</text>
+</svg>

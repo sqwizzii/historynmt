@@ -33,8 +33,8 @@ function Landing() {
       <section className="grid-lines border-b border-slate-200 bg-white">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="stagger">
-            <p className="mb-4 inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">{BRAND_NAME}</p>
-            <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight text-slate-900 sm:text-5xl">{BRAND_TAGLINE}</h1>
+            <p className="mb-4 text-4xl font-semibold tracking-tight text-indigo-600 sm:text-5xl">{BRAND_NAME}</p>
+            <h1 className="text-2xl font-semibold leading-snug tracking-tight text-slate-900 sm:text-3xl">{BRAND_TAGLINE}</h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-600">{BRAND_DESCRIPTION}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/register/teacher" className={`${primaryButtonClass} px-5 py-3`}>Я вчитель <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>

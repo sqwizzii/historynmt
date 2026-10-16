@@ -20,7 +20,7 @@ export default function AuthCard({ title, subtitle, children, footer }) {
             ))}
           </ul>
         </div>
-        <p className="text-xs text-indigo-200">Для вчителів та їхніх учнів</p>
+        <p className="text-xs text-indigo-200">Для вчителів, репетиторів і онлайн-шкіл</p>
       </aside>
       <div className="grid-lines flex items-center justify-center px-4 py-10 sm:px-8">
         <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-lift sm:p-8">

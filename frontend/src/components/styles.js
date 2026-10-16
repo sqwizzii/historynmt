@@ -10,7 +10,7 @@ export const secondaryButtonClass = `${buttonBase} border border-slate-300 bg-wh
 
 export const dangerButtonClass = `${buttonBase} bg-red-600 text-white shadow-sm hover:bg-red-700`
 
-export const cardClass = 'rounded-xl border border-slate-200 bg-white shadow-card'
+export const cardClass = 'rounded-xl border border-[#E6E8F0] bg-white shadow-card'
 
 export const labelClass = 'mb-1.5 block text-sm font-medium text-slate-700'
 
