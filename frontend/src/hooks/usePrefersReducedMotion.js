@@ -9,8 +9,7 @@ export function usePrefersReducedMotion() {
 
   useEffect(() => {
     const media = window.matchMedia(QUERY)
-    const onChange = () => setReduced(media.matches)
-    onChange()
+    const onChange = (event) => setReduced(event.matches)
     media.addEventListener('change', onChange)
     return () => media.removeEventListener('change', onChange)
   }, [])

@@ -20,7 +20,7 @@ export default function MultipleChoice({ question, value, onChange }) {
               key={option.id}
               className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-all duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-500/40 ${
                 checked
-                  ? 'scale-[1.01] border-indigo-500 bg-indigo-50 shadow-[0_0_0_1px_rgb(81_70_229/0.15)]'
+                  ? 'scale-[1.015] border-indigo-500 bg-indigo-50 shadow-[0_0_0_1px_rgb(81_70_229/0.2),0_8px_18px_-12px_rgb(81_70_229/0.45)]'
                   : 'border-[var(--color-line)] hover:border-indigo-200 hover:bg-indigo-50/30'
               }`}
             >

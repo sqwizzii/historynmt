@@ -19,7 +19,7 @@ export default function PlanCards({ plans, highlight }) {
         return (
           <article
             key={plan.plan}
-            className={`${cardClass} group relative flex flex-col overflow-hidden p-6 hover:-translate-y-1 hover:shadow-lift ${
+            className={`${cardClass} group relative flex flex-col overflow-hidden p-6 hover:-translate-y-1.5 hover:shadow-lift ${
               highlight === plan.plan
                 ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-[var(--color-canvas)]'
                 : featured

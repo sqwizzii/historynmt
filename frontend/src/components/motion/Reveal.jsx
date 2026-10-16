@@ -12,11 +12,12 @@ export default function Reveal({
 }) {
   const reduced = usePrefersReducedMotion()
   const [ref, inView] = useInView({ once, disabled: reduced })
+  const visible = inView || reduced
 
   return (
     <Tag
       ref={ref}
-      className={`motion-reveal motion-reveal--${variant} ${inView || reduced ? 'is-visible' : ''} ${className}`.trim()}
+      className={`motion-reveal motion-reveal--${variant}${visible ? ' is-visible' : ''} ${className}`.trim()}
       style={delay ? { '--motion-delay': `${delay}ms` } : undefined}
       {...props}
     >

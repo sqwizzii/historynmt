@@ -12,33 +12,32 @@ function parseNumeric(value) {
   return { num, suffix: match[2] ?? '' }
 }
 
-export default function CountUp({ value, className = '', duration = 700 }) {
+export default function CountUp({ value, className = '', duration = 650 }) {
   const reduced = usePrefersReducedMotion()
   const [ref, inView] = useInView({ once: true, disabled: reduced })
   const parsed = useMemo(() => parseNumeric(value), [value])
-  const [display, setDisplay] = useState(() => (parsed && !reduced ? `0${parsed.suffix}` : value))
+  const animate = Boolean(parsed) && !reduced && inView
+  const [frame, setFrame] = useState(null)
 
   useEffect(() => {
-    if (!parsed || reduced || !inView) {
-      setDisplay(value)
-      return undefined
-    }
+    if (!animate || !parsed) return undefined
 
+    let raf = 0
     const start = performance.now()
     const to = parsed.num
-    let frame = 0
 
     const tick = (now) => {
       const t = Math.min(1, (now - start) / duration)
       const eased = 1 - (1 - t) ** 3
-      const current = Math.round(to * eased)
-      setDisplay(`${current}${parsed.suffix}`)
-      if (t < 1) frame = requestAnimationFrame(tick)
+      setFrame(`${Math.round(to * eased)}${parsed.suffix}`)
+      if (t < 1) raf = requestAnimationFrame(tick)
     }
 
-    frame = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(frame)
-  }, [value, parsed, reduced, inView, duration])
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [animate, parsed, duration, value])
+
+  const display = animate ? (frame ?? `0${parsed?.suffix ?? ''}`) : value
 
   return (
     <span ref={ref} className={className}>

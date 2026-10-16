@@ -6,7 +6,7 @@ export default function Stagger({
   as: Tag = 'div',
   children,
   className = '',
-  step = 70,
+  step = 80,
   baseDelay = 0,
   once = true,
   ...props

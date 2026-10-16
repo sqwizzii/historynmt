@@ -1,41 +1,67 @@
 import { useEffect, useRef, useState } from 'react'
 
+function canUseIntersectionObserver() {
+  return typeof window !== 'undefined' && typeof IntersectionObserver !== 'undefined'
+}
+
+/**
+ * Observe element visibility. Content stays visible when:
+ * - motion is disabled,
+ * - IntersectionObserver is unavailable,
+ * - or the safety timeout fires (avoids permanently hidden UI).
+ */
 export function useInView({
   root = null,
-  rootMargin = '0px 0px -8% 0px',
-  threshold = 0.12,
+  rootMargin = '0px 0px -10% 0px',
+  threshold = 0.08,
   once = true,
   disabled = false,
+  fallbackMs = 1600,
 } = {}) {
   const ref = useRef(null)
-  const [inView, setInView] = useState(disabled)
+  const [observed, setObserved] = useState(false)
+  const observe = !disabled && canUseIntersectionObserver()
+  const inView = disabled || !observe || observed
 
   useEffect(() => {
-    if (disabled) {
-      setInView(true)
-      return undefined
-    }
+    if (!observe) return undefined
+
     const node = ref.current
-    if (!node || typeof IntersectionObserver === 'undefined') {
-      setInView(true)
-      return undefined
+    if (!node) {
+      const timer = window.setTimeout(() => setObserved(true), fallbackMs)
+      return () => window.clearTimeout(timer)
+    }
+
+    let settled = false
+    const reveal = () => {
+      if (settled) return
+      settled = true
+      setObserved(true)
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setInView(true)
+          reveal()
           if (once) observer.disconnect()
-        } else if (!once) {
-          setInView(false)
+          return
+        }
+        if (!once) {
+          settled = false
+          setObserved(false)
         }
       },
       { root, rootMargin, threshold },
     )
 
     observer.observe(node)
-    return () => observer.disconnect()
-  }, [root, rootMargin, threshold, once, disabled])
+    const timer = window.setTimeout(reveal, fallbackMs)
+
+    return () => {
+      observer.disconnect()
+      window.clearTimeout(timer)
+    }
+  }, [root, rootMargin, threshold, once, observe, fallbackMs])
 
   return [ref, inView]
 }

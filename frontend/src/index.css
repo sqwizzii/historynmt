@@ -53,7 +53,7 @@
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(22px);
   }
   to {
     opacity: 1;
@@ -73,7 +73,7 @@
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(28px) scale(0.985);
+    transform: translateY(40px) scale(0.96);
   }
   to {
     opacity: 1;
@@ -87,7 +87,7 @@
     transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(3%, 4%, 0) scale(1.06);
+    transform: translate3d(5%, 6%, 0) scale(1.1);
   }
 }
 
@@ -97,14 +97,14 @@
     transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(-4%, -3%, 0) scale(1.08);
+    transform: translate3d(-6%, -5%, 0) scale(1.12);
   }
 }
 
 @keyframes modal-in {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.97);
+    transform: translateY(18px) scale(0.96);
   }
   to {
     opacity: 1;
@@ -133,7 +133,7 @@
 @keyframes alert-in {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;
@@ -144,7 +144,7 @@
 @keyframes question-swap {
   from {
     opacity: 0;
-    transform: translateX(12px);
+    transform: translateX(16px);
   }
   to {
     opacity: 1;
@@ -227,8 +227,8 @@ h3 {
   left: -8%;
   width: min(62vw, 42rem);
   height: min(62vw, 42rem);
-  background: radial-gradient(circle, rgb(81 70 229 / 0.55) 0%, transparent 68%);
-  animation: hero-orb 14s ease-in-out infinite;
+  background: radial-gradient(circle, rgb(81 70 229 / 0.62) 0%, transparent 68%);
+  animation: hero-orb 11s ease-in-out infinite;
 }
 
 .hero-orbs::after {
@@ -236,8 +236,8 @@ h3 {
   bottom: -22%;
   width: min(48vw, 32rem);
   height: min(48vw, 32rem);
-  background: radial-gradient(circle, rgb(57 48 184 / 0.42) 0%, transparent 70%);
-  animation: hero-orb-alt 18s ease-in-out infinite;
+  background: radial-gradient(circle, rgb(57 48 184 / 0.5) 0%, transparent 70%);
+  animation: hero-orb-alt 14s ease-in-out infinite;
 }
 
 .bg-mesh {
@@ -260,23 +260,22 @@ h3 {
 .motion-reveal {
   --motion-delay: 0ms;
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(28px);
   transition:
-    opacity 0.65s var(--ease-out-expo) var(--motion-delay),
-    transform 0.65s var(--ease-out-expo) var(--motion-delay);
-  will-change: opacity, transform;
+    opacity 0.55s var(--ease-out-expo) var(--motion-delay),
+    transform 0.55s var(--ease-out-expo) var(--motion-delay);
 }
 
 .motion-reveal--left {
-  transform: translateX(-18px);
+  transform: translateX(-28px);
 }
 
 .motion-reveal--right {
-  transform: translateX(18px);
+  transform: translateX(28px);
 }
 
 .motion-reveal--scale {
-  transform: translateY(10px) scale(0.97);
+  transform: translateY(16px) scale(0.94);
 }
 
 .motion-reveal.is-visible {
@@ -287,10 +286,10 @@ h3 {
 .motion-stagger-item {
   --motion-delay: 0ms;
   opacity: 0;
-  transform: translateY(14px);
+  transform: translateY(22px);
   transition:
-    opacity 0.55s var(--ease-out-expo) var(--motion-delay),
-    transform 0.55s var(--ease-out-expo) var(--motion-delay);
+    opacity 0.48s var(--ease-out-expo) var(--motion-delay),
+    transform 0.48s var(--ease-out-expo) var(--motion-delay);
 }
 
 .motion-stagger.is-visible .motion-stagger-item {
@@ -300,66 +299,76 @@ h3 {
 
 .motion-tilt {
   transform-style: preserve-3d;
-  transition: transform 0.35s var(--ease-out-expo);
-  will-change: transform;
+  transition: transform 0.28s var(--ease-out-expo);
 }
 
 .hero-enter > * {
   opacity: 0;
-  animation: fade-up 0.7s var(--ease-out-expo) both;
+  animation: fade-up 0.62s var(--ease-out-expo) both;
 }
 
 .hero-enter > *:nth-child(1) {
-  animation-delay: 0.05s;
+  animation-delay: 0.04s;
 }
 
 .hero-enter > *:nth-child(2) {
-  animation-delay: 0.14s;
+  animation-delay: 0.12s;
 }
 
 .hero-enter > *:nth-child(3) {
-  animation-delay: 0.22s;
+  animation-delay: 0.2s;
 }
 
 .hero-enter > *:nth-child(4) {
-  animation-delay: 0.3s;
+  animation-delay: 0.28s;
 }
 
 .hero-enter > *:nth-child(5) {
-  animation-delay: 0.38s;
+  animation-delay: 0.36s;
 }
 
 .hero-preview-enter {
-  animation: rise 0.9s var(--ease-out-expo) 0.35s both;
+  animation: rise 0.78s var(--ease-out-expo) 0.28s both;
 }
 
 .motion-modal-backdrop {
-  animation: backdrop-in 0.22s ease both;
-}
-
-.motion-modal-panel {
-  animation: modal-in 0.32s var(--ease-out-expo) both;
-}
-
-.motion-drawer-backdrop {
   animation: backdrop-in 0.2s ease both;
 }
 
+.motion-modal-panel {
+  animation: modal-in 0.34s var(--ease-out-expo) both;
+}
+
+.motion-drawer-backdrop {
+  animation: backdrop-in 0.18s ease both;
+}
+
 .motion-drawer-panel {
-  animation: drawer-in 0.32s var(--ease-out-expo) both;
+  animation: drawer-in 0.34s var(--ease-out-expo) both;
 }
 
 .motion-alert {
-  animation: alert-in 0.28s var(--ease-out-expo) both;
+  animation: alert-in 0.26s var(--ease-out-expo) both;
 }
 
 .motion-question {
-  animation: question-swap 0.28s var(--ease-out-expo) both;
+  animation: question-swap 0.26s var(--ease-out-expo) both;
 }
 
 .motion-progress-fill {
   transform-origin: left center;
-  animation: progress-grow 0.55s var(--ease-out-expo) both;
+  animation: progress-grow 0.5s var(--ease-out-expo) both;
+}
+
+@media (scripting: none) {
+  .motion-reveal,
+  .motion-stagger-item,
+  .hero-enter > *,
+  .hero-preview-enter {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
 }
 
 .stagger > * {

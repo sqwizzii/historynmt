@@ -46,7 +46,7 @@ const PLANS = [
 
 function ProductPreview() {
   return (
-    <Tilt className="hero-preview-enter relative w-full" max={5} aria-hidden="true">
+    <Tilt className="hero-preview-enter relative w-full" max={9} aria-hidden="true">
       <div className="overflow-hidden rounded-t-[1.25rem] border border-white/12 bg-[#12131c]/75 shadow-dock backdrop-blur-md">
         <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
           <span className="h-2.5 w-2.5 rounded-full bg-white/20" />

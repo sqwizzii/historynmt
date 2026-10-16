@@ -68,7 +68,7 @@ function Sidebar({ user, onNavigate, dark = true }) {
                   {({ isActive }) => (
                     <>
                       <span
-                        className={`nav-link-indicator absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-indigo-400 ${
+                        className={`nav-link-indicator absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-indigo-400 ${
                           isActive ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-50'
                         }`}
                         aria-hidden="true"
