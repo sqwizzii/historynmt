@@ -151,36 +151,36 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <header className="mb-6">
+      <header className="mb-6 rounded-[0.875rem] border border-[#E6E8F0] bg-white p-4 shadow-card sm:p-5">
         <div className="flex items-start justify-between gap-4">
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">{test.title}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-[#20212B] sm:text-2xl">{test.title}</h1>
           <span
             role="timer"
             aria-label="Залишилось часу"
             className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-semibold tabular-nums ${
-              lowTime ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'
+              lowTime ? 'bg-red-50 text-red-700 ring-1 ring-red-200' : 'bg-indigo-50 text-indigo-800'
             }`}
           >
             <Clock className="h-4 w-4" aria-hidden="true" />
             {formatRemaining(remainingMs)}
           </span>
         </div>
-        <p className="mt-3 flex items-start gap-2 rounded-lg bg-slate-100 px-3 py-2 text-xs text-slate-900">
-          <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+        <p className="mt-3 flex items-start gap-2 rounded-xl bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
+          <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden="true" />
           <span>
             Не залишайте сторінку: виходи фіксуються (поки що: {leaves}), а відсутність понад {AWAY_LIMIT_SECONDS} с автоматично завершить тест.
             {notice && <strong className="mt-1 block">{notice}</strong>}
           </span>
         </p>
         <div className="mt-4">
-          <div className="mb-1.5 flex justify-between text-xs text-slate-500">
+          <div className="mb-1.5 flex justify-between text-xs text-[#73758A]">
             <span>
               Відповіли: {answeredCount} з {questions.length}
             </span>
             <span>{Math.round((answeredCount / questions.length) * 100)}%</span>
           </div>
-          <div className="h-2 overflow-hidden rounded-xl bg-slate-200">
-            <div className="h-full rounded-xl bg-blue-600 transition-all" style={{ width: `${(answeredCount / questions.length) * 100}%` }} />
+          <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-full rounded-full bg-indigo-600 transition-all" style={{ width: `${(answeredCount / questions.length) * 100}%` }} />
           </div>
         </div>
       </header>
@@ -196,12 +196,12 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
               onClick={() => setIndex(i)}
               aria-current={current ? 'step' : undefined}
               aria-label={`Питання ${i + 1}${done ? ', є відповідь' : ''}`}
-              className={`h-9 w-9 rounded-lg border text-sm font-semibold transition-colors ${
+              className={`h-9 min-w-9 rounded-xl border px-2 text-sm font-semibold transition-colors ${
                 current
-                  ? 'border-blue-700 bg-blue-700 text-white'
+                  ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm'
                   : done
-                    ? 'border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
+                    ? 'border-indigo-200 bg-indigo-50 text-indigo-800 hover:bg-indigo-100'
+                    : 'border-[#E6E8F0] bg-white text-slate-600 hover:bg-slate-50'
               }`}
             >
               {i + 1}

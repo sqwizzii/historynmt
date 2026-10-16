@@ -35,9 +35,9 @@ export default function Account() {
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900">Профіль</h1>
-      <p className="mt-1 text-sm text-slate-600">
-        Акаунт: <span className="font-semibold text-slate-800">{user.username}</span>
+      <h1 className="text-2xl font-semibold tracking-tight text-[#20212B]">Профіль</h1>
+      <p className="mt-1.5 text-sm text-[#73758A]">
+        Акаунт: <span className="font-semibold text-[#20212B]">{user.username}</span>
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-card" noValidate>

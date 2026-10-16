@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import PageHeader from '../components/PageHeader.jsx'
 import { ErrorState, LoadingState } from '../components/PageState.jsx'
 import StatCard from '../components/StatCard.jsx'
-import { badgeClass, cardClass, primaryButtonClass, secondaryButtonClass } from '../components/styles.js'
+import { badgeClass, cardClass, cardInteractiveClass, primaryButtonClass, secondaryButtonClass } from '../components/styles.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useAsyncData } from '../hooks/useAsyncData.js'
 import { adminService, getErrorMessage, resultService, subscriptionService, testService } from '../services/api.js'
@@ -11,31 +11,36 @@ import { formatDate } from '../utils/format.js'
 
 function QuickLink({ to, title, text, Icon }) {
   return (
-    <Link to={to} className={`${cardClass} group flex items-start gap-4 p-5 transition hover:-translate-y-0.5 hover:shadow-lift`}>
+    <Link to={to} className={`${cardInteractiveClass} group flex items-start gap-4 p-5`}>
       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
         <Icon className="h-5 w-5" aria-hidden="true" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="flex items-center justify-between font-semibold text-slate-900">
+        <span className="flex items-center justify-between gap-2 font-semibold text-[#20212B]">
           {title}
-          <ArrowRight className="h-4 w-4 text-slate-400 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+          <ArrowRight className="h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-indigo-600" aria-hidden="true" />
         </span>
-        <span className="mt-0.5 block text-sm text-slate-600">{text}</span>
+        <span className="mt-0.5 block text-sm text-[#73758A]">{text}</span>
       </span>
     </Link>
   )
 }
 
 function ResultsList({ results, showStudent }) {
-  if (results.length === 0) return <p className="px-5 py-8 text-center text-sm text-slate-500">Результатів поки немає.</p>
+  if (results.length === 0) {
+    return <p className="px-5 py-10 text-center text-sm text-[#73758A]">Результатів поки немає.</p>
+  }
   return (
-    <ul className="divide-y divide-slate-100">
+    <ul className="divide-y divide-[#E6E8F0]">
       {results.slice(0, 5).map((r) => (
         <li key={r.id}>
-          <Link to={`/results/${r.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
+          <Link to={`/results/${r.id}`} className="flex items-center justify-between gap-3 px-5 py-3.5 transition hover:bg-slate-50">
             <span className="min-w-0">
-              <span className="block truncate text-sm font-medium text-slate-900">{r.testTitle}</span>
-              <span className="block text-xs text-slate-500">{showStudent ? `${r.studentName} · ` : ''}{formatDate(r.completedAt)}</span>
+              <span className="block truncate text-sm font-medium text-[#20212B]">{r.testTitle}</span>
+              <span className="block text-xs text-[#73758A]">
+                {showStudent ? `${r.studentName} · ` : ''}
+                {formatDate(r.completedAt)}
+              </span>
             </span>
             <span className={badgeClass('indigo')}>{r.nmtScore ?? r.score}</span>
           </Link>
@@ -60,7 +65,7 @@ function StudentDashboard() {
       </div>
       <div className="mt-6 grid gap-6 lg:grid-cols-[3fr_2fr]">
         <section className={cardClass}>
-          <h2 className="border-b border-slate-100 px-5 py-4 font-semibold text-slate-900">Останні результати</h2>
+          <h2 className="border-b border-[#E6E8F0] px-5 py-4 font-semibold text-[#20212B]">Останні результати</h2>
           <ResultsList results={results.data} />
         </section>
         <div className="space-y-4">
@@ -86,11 +91,21 @@ function TeacherDashboard() {
         <StatCard label="Мої тести" value={mine.length} Icon={ClipboardList} />
         <StatCard label="Учні" value={students.data.length} Icon={Users} />
         <StatCard label="Спроби учнів" value={results.data.length} Icon={BarChart3} />
-        <StatCard label="Підписка" value={sub.data.active ? 'Активна' : 'Не активна'} hint={sub.data.expiresAt ? `до ${formatDate(sub.data.expiresAt)}` : undefined} Icon={CreditCard} />
+        <StatCard
+          label="Підписка"
+          value={sub.data.active ? 'Активна' : 'Не активна'}
+          hint={sub.data.expiresAt ? `до ${formatDate(sub.data.expiresAt)}` : undefined}
+          Icon={CreditCard}
+        />
       </div>
       <div className="mt-6 grid gap-6 lg:grid-cols-[3fr_2fr]">
         <section className={cardClass}>
-          <h2 className="border-b border-slate-100 px-5 py-4 font-semibold text-slate-900">Останні результати учнів</h2>
+          <div className="flex items-center justify-between border-b border-[#E6E8F0] px-5 py-4">
+            <h2 className="font-semibold text-[#20212B]">Останні результати учнів</h2>
+            <Link to="/teacher/students" className="text-sm font-medium text-indigo-700 hover:underline">
+              Усі
+            </Link>
+          </div>
           <ResultsList results={results.data} showStudent />
         </section>
         <div className="space-y-4">
@@ -109,7 +124,7 @@ function AdminDashboard() {
   if (!data) return <LoadingState />
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard label="Користувачі" value={data.users} hint={`${data.admins} адмін. · ${data.teachers} вчителів · ${data.students} учнів`} Icon={Users} />
         <StatCard label="Тести" value={data.tests} hint={`${data.systemTests} системних`} Icon={ClipboardList} />
         <StatCard label="Модулі карток" value={data.modules} hint={`${data.systemModules} системних`} Icon={Layers} />
@@ -128,8 +143,8 @@ function AdminDashboard() {
 
 const TITLES = {
   STUDENT: ['Мій кабінет', 'Ваші тести, результати й прогрес.'],
-  TEACHER: ['Кабінет вчителя', 'Огляд ваших матеріалів, учнів та результатів.'],
-  ADMIN: ['Огляд платформи', 'Загальний стан платформи.'],
+  TEACHER: ['Кабінет вчителя', 'Огляд матеріалів, учнів та результатів.'],
+  ADMIN: ['Огляд платформи', 'Загальний стан Masterly.'],
 }
 
 export default function Dashboard() {
@@ -140,8 +155,17 @@ export default function Dashboard() {
       <PageHeader
         title={title}
         description={description}
-        actions={user.role === 'TEACHER' ? <Link to="/teacher/tests" className={primaryButtonClass}>Новий тест</Link>
-          : user.role === 'STUDENT' ? <Link to="/tests" className={secondaryButtonClass}>До тестів</Link> : null}
+        actions={
+          user.role === 'TEACHER' ? (
+            <Link to="/teacher/tests" className={primaryButtonClass}>
+              Новий тест
+            </Link>
+          ) : user.role === 'STUDENT' ? (
+            <Link to="/tests" className={secondaryButtonClass}>
+              До тестів
+            </Link>
+          ) : null
+        }
       />
       {user.role === 'STUDENT' && <StudentDashboard />}
       {user.role === 'TEACHER' && <TeacherDashboard />}

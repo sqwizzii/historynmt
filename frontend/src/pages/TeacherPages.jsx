@@ -6,7 +6,7 @@ import TestsManager from '../components/teacher/TestsManager.jsx'
 export function TeacherTests() {
   return (
     <>
-      <PageHeader title="Мої тести" description="Створюйте тести за предметами й класами, додавайте питання, призначайте їх учням і дивіться статистику." />
+      <PageHeader title="Мої тести" description="Створюйте тести, додавайте питання, призначайте їх учням і дивіться статистику." />
       <TestsManager />
     </>
   )

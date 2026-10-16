@@ -1,4 +1,5 @@
 import OptionImage from '../OptionImage.jsx'
+
 export default function SingleChoice({ question, value, onChange }) {
   const selected = value?.selectedOptionIds?.[0]
 
@@ -9,8 +10,10 @@ export default function SingleChoice({ question, value, onChange }) {
         return (
           <label
             key={option.id}
-            className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-blue-600/40 ${
-              checked ? 'border-blue-600 bg-blue-50 ' : 'border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/50'
+            className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-500/40 ${
+              checked
+                ? 'border-indigo-500 bg-indigo-50 shadow-sm'
+                : 'border-[#E6E8F0] bg-white hover:border-indigo-200 hover:bg-indigo-50/40'
             }`}
           >
             <input
@@ -21,13 +24,13 @@ export default function SingleChoice({ question, value, onChange }) {
               className="sr-only"
             />
             <span
-              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border text-xs font-bold ${
-                checked ? 'border-blue-700 bg-indigo-600 text-white' : 'border-slate-300 text-slate-600'
+              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-xs font-bold ${
+                checked ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300 text-slate-600'
               }`}
             >
               {String.fromCharCode(1040 + index)}
             </span>
-            <span className="pt-0.5 text-sm text-slate-800">
+            <span className="pt-0.5 text-sm leading-relaxed text-[#20212B]">
               {option.optionText}
               <OptionImage src={option.imageUrl} />
             </span>

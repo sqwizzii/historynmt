@@ -22,7 +22,7 @@ export default function Matching({ question, value, onChange }) {
         <ul className="space-y-2">
           {choices.map((choice, index) => (
             <li key={choice} className="flex items-start gap-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-800">
-              <span className="font-bold text-blue-700">{LETTERS[index]}</span>
+              <span className="font-bold text-indigo-700">{LETTERS[index]}</span>
               <span>{choice}</span>
             </li>
           ))}
@@ -45,7 +45,7 @@ export default function Matching({ question, value, onChange }) {
                 <select
                   value={matches[option.id] ?? ''}
                   onChange={(event) => select(option.id, event.target.value)}
-                  className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                  className="block w-full rounded-xl border border-[#E6E8F0] bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 >
                   <option value="">Оберіть відповідь…</option>
                   {choices.map((choice, choiceIndex) => (

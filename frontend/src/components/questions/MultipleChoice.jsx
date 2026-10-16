@@ -11,26 +11,28 @@ export default function MultipleChoice({ question, value, onChange }) {
 
   return (
     <div>
-      <p className="mb-3 text-xs text-slate-500">Оберіть усі правильні варіанти. Обрано: {selected.length}</p>
+      <p className="mb-3 text-xs text-[#73758A]">Оберіть усі правильні варіанти. Обрано: {selected.length}</p>
       <div className="space-y-2.5">
         {question.options.map((option, index) => {
           const checked = selected.includes(option.id)
           return (
             <label
               key={option.id}
-              className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-blue-600/40 ${
-                checked ? 'border-blue-600 bg-blue-50' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+              className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-500/40 ${
+                checked
+                  ? 'border-indigo-500 bg-indigo-50 shadow-sm'
+                  : 'border-[#E6E8F0] hover:border-indigo-200 hover:bg-indigo-50/40'
               }`}
             >
               <input type="checkbox" checked={checked} onChange={() => toggle(option.id)} className="sr-only" />
               <span
-                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md border text-xs font-bold ${
-                  checked ? 'border-blue-700 bg-blue-700 text-white' : 'border-slate-300 text-slate-600'
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-xs font-bold ${
+                  checked ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300 text-slate-600'
                 }`}
               >
                 {checked ? <Check className="h-4 w-4" aria-hidden="true" /> : index + 1}
               </span>
-              <span className="pt-0.5 text-sm text-slate-800">
+              <span className="pt-0.5 text-sm leading-relaxed text-[#20212B]">
                 {option.optionText}
                 <OptionImage src={option.imageUrl} />
               </span>

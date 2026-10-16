@@ -20,16 +20,28 @@ export default function Subscription() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <PageHeader title="Тарифи" description="Два плани з однаковими можливостями: відрізняється лише період доступу. Учням підписка не потрібна." />
+      <PageHeader
+        title="Тарифи"
+        description="Два плани з однаковими можливостями: відрізняється лише період доступу. Учням підписка не потрібна."
+      />
       {status && (
-        <section className={`${cardClass} mb-6 flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between`} aria-live="polite">
+        <section
+          className={`${cardClass} mb-6 flex flex-col gap-3 border-l-4 p-5 sm:flex-row sm:items-center sm:justify-between ${
+            status.active ? 'border-l-emerald-500' : 'border-l-amber-500'
+          }`}
+          aria-live="polite"
+        >
           <div className="flex items-start gap-3">
-            <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${status.active ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+            <span
+              className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+                status.active ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+              }`}
+            >
               <Clock className="h-5 w-5" aria-hidden="true" />
             </span>
             <div>
-              <p className="font-semibold text-slate-900">{status.active ? 'Підписка активна' : 'Підписка не активна'}</p>
-              <p className="text-sm text-slate-600">
+              <p className="font-semibold text-[#20212B]">{status.active ? 'Підписка активна' : 'Підписка не активна'}</p>
+              <p className="mt-0.5 text-sm text-[#73758A]">
                 {status.expiresAt
                   ? `Діє до ${formatDate(status.expiresAt)}`
                   : status.legacyFreeAccess
@@ -41,10 +53,17 @@ export default function Subscription() {
         </section>
       )}
       <PlanCards plans={plans.data} highlight={status?.active ? status.plan : null} />
-      <section className={`${cardClass} mt-6 p-5 text-sm text-slate-600`}>
-        <h2 className="mb-1 text-base font-semibold text-slate-900">Як активувати доступ</h2>
-        <p>Онлайн-оплата поки не підключена. Підписку активує, продовжує або скасовує адміністратор платформи вручну; після активації доступ відкривається автоматично.</p>
-        {!isAuthenticated && <Link to="/register/teacher" className={`${primaryButtonClass} mt-4`}>Створити акаунт вчителя</Link>}
+      <section className={`${cardClass} mt-6 p-5 text-sm text-[#73758A]`}>
+        <h2 className="mb-1.5 text-base font-semibold text-[#20212B]">Як активувати доступ</h2>
+        <p className="leading-relaxed">
+          Онлайн-оплата поки не підключена. Підписку активує, продовжує або скасовує адміністратор платформи вручну;
+          після активації доступ відкривається автоматично.
+        </p>
+        {!isAuthenticated && (
+          <Link to="/register/teacher" className={`${primaryButtonClass} mt-4`}>
+            Створити акаунт вчителя
+          </Link>
+        )}
       </section>
     </div>
   )

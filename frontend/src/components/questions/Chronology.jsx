@@ -24,7 +24,7 @@ export default function Chronology({ question, value, onChange }) {
         {orderedIds.map((id, index) => (
           <li
             key={id}
-            className={`flex items-center gap-3 rounded-xl border p-3 ${touched ? 'border-blue-200 bg-blue-50/50' : 'border-slate-200'}`}
+            className={`flex items-center gap-3 rounded-xl border p-3 ${touched ? 'border-indigo-200 bg-indigo-50/50' : 'border-[#E6E8F0]'}`}
           >
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-xs font-bold text-slate-700">
               {index + 1}
