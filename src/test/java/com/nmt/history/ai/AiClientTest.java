@@ -21,6 +21,7 @@ class AiClientTest {
     private final AtomicReference<String> auth = new AtomicReference<>();
     private final AtomicReference<String> requestBody = new AtomicReference<>();
     private volatile int status = 200;
+    private volatile long delayMs = 0;
     private volatile String responseBody = "{\"choices\":[{\"message\":{\"content\":\"  Пояснення  \"}}]}";
 
     @BeforeEach
@@ -28,6 +29,13 @@ class AiClientTest {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/v1/chat/completions", exchange -> {
             calls.incrementAndGet();
+            if (delayMs > 0) {
+                try {
+                    Thread.sleep(delayMs);
+                } catch (InterruptedException ignored) {
+                    Thread.currentThread().interrupt();
+                }
+            }
             auth.set(exchange.getRequestHeaders().getFirst("Authorization"));
             requestBody.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
             byte[] bytes = responseBody.getBytes(StandardCharsets.UTF_8);
@@ -44,7 +52,7 @@ class AiClientTest {
     }
 
     private AiClient client(String key) {
-        return new AiClient(new ObjectMapper(), key, "http://127.0.0.1:" + server.getAddress().getPort() + "/v1", "m", 300, 5);
+        return new AiClient(new ObjectMapper(), key, "http://127.0.0.1:" + server.getAddress().getPort() + "/v1", "m", 300, 5, "");
     }
 
     @Test
@@ -77,5 +85,71 @@ class AiClientTest {
     void unreachableServerGivesEmptyResult() {
         server.stop(0);
         assertTrue(client("k").complete("s", "u").isEmpty());
+    }
+
+    private AiClient clientWith(String key, String effort, long timeoutSeconds) {
+        return new AiClient(new ObjectMapper(), key, "http://127.0.0.1:" + server.getAddress().getPort() + "/v1/", "gemini-x", 800, timeoutSeconds, effort);
+    }
+
+    @Test
+    void classifiesProviderErrorsAndExtractsTheirMessageWithoutTheKey() {
+        record Case(int status, String body, AiResult.Failure expected) { }
+        for (Case c : new Case[] {
+                new Case(401, "{\"error\":{\"message\":\"API key not valid: secret-key-xyz\"}}", AiResult.Failure.AUTH),
+                new Case(403, "[{\"error\":{\"code\":403,\"message\":\"Permission denied\"}}]", AiResult.Failure.AUTH),
+                new Case(404, "{\"error\":{\"message\":\"models/x is not found\"}}", AiResult.Failure.NOT_FOUND),
+                new Case(429, "{\"error\":{\"message\":\"Quota exceeded\"}}", AiResult.Failure.RATE_LIMITED),
+                new Case(400, "{\"error\":{\"message\":\"Unknown field reasoning_effort\"}}", AiResult.Failure.BAD_REQUEST),
+                new Case(503, "Service Unavailable", AiResult.Failure.SERVER_ERROR)}) {
+            status = c.status();
+            responseBody = c.body();
+            AiResult result = clientWith("secret-key-xyz", "", 5).generate("s", "u");
+            assertFalse(result.isOk());
+            assertEquals(c.expected(), result.failure(), "status " + c.status());
+            assertEquals(c.status(), result.status());
+            assertFalse(result.providerMessage().contains("secret-key-xyz"), "ключ не має потрапляти у діагностику");
+        }
+        status = 401;
+        responseBody = "{\"error\":{\"message\":\"API key not valid: secret-key-xyz\"}}";
+        assertEquals("API key not valid: ***", clientWith("secret-key-xyz", "", 5).generate("s", "u").providerMessage());
+    }
+
+    @Test
+    void classifiesFormatTruncationAndTimeoutProblems() {
+        responseBody = "not json";
+        assertEquals(AiResult.Failure.BAD_RESPONSE, clientWith("k", "", 5).generate("s", "u").failure());
+        responseBody = "{\"choices\":[]}";
+        assertEquals(AiResult.Failure.BAD_RESPONSE, clientWith("k", "", 5).generate("s", "u").failure());
+        responseBody = "{\"choices\":[{\"finish_reason\":\"length\",\"message\":{\"content\":null}}]}";
+        AiResult truncated = clientWith("k", "", 5).generate("s", "u");
+        assertEquals(AiResult.Failure.TRUNCATED, truncated.failure());
+        assertTrue(truncated.providerMessage().contains("length"));
+        responseBody = "{\"choices\":[{\"finish_reason\":\"stop\",\"message\":{\"content\":\"   \"}}]}";
+        assertEquals(AiResult.Failure.BAD_RESPONSE, clientWith("k", "", 5).generate("s", "u").failure());
+
+        responseBody = "{\"choices\":[{\"message\":{\"content\":\"ok\"}}]}";
+        delayMs = 2500;
+        assertEquals(AiResult.Failure.TIMEOUT, clientWith("k", "", 1).generate("s", "u").failure());
+    }
+
+    @Test
+    void sendsReasoningEffortOnlyWhenConfiguredAndNormalizesTheBaseUrl() {
+        clientWith("k", "low", 5).generate("s", "u");
+        assertTrue(requestBody.get().contains("\"reasoning_effort\":\"low\""));
+        assertTrue(requestBody.get().contains("\"model\":\"gemini-x\""));
+        assertTrue(requestBody.get().contains("\"max_tokens\":800"));
+        clientWith("k", "", 5).generate("s", "u");
+        assertFalse(requestBody.get().contains("reasoning_effort"));
+
+        assertEquals("https://h/v1/chat/completions", AiClient.endpointOf("https://h/v1"));
+        assertEquals("https://h/v1/chat/completions", AiClient.endpointOf("https://h/v1/"));
+        assertEquals("https://h/v1/chat/completions", AiClient.endpointOf("https://h/v1/chat/completions"));
+        assertEquals("https://h/v1beta/openai/chat/completions", AiClient.endpointOf(" https://h/v1beta/openai/ "));
+    }
+
+    @Test
+    void toleratesQuotedKeysAndBearerPrefix() {
+        clientWith("\"Bearer quoted-key\"", "", 5).generate("s", "u");
+        assertEquals("Bearer quoted-key", auth.get());
     }
 }
