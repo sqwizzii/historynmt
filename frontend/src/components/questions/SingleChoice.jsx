@@ -10,9 +10,9 @@ export default function SingleChoice({ question, value, onChange }) {
         return (
           <label
             key={option.id}
-            className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-500/40 ${
+            className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-all duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-500/40 ${
               checked
-                ? 'border-indigo-500 bg-indigo-50'
+                ? 'scale-[1.01] border-indigo-500 bg-indigo-50 shadow-[0_0_0_1px_rgb(81_70_229/0.15)]'
                 : 'border-[var(--color-line)] bg-white hover:border-indigo-200 hover:bg-indigo-50/30'
             }`}
           >

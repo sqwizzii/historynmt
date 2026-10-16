@@ -28,7 +28,7 @@ export function ErrorState({ message, onRetry }) {
 
 export function EmptyState({ title, text, action, actionLabel, icon: Icon = Inbox }) {
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-dashed border-[#c9ced9] bg-white/70 px-6 py-14 text-center">
+    <div className="motion-reveal is-visible mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-dashed border-[#c9ced9] bg-white/70 px-6 py-14 text-center">
       <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--color-ink)] text-white">
         <Icon className="h-5 w-5" aria-hidden="true" />
       </span>

@@ -180,7 +180,10 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
             <span>{Math.round((answeredCount / questions.length) * 100)}%</span>
           </div>
           <div className="h-1 overflow-hidden rounded-full bg-[var(--color-surface-muted)]">
-            <div className="h-full rounded-full bg-indigo-600 transition-all" style={{ width: `${(answeredCount / questions.length) * 100}%` }} />
+            <div
+              className="h-full rounded-full bg-indigo-600 transition-[width] duration-500 ease-out"
+              style={{ width: `${(answeredCount / questions.length) * 100}%` }}
+            />
           </div>
         </div>
       </header>
@@ -210,8 +213,8 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
         })}
       </nav>
 
+      <div key={question.id} className="motion-question">
       <QuestionCard
-        key={question.id}
         question={question}
         number={index + 1}
         total={questions.length}
@@ -229,6 +232,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
         )}
         {feedback[question.id] && <AnswerFeedback item={feedback[question.id]} testId={testId} />}
       </QuestionCard>
+      </div>
 
       <div className="mt-6 flex items-center justify-between gap-3">
         <button type="button" onClick={() => setIndex((i) => i - 1)} disabled={index === 0} className={secondaryButtonClass}>

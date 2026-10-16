@@ -2,6 +2,7 @@ import { ArrowRight, CalendarDays, ClipboardList, Clock } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PageHeader from '../PageHeader.jsx'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
+import Stagger from '../motion/Stagger.jsx'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, testService } from '../../services/api.js'
 import { formatDate, pluralize } from '../../utils/format.js'
@@ -19,15 +20,19 @@ export default function TestList() {
       {tests.length === 0 ? (
         <EmptyState title="Тестів поки немає" text="Вчитель ще не додав жодного тесту." />
       ) : (
-        <ul className="divide-y divide-[var(--color-line)] overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-card">
+        <Stagger
+          as="ul"
+          className="divide-y divide-[var(--color-line)] overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-card"
+          step={45}
+        >
           {tests.map((test) => (
             <li key={test.id}>
               <Link
                 to={`/tests/${test.id}`}
-                className="group flex flex-col gap-3 px-4 py-4 transition hover:bg-[var(--color-surface-muted)] sm:flex-row sm:items-center sm:justify-between sm:px-5"
+                className="group flex flex-col gap-3 px-4 py-4 transition duration-200 hover:bg-[var(--color-surface-muted)] sm:flex-row sm:items-center sm:justify-between sm:px-5"
               >
                 <div className="flex min-w-0 items-start gap-3.5">
-                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white">
+                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white transition duration-200 group-hover:scale-105 group-hover:bg-indigo-600">
                     <ClipboardList className="h-4 w-4" aria-hidden="true" />
                   </span>
                   <div className="min-w-0">
@@ -57,7 +62,7 @@ export default function TestList() {
               </Link>
             </li>
           ))}
-        </ul>
+        </Stagger>
       )}
     </div>
   )

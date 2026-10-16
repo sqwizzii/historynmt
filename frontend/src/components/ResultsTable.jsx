@@ -23,7 +23,7 @@ export default function ResultsTable({ results, showStudent = false }) {
         </thead>
         <tbody className="divide-y divide-[var(--color-line-soft)]">
           {results.map((r) => (
-            <tr key={r.id} className="transition hover:bg-[var(--color-surface-muted)]">
+            <tr key={r.id} className="transition-colors duration-150 hover:bg-[var(--color-surface-muted)]">
               {showStudent && <td className="px-4 py-3 font-medium text-[var(--color-ink)]">{r.studentName}</td>}
               <td className="px-4 py-3 text-[#2f313c]">{r.testTitle}</td>
               <td className="px-4 py-3 tabular-nums text-[#2f313c]">{r.score}</td>

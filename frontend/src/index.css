@@ -43,9 +43,11 @@
   --shadow-card: 0 1px 0 rgb(11 12 16 / 0.04), 0 1px 2px rgb(11 12 16 / 0.04);
   --shadow-lift: 0 1px 0 rgb(11 12 16 / 0.05), 0 18px 40px -24px rgb(11 12 16 / 0.28);
   --shadow-dock: 0 0 0 1px rgb(255 255 255 / 0.06), 0 24px 48px -20px rgb(0 0 0 / 0.55);
-  --animate-fade-up: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.2, 0.64, 1);
+  --animate-fade-up: fade-up 0.55s var(--ease-out-expo) both;
   --animate-fade-in: fade-in 0.4s ease both;
-  --animate-rise: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-rise: rise 0.75s var(--ease-out-expo) both;
 }
 
 @keyframes fade-up {
@@ -76,6 +78,96 @@
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes hero-orb {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, 4%, 0) scale(1.06);
+  }
+}
+
+@keyframes hero-orb-alt {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-4%, -3%, 0) scale(1.08);
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes alert-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes question-swap {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes progress-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
   }
 }
 
@@ -110,11 +202,42 @@ h3 {
 
 .bg-hero {
   background-color: #0b0c10;
-  background-image:
-    radial-gradient(ellipse 70% 55% at 15% 0%, rgb(81 70 229 / 0.45) 0%, transparent 58%),
-    radial-gradient(ellipse 45% 40% at 92% 88%, rgb(57 48 184 / 0.28) 0%, transparent 50%),
-    linear-gradient(180deg, #12131a 0%, #0b0c10 100%);
+  background-image: linear-gradient(180deg, #12131a 0%, #0b0c10 100%);
   color: #fff;
+}
+
+.hero-orbs {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero-orbs::before,
+.hero-orbs::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(8px);
+  will-change: transform;
+}
+
+.hero-orbs::before {
+  top: -18%;
+  left: -8%;
+  width: min(62vw, 42rem);
+  height: min(62vw, 42rem);
+  background: radial-gradient(circle, rgb(81 70 229 / 0.55) 0%, transparent 68%);
+  animation: hero-orb 14s ease-in-out infinite;
+}
+
+.hero-orbs::after {
+  right: -10%;
+  bottom: -22%;
+  width: min(48vw, 32rem);
+  height: min(48vw, 32rem);
+  background: radial-gradient(circle, rgb(57 48 184 / 0.42) 0%, transparent 70%);
+  animation: hero-orb-alt 18s ease-in-out infinite;
 }
 
 .bg-mesh {
@@ -133,6 +256,112 @@ h3 {
     radial-gradient(ellipse 50% 40% at 90% 90%, rgb(57 48 184 / 0.25), transparent 50%);
 }
 
+/* —— Motion primitives —— */
+.motion-reveal {
+  --motion-delay: 0ms;
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.65s var(--ease-out-expo) var(--motion-delay),
+    transform 0.65s var(--ease-out-expo) var(--motion-delay);
+  will-change: opacity, transform;
+}
+
+.motion-reveal--left {
+  transform: translateX(-18px);
+}
+
+.motion-reveal--right {
+  transform: translateX(18px);
+}
+
+.motion-reveal--scale {
+  transform: translateY(10px) scale(0.97);
+}
+
+.motion-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.motion-stagger-item {
+  --motion-delay: 0ms;
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.55s var(--ease-out-expo) var(--motion-delay),
+    transform 0.55s var(--ease-out-expo) var(--motion-delay);
+}
+
+.motion-stagger.is-visible .motion-stagger-item {
+  opacity: 1;
+  transform: none;
+}
+
+.motion-tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.35s var(--ease-out-expo);
+  will-change: transform;
+}
+
+.hero-enter > * {
+  opacity: 0;
+  animation: fade-up 0.7s var(--ease-out-expo) both;
+}
+
+.hero-enter > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.hero-enter > *:nth-child(2) {
+  animation-delay: 0.14s;
+}
+
+.hero-enter > *:nth-child(3) {
+  animation-delay: 0.22s;
+}
+
+.hero-enter > *:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.hero-enter > *:nth-child(5) {
+  animation-delay: 0.38s;
+}
+
+.hero-preview-enter {
+  animation: rise 0.9s var(--ease-out-expo) 0.35s both;
+}
+
+.motion-modal-backdrop {
+  animation: backdrop-in 0.22s ease both;
+}
+
+.motion-modal-panel {
+  animation: modal-in 0.32s var(--ease-out-expo) both;
+}
+
+.motion-drawer-backdrop {
+  animation: backdrop-in 0.2s ease both;
+}
+
+.motion-drawer-panel {
+  animation: drawer-in 0.32s var(--ease-out-expo) both;
+}
+
+.motion-alert {
+  animation: alert-in 0.28s var(--ease-out-expo) both;
+}
+
+.motion-question {
+  animation: question-swap 0.28s var(--ease-out-expo) both;
+}
+
+.motion-progress-fill {
+  transform-origin: left center;
+  animation: progress-grow 0.55s var(--ease-out-expo) both;
+}
+
 .stagger > * {
   animation: var(--animate-fade-up);
 }
@@ -149,6 +378,14 @@ h3 {
   animation-delay: 0.21s;
 }
 
+.stagger > *:nth-child(5) {
+  animation-delay: 0.28s;
+}
+
+.stagger > *:nth-child(6) {
+  animation-delay: 0.35s;
+}
+
 .animate-rise {
   animation: var(--animate-rise);
 }
@@ -157,13 +394,37 @@ h3 {
   animation: var(--animate-fade-in);
 }
 
+.animate-pulse-soft {
+  animation: pulse-soft 2.8s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     animation-delay: 0s !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .motion-reveal,
+  .motion-stagger-item {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .hero-orbs::before,
+  .hero-orbs::after {
+    animation: none !important;
+  }
+
+  .motion-tilt {
+    transform: none !important;
   }
 }
 
@@ -202,6 +463,19 @@ h3 {
 .nav-rail {
   background: #0b0c10;
   box-shadow: inset -1px 0 0 rgb(255 255 255 / 0.06);
+}
+
+.nav-link {
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s var(--ease-out-expo);
+}
+
+.nav-link-indicator {
+  transition:
+    transform 0.22s var(--ease-out-expo),
+    opacity 0.22s ease;
 }
 
 .surface {

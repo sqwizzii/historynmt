@@ -12,8 +12,11 @@ export default function AuthCard({ title, subtitle, children, footer }) {
   return (
     <div className="grid min-h-[calc(100vh-3.5rem)] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
       <aside className="bg-auth-panel relative hidden flex-col justify-between overflow-hidden p-10 lg:flex xl:p-14">
-        <Brand light />
-        <div className="animate-fade-in">
+        <div className="hero-orbs opacity-70" aria-hidden="true" />
+        <div className="relative">
+          <Brand light />
+        </div>
+        <div className="relative hero-enter">
           <p className="font-display text-5xl font-semibold leading-[0.95] tracking-tight text-white xl:text-6xl">{BRAND_NAME}</p>
           <p className="mt-5 max-w-sm text-lg leading-snug text-white/70">{BRAND_TAGLINE}</p>
           <ul className="mt-12 space-y-3.5 text-sm text-white/65">
@@ -25,10 +28,10 @@ export default function AuthCard({ title, subtitle, children, footer }) {
             ))}
           </ul>
         </div>
-        <p className="text-xs text-white/35">Для вчителів, репетиторів і онлайн-шкіл</p>
+        <p className="relative text-xs text-white/35">Для вчителів, репетиторів і онлайн-шкіл</p>
       </aside>
       <div className="bg-mesh flex items-center justify-center px-4 py-10 sm:px-8">
-        <div className="w-full max-w-[26rem] animate-fade-in rounded-2xl border border-[var(--color-line)] bg-white p-6 shadow-lift sm:p-8">
+        <div className="motion-modal-panel w-full max-w-[26rem] rounded-2xl border border-[var(--color-line)] bg-white p-6 shadow-lift sm:p-8">
           <div className="mb-6 lg:hidden">
             <Brand />
           </div>

@@ -2,6 +2,7 @@ import { ArrowRight, Layers } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PageHeader from '../PageHeader.jsx'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
+import Stagger from '../motion/Stagger.jsx'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, quizletService } from '../../services/api.js'
 import { pluralize } from '../../utils/format.js'
@@ -19,16 +20,16 @@ export default function ModuleList() {
       {modules.length === 0 ? (
         <EmptyState title="Модулів поки немає" text="Вчитель ще не створив жодного модуля карток." />
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <Stagger as="ul" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" step={55}>
           {modules.map((module) => {
             const count = module.flashcards.length
             return (
               <li key={module.id}>
                 <Link
                   to={`/quizlet/${module.id}`}
-                  className="group flex h-full flex-col rounded-xl border border-[var(--color-line)] bg-white p-5 shadow-card transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200/80 hover:shadow-lift"
+                  className="group flex h-full flex-col rounded-xl border border-[var(--color-line)] bg-white p-5 shadow-card transition duration-200 hover:-translate-y-1 hover:border-indigo-200/80 hover:shadow-lift"
                 >
-                  <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white">
+                  <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white transition duration-200 group-hover:scale-105 group-hover:bg-indigo-600">
                     <Layers className="h-4 w-4" aria-hidden="true" />
                   </span>
                   <h2 className="text-[15px] font-semibold text-[var(--color-ink)]">{module.title}</h2>
@@ -48,7 +49,7 @@ export default function ModuleList() {
               </li>
             )
           })}
-        </ul>
+        </Stagger>
       )}
     </div>
   )

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import PlanCards from '../components/PlanCards.jsx'
 import PageHeader from '../components/PageHeader.jsx'
 import { ErrorState, LoadingState } from '../components/PageState.jsx'
+import Reveal from '../components/motion/Reveal.jsx'
 import { cardClass, primaryButtonClass } from '../components/styles.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useAsyncData } from '../hooks/useAsyncData.js'
@@ -26,7 +27,7 @@ export default function Subscription() {
       />
       {status && (
         <section
-          className={`${cardClass} mb-5 flex flex-col gap-3 border-l-[3px] p-4 sm:flex-row sm:items-center sm:justify-between ${
+          className={`motion-alert ${cardClass} mb-5 flex flex-col gap-3 border-l-[3px] p-4 sm:flex-row sm:items-center sm:justify-between ${
             status.active ? 'border-l-emerald-500' : 'border-l-amber-500'
           }`}
           aria-live="polite"
@@ -54,8 +55,11 @@ export default function Subscription() {
           </div>
         </section>
       )}
-      <PlanCards plans={plans.data} highlight={status?.active ? status.plan : null} />
-      <section className={`${cardClass} mt-5 p-5 text-[13px] leading-relaxed text-[var(--color-mute)] sm:p-6`}>
+      <Reveal>
+        <PlanCards plans={plans.data} highlight={status?.active ? status.plan : null} />
+      </Reveal>
+      <Reveal className="mt-5" delay={80}>
+      <section className={`${cardClass} p-5 text-[13px] leading-relaxed text-[var(--color-mute)] sm:p-6`}>
         <h2 className="mb-1.5 text-[14px] font-semibold text-[var(--color-ink)]">Як активувати доступ</h2>
         <p>
           Онлайн-оплата поки не підключена. Підписку активує адміністратор платформи вручну; після цього доступ
@@ -67,6 +71,7 @@ export default function Subscription() {
           </Link>
         )}
       </section>
+      </Reveal>
     </div>
   )
 }

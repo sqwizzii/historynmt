@@ -49,7 +49,7 @@ const NAV = {
 }
 
 const linkClass = ({ isActive }) =>
-  `group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors ${
+  `nav-link group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium ${
     isActive ? navActiveClass : navIdleClass
   }`
 
@@ -67,10 +67,16 @@ function Sidebar({ user, onNavigate, dark = true }) {
                 <NavLink to={to} end={end} onClick={onNavigate} className={linkClass}>
                   {({ isActive }) => (
                     <>
-                      {isActive && (
-                        <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-indigo-400" aria-hidden="true" />
-                      )}
-                      <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-300' : 'opacity-70'}`} aria-hidden="true" />
+                      <span
+                        className={`nav-link-indicator absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-indigo-400 ${
+                          isActive ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-50'
+                        }`}
+                        aria-hidden="true"
+                      />
+                      <Icon
+                        className={`h-4 w-4 shrink-0 transition duration-200 ${isActive ? 'text-indigo-300' : 'opacity-70 group-hover:opacity-100'}`}
+                        aria-hidden="true"
+                      />
                       {label}
                     </>
                   )}
@@ -143,11 +149,11 @@ function AppShell() {
 
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Меню">
-          <button type="button" className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} aria-label="Закрити меню" />
-          <div className="nav-rail absolute inset-y-0 left-0 flex w-72 max-w-[88%] flex-col shadow-dock">
+          <button type="button" className="motion-drawer-backdrop absolute inset-0 bg-black/50" onClick={() => setOpen(false)} aria-label="Закрити меню" />
+          <div className="motion-drawer-panel nav-rail absolute inset-y-0 left-0 flex w-72 max-w-[88%] flex-col shadow-dock">
             <div className="flex h-14 items-center justify-between px-4">
               <Brand light onClick={() => setOpen(false)} />
-              <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-2 text-white/60 hover:bg-white/10 hover:text-white" aria-label="Закрити">
+              <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-2 text-white/60 transition hover:bg-white/10 hover:text-white active:scale-95" aria-label="Закрити">
                 <X className="h-5 w-5" />
               </button>
             </div>

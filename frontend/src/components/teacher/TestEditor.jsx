@@ -144,7 +144,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
         <ol className="space-y-2">
           {test.questions.map((question, index) =>
             editing === question.id ? (
-              <li key={question.id}>
+              <li key={question.id} className="motion-alert">
                 <QuestionForm
                   testId={test.id}
                   initial={question}
@@ -156,7 +156,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
                 />
               </li>
             ) : (
-              <li key={question.id} className="flex flex-col gap-3 rounded-xl border border-[var(--color-line)] bg-white p-3.5 shadow-card sm:flex-row sm:items-start sm:p-4">
+              <li key={question.id} className="motion-alert flex flex-col gap-3 rounded-xl border border-[var(--color-line)] bg-white p-3.5 shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-lift sm:flex-row sm:items-start sm:p-4">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--color-ink)] text-[11px] font-bold text-white">
                   {index + 1}
                 </span>
