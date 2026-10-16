@@ -18,6 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 class TestImportApiTest extends AbstractApiTest {
 
+    /** Тест перевіряє поведінку за замовчуванням незалежно від локальної конфігурації розробника. */
+    @org.springframework.test.context.DynamicPropertySource
+    static void znoDisabled(org.springframework.test.context.DynamicPropertyRegistry registry) {
+        registry.add("app.import.zno-enabled", () -> "false");
+    }
+
     @Autowired
     private InviteCodeService inviteCodes;
 
@@ -95,7 +101,7 @@ class TestImportApiTest extends AbstractApiTest {
 
     @Test
     void longMatchingKeysSurviveImport() throws Exception {
-        String longKey = "Довге формулювання відповідника, яке перевищує сто символів і раніше не вміщалося в колонку бази даних. ".repeat(2);
+        String longKey = "Довге формулювання відповідника, яке перевищує сто символів і раніше не вміщалося в колонку бази даних. ".repeat(2).strip();
         Map<String, Object> q = Map.of("questionText", "Поєднайте", "questionType", "MATCHING", "status", "OK", "options", List.of(
                 Map.of("optionText", "Ліве 1", "isCorrect", false, "matchKey", longKey),
                 Map.of("optionText", "Ліве 2", "isCorrect", false, "matchKey", "Коротке")));
