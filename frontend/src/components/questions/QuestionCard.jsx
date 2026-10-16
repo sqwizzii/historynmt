@@ -5,10 +5,10 @@ import MultipleChoice from './MultipleChoice.jsx'
 import SingleChoice from './SingleChoice.jsx'
 
 const QUESTION_TYPES = {
-  SINGLE_CHOICE: { label: 'Одна правильна відповідь', Component: SingleChoice },
-  MULTIPLE_CHOICE: { label: 'Кілька правильних відповідей', Component: MultipleChoice },
-  MATCHING: { label: 'Встановлення відповідності', Component: Matching },
-  CHRONOLOGY: { label: 'Хронологічна послідовність', Component: Chronology },
+  SINGLE_CHOICE: { label: 'Одна відповідь', Component: SingleChoice },
+  MULTIPLE_CHOICE: { label: 'Кілька відповідей', Component: MultipleChoice },
+  MATCHING: { label: 'Відповідність', Component: Matching },
+  CHRONOLOGY: { label: 'Хронологія', Component: Chronology },
 }
 
 export default function QuestionCard({ question, number, total, value, onChange, locked = false, children }) {
@@ -16,18 +16,18 @@ export default function QuestionCard({ question, number, total, value, onChange,
   const Input = type?.Component
 
   return (
-    <article className="rounded-[0.875rem] border border-[#E6E8F0] bg-white p-5 shadow-card sm:p-7">
-      <div className="mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold">
-        <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-indigo-800">
-          Питання {number} з {total}
+    <article className="rounded-xl border border-[#E2E4EC] bg-white p-5 shadow-card sm:p-6">
+      <div className="mb-4 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold">
+        <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-indigo-800">
+          {number} / {total}
         </span>
-        {type && <span className="rounded-full bg-slate-100 px-2.5 py-1 text-slate-700">{type.label}</span>}
-        {locked && <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[#73758A]">Зафіксовано</span>}
+        {type && <span className="rounded-md bg-[#F0F1F5] px-2 py-0.5 text-[#3A3C48]">{type.label}</span>}
+        {locked && <span className="rounded-md bg-[#F0F1F5] px-2 py-0.5 text-[#6B6E7B]">Зафіксовано</span>}
       </div>
 
       <QuestionImages main={question.imageUrl} extra={question.extraImageUrls} />
 
-      <h2 className="mb-5 text-lg font-semibold leading-snug tracking-tight text-[#20212B]">{question.questionText}</h2>
+      <h2 className="mb-5 text-base font-semibold leading-snug tracking-tight text-[#14151C] sm:text-lg">{question.questionText}</h2>
 
       {Input ? (
         <fieldset disabled={locked} className="m-0 min-w-0 border-0 p-0 disabled:opacity-80">

@@ -17,7 +17,7 @@ export default function Modal({ title, onClose, children, labelledBy = 'modal-ti
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#20212B]/50 p-3 backdrop-blur-[2px] sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-[#14151C]/45 p-3 backdrop-blur-[3px] sm:items-center sm:p-4"
       onMouseDown={onClose}
     >
       <div
@@ -25,20 +25,20 @@ export default function Modal({ title, onClose, children, labelledBy = 'modal-ti
         aria-modal="true"
         aria-labelledby={labelledBy}
         onMouseDown={(event) => event.stopPropagation()}
-        className={`relative max-h-[min(92vh,900px)] w-full ${wide ? 'max-w-3xl' : 'max-w-md'} overflow-y-auto rounded-2xl border border-[#E6E8F0] bg-white p-5 shadow-lift sm:p-6`}
+        className={`relative max-h-[min(92vh,900px)] w-full ${wide ? 'max-w-3xl' : 'max-w-md'} overflow-y-auto rounded-2xl border border-[#E2E4EC] bg-white p-5 shadow-lift sm:p-6`}
       >
         {onClose && (
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-3 top-3 rounded-xl p-2 text-[#73758A] transition hover:bg-slate-100 hover:text-[#20212B]"
+            className="absolute right-3 top-3 rounded-lg p-2 text-[#8B8E9C] transition hover:bg-[#F0F1F5] hover:text-[#14151C]"
             aria-label="Закрити"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         )}
         {title && (
-          <h2 id={labelledBy} className="pr-10 text-lg font-semibold tracking-tight text-[#20212B]">
+          <h2 id={labelledBy} className="pr-10 text-lg font-semibold tracking-tight text-[#14151C]">
             {title}
           </h2>
         )}

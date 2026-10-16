@@ -1,6 +1,8 @@
 import { ArrowRight, Layers } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import PageHeader from '../PageHeader.jsx'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
+import { cardInteractiveClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, quizletService } from '../../services/api.js'
 import { pluralize } from '../../utils/format.js'
@@ -12,36 +14,32 @@ export default function ModuleList() {
   if (!modules) return <LoadingState label="Завантажуємо модулі…" />
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Картки для запам&apos;ятовування</h1>
-        <p className="mt-1 text-sm text-slate-600">Оберіть модуль: дати, терміни чи персоналії.</p>
-      </header>
+    <div>
+      <PageHeader title="Картки" description="Оберіть модуль: дати, терміни чи поняття." />
 
       {modules.length === 0 ? (
         <EmptyState title="Модулів поки немає" text="Вчитель ще не створив жодного модуля карток." />
       ) : (
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {modules.map((module) => {
             const count = module.flashcards.length
             return (
               <li key={module.id}>
-                <Link
-                  to={`/quizlet/${module.id}`}
-                  className="group flex h-full flex-col rounded-xl border border-slate-200 bg-white p-6 transition-all hover:-translate-y-0.5 hover:shadow-lift"
-                >
-                  <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 text-slate-900">
-                    <Layers className="h-5 w-5" aria-hidden="true" />
+                <Link to={`/quizlet/${module.id}`} className={`${cardInteractiveClass} group flex h-full flex-col p-5`}>
+                  <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-[#E2E4EC] text-[#14151C]">
+                    <Layers className="h-4 w-4" aria-hidden="true" />
                   </span>
-                  <h2 className="text-lg font-semibold text-slate-900">{module.title}</h2>
-                  {module.description && <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-600">{module.description}</p>}
-                  <div className="mt-auto flex items-center justify-between pt-5 text-sm">
-                    <span className="text-xs font-medium text-slate-500">
+                  <h2 className="text-[15px] font-semibold text-[#14151C]">{module.title}</h2>
+                  {module.description && (
+                    <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-[#6B6E7B]">{module.description}</p>
+                  )}
+                  <div className="mt-auto flex items-center justify-between pt-4 text-[13px]">
+                    <span className="text-[11px] font-medium text-[#6B6E7B]">
                       {count} {pluralize(count, 'картка', 'картки', 'карток')}
                     </span>
-                    <span className="flex items-center gap-1 font-semibold text-blue-700">
+                    <span className="inline-flex items-center gap-1 font-semibold text-indigo-700">
                       Вчити
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                      <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden="true" />
                     </span>
                   </div>
                 </Link>

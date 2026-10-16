@@ -151,41 +151,41 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <header className="mb-6 rounded-[0.875rem] border border-[#E6E8F0] bg-white p-4 shadow-card sm:p-5">
+      <header className="mb-5 rounded-xl border border-[#E2E4EC] bg-white p-4 shadow-card sm:p-5">
         <div className="flex items-start justify-between gap-4">
-          <h1 className="text-xl font-semibold tracking-tight text-[#20212B] sm:text-2xl">{test.title}</h1>
+          <h1 className="text-lg font-semibold tracking-tight text-[#14151C] sm:text-xl">{test.title}</h1>
           <span
             role="timer"
             aria-label="Залишилось часу"
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-semibold tabular-nums ${
-              lowTime ? 'bg-red-50 text-red-700 ring-1 ring-red-200' : 'bg-indigo-50 text-indigo-800'
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold tabular-nums ${
+              lowTime ? 'bg-red-50 text-red-700 ring-1 ring-red-200' : 'bg-[#14151C] text-white'
             }`}
           >
-            <Clock className="h-4 w-4" aria-hidden="true" />
+            <Clock className="h-3.5 w-3.5" aria-hidden="true" />
             {formatRemaining(remainingMs)}
           </span>
         </div>
-        <p className="mt-3 flex items-start gap-2 rounded-xl bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
-          <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden="true" />
+        <p className="mt-3 flex items-start gap-2 rounded-lg bg-[#FFF8EB] px-3 py-2.5 text-[12px] leading-relaxed text-amber-950">
+          <ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-700" aria-hidden="true" />
           <span>
-            Не залишайте сторінку: виходи фіксуються (поки що: {leaves}), а відсутність понад {AWAY_LIMIT_SECONDS} с автоматично завершить тест.
+            Не залишайте сторінку: виходи фіксуються ({leaves}), відсутність понад {AWAY_LIMIT_SECONDS} с завершить тест.
             {notice && <strong className="mt-1 block">{notice}</strong>}
           </span>
         </p>
         <div className="mt-4">
-          <div className="mb-1.5 flex justify-between text-xs text-[#73758A]">
+          <div className="mb-1.5 flex justify-between text-[11px] text-[#6B6E7B]">
             <span>
               Відповіли: {answeredCount} з {questions.length}
             </span>
             <span>{Math.round((answeredCount / questions.length) * 100)}%</span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+          <div className="h-1.5 overflow-hidden rounded-full bg-[#E2E4EC]">
             <div className="h-full rounded-full bg-indigo-600 transition-all" style={{ width: `${(answeredCount / questions.length) * 100}%` }} />
           </div>
         </div>
       </header>
 
-      <nav aria-label="Навігація по питаннях" className="mb-5 flex flex-wrap gap-2">
+      <nav aria-label="Навігація по питаннях" className="mb-4 flex flex-wrap gap-1.5">
         {questions.map((q, i) => {
           const current = i === index
           const done = isDone(q)
@@ -196,12 +196,12 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
               onClick={() => setIndex(i)}
               aria-current={current ? 'step' : undefined}
               aria-label={`Питання ${i + 1}${done ? ', є відповідь' : ''}`}
-              className={`h-9 min-w-9 rounded-xl border px-2 text-sm font-semibold transition-colors ${
+              className={`h-8 min-w-8 rounded-md border px-2 text-[12px] font-semibold transition-colors ${
                 current
-                  ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm'
+                  ? 'border-indigo-600 bg-indigo-600 text-white'
                   : done
                     ? 'border-indigo-200 bg-indigo-50 text-indigo-800 hover:bg-indigo-100'
-                    : 'border-[#E6E8F0] bg-white text-slate-600 hover:bg-slate-50'
+                    : 'border-[#E2E4EC] bg-white text-[#6B6E7B] hover:bg-[#F8F8FB]'
               }`}
             >
               {i + 1}

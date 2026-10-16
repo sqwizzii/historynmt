@@ -20,41 +20,41 @@ function StudentList({ selectedId, onSelect, version }) {
   const needle = query.trim().toLowerCase()
   const visible = students.filter((s) => `${s.fullName} ${s.username}`.toLowerCase().includes(needle))
   const itemClass = (active) =>
-    `flex w-full items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left text-sm transition-colors ${
-      active ? 'border-blue-600 bg-blue-50' : 'border-transparent hover:bg-slate-50'
+    `flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors ${
+      active ? 'bg-indigo-50 text-indigo-900' : 'hover:bg-[#F8F8FB]'
     }`
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
-      <div className="relative mb-3">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
-        <input className={`${inputClass} pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Пошук учня" aria-label="Пошук учня" />
+    <div className="rounded-xl border border-[#E2E4EC] bg-white p-3 shadow-card sm:p-4">
+      <div className="relative mb-2.5">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#8B8E9C]" aria-hidden="true" />
+        <input className={`${inputClass} !py-2 pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Пошук учня" aria-label="Пошук учня" />
       </div>
-      <ul className="max-h-[28rem] space-y-1 overflow-y-auto">
+      <ul className="max-h-[28rem] space-y-0.5 overflow-y-auto">
         <li>
           <button type="button" onClick={() => onSelect(null)} className={itemClass(selectedId === null)}>
-            <span className="flex items-center gap-2 font-medium text-slate-900">
-              <Users className="h-4 w-4 text-slate-500" aria-hidden="true" />
+            <span className="flex items-center gap-2 font-semibold">
+              <Users className="h-3.5 w-3.5 text-[#6B6E7B]" aria-hidden="true" />
               Усі учні
             </span>
-            <span className="text-xs text-slate-500">{students.length}</span>
+            <span className="text-[11px] text-[#6B6E7B]">{students.length}</span>
           </button>
         </li>
         {visible.map((student) => (
           <li key={student.id}>
             <button type="button" onClick={() => onSelect(student)} className={itemClass(selectedId === student.id)}>
               <span className="min-w-0">
-                <span className="block truncate font-medium text-slate-900">{student.fullName}</span>
-                <span className="block truncate text-xs text-slate-500">логін: {student.username}</span>
+                <span className="block truncate font-semibold">{student.fullName}</span>
+                <span className="block truncate text-[11px] text-[#6B6E7B]">логін: {student.username}</span>
               </span>
-              <span className="shrink-0 text-right text-xs text-slate-500">
+              <span className="shrink-0 text-right text-[11px] text-[#6B6E7B]">
                 <span className="block">Спроб: {student.attempts}</span>
-                {student.bestNmtScore != null && <span className="block font-semibold text-blue-700">Кращий: {student.bestNmtScore}</span>}
+                {student.bestNmtScore != null && <span className="block font-semibold text-indigo-700">Кращий: {student.bestNmtScore}</span>}
               </span>
             </button>
           </li>
         ))}
-        {visible.length === 0 && <li className="px-3 py-4 text-center text-sm text-slate-500">Учнів не знайдено</li>}
+        {visible.length === 0 && <li className="px-2 py-4 text-center text-[13px] text-[#6B6E7B]">Учнів не знайдено</li>}
       </ul>
     </div>
   )

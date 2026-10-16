@@ -26,34 +26,34 @@ export default function TestsManager() {
   const activeId = creating ? null : (selectedId ?? tests[0]?.id ?? null)
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
-      <aside className="space-y-3 self-start lg:sticky lg:top-24">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)]">
+      <aside className="space-y-2.5 self-start lg:sticky lg:top-20">
         <button type="button" onClick={() => setCreating(true)} className={`${primaryButtonClass} w-full`}>
           <Plus className="h-4 w-4" aria-hidden="true" />
           Новий тест
         </button>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1">
-          <button type="button" onClick={() => setImportingTest(true)} className={`${secondaryButtonClass} w-full`}>
-            <Download className="h-4 w-4" aria-hidden="true" />
-            Імпортувати тест
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
+          <button type="button" onClick={() => setImportingTest(true)} className={`${secondaryButtonClass} w-full !px-3`}>
+            <Download className="h-3.5 w-3.5" aria-hidden="true" />
+            Імпорт
           </button>
-          <button type="button" onClick={() => setImporting(true)} className={`${secondaryButtonClass} w-full`}>
-            <FileUp className="h-4 w-4" aria-hidden="true" />
-            Google Forms
+          <button type="button" onClick={() => setImporting(true)} className={`${secondaryButtonClass} w-full !px-3`}>
+            <FileUp className="h-3.5 w-3.5" aria-hidden="true" />
+            Forms
           </button>
         </div>
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#73758A]" aria-hidden="true" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#8B8E9C]" aria-hidden="true" />
           <input
             type="search"
             aria-label="Пошук тестів"
-            placeholder="Пошук за назвою"
+            placeholder="Пошук…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className={`${inputClass} pl-10`}
+            className={`${inputClass} !py-2 pl-9`}
           />
         </div>
-        <ul className="max-h-[min(60vh,28rem)] space-y-1 overflow-y-auto rounded-[0.875rem] border border-[#E6E8F0] bg-white p-2 shadow-card lg:max-h-[calc(100vh-16rem)]">
+        <ul className="max-h-[min(55vh,26rem)] space-y-0.5 overflow-y-auto rounded-xl border border-[#E2E4EC] bg-white p-1.5 shadow-card lg:max-h-[calc(100vh-15rem)]">
           {shown.map((test) => {
             const active = test.id === activeId
             return (
@@ -65,24 +65,20 @@ export default function TestsManager() {
                     setSelectedId(test.id)
                   }}
                   aria-current={active ? 'true' : undefined}
-                  className={`w-full rounded-xl border px-3 py-2.5 text-left transition-colors ${
-                    active
-                      ? 'border-indigo-200 bg-indigo-50 shadow-sm'
-                      : 'border-transparent hover:bg-slate-50'
+                  className={`w-full rounded-lg px-2.5 py-2 text-left transition ${
+                    active ? 'bg-indigo-50 text-indigo-900' : 'hover:bg-[#F8F8FB]'
                   }`}
                 >
-                  <span className={`block truncate text-sm font-medium ${active ? 'text-indigo-900' : 'text-[#20212B]'}`}>
-                    {test.title}
-                  </span>
-                  <span className="mt-0.5 block text-xs text-[#73758A]">
-                    Питань: {test.questionCount} · {test.timeLimitMinutes} хв
+                  <span className="block truncate text-[13px] font-semibold">{test.title}</span>
+                  <span className="mt-0.5 block text-[11px] text-[#6B6E7B]">
+                    {test.questionCount} пит. · {test.timeLimitMinutes} хв
                   </span>
                 </button>
               </li>
             )
           })}
           {shown.length === 0 && (
-            <li className="px-3 py-6 text-center text-sm text-[#73758A]">
+            <li className="px-2 py-6 text-center text-[13px] text-[#6B6E7B]">
               {tests.length === 0 ? 'Тестів ще немає' : 'Нічого не знайдено'}
             </li>
           )}
@@ -91,9 +87,9 @@ export default function TestsManager() {
 
       <div className="min-w-0">
         {creating ? (
-          <section className="rounded-[0.875rem] border border-[#E6E8F0] bg-white p-5 shadow-card sm:p-6">
-            <h2 className="mb-1 text-base font-semibold text-[#20212B]">Новий тест</h2>
-            <p className="mb-5 text-sm text-[#73758A]">Спочатку налаштуйте параметри, потім додайте питання.</p>
+          <section className="rounded-xl border border-[#E2E4EC] bg-white p-5 shadow-card sm:p-6">
+            <h2 className="text-[15px] font-semibold text-[#14151C]">Новий тест</h2>
+            <p className="mt-1 mb-5 text-[13px] text-[#6B6E7B]">Спочатку параметри, потім питання.</p>
             <TestForm
               onSaved={(created) => {
                 setCreating(false)
@@ -116,7 +112,7 @@ export default function TestsManager() {
         ) : (
           <EmptyState
             title="Створіть перший тест"
-            text="Натисніть «Новий тест», потім додайте питання."
+            text="Додайте параметри й питання — учні побачать тест після збереження."
             action={() => setCreating(true)}
             actionLabel="Новий тест"
           />

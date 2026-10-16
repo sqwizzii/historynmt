@@ -1,39 +1,44 @@
 import { Link } from 'react-router-dom'
 import { formatDate } from '../utils/format.js'
+import { badgeClass, tableWrapClass } from './styles.js'
 
 export default function ResultsTable({ results, showStudent = false }) {
   return (
-    <div className="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-card">
-      <table className="min-w-full divide-y divide-slate-200 text-sm">
-        <thead className="bg-slate-50 text-left text-xs font-semibold text-slate-500">
+    <div className={tableWrapClass}>
+      <table className="min-w-full divide-y divide-[#E2E4EC] text-sm">
+        <thead className="bg-[#F8F8FB] text-left text-[11px] font-semibold uppercase tracking-wide text-[#6B6E7B]">
           <tr>
             {showStudent && <th className="px-4 py-3">Учень</th>}
             <th className="px-4 py-3">Тест</th>
-            <th className="px-4 py-3">Первинний бал</th>
-            <th className="px-4 py-3" title="Орієнтовний бал за лінійною шкалою, не офіційна таблиця НМТ">Орієнт. бал НМТ</th>
+            <th className="px-4 py-3">Первинний</th>
+            <th className="px-4 py-3" title="Орієнтовний бал за лінійною шкалою, не офіційна таблиця НМТ">
+              НМТ
+            </th>
             <th className="px-4 py-3">Дата</th>
             <th className="px-4 py-3">Примітки</th>
-            <th className="px-4 py-3"><span className="sr-only">Розбір</span></th>
+            <th className="px-4 py-3">
+              <span className="sr-only">Розбір</span>
+            </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-[#E2E4EC]">
           {results.map((r) => (
-            <tr key={r.id} className="hover:bg-slate-50">
-              {showStudent && <td className="px-4 py-3 font-medium text-slate-900">{r.studentName}</td>}
-              <td className="px-4 py-3 text-slate-700">{r.testTitle}</td>
-              <td className="px-4 py-3 tabular-nums text-slate-700">{r.score}</td>
-              <td className="px-4 py-3 font-semibold tabular-nums text-blue-700">{r.nmtScore ?? '—'}</td>
-              <td className="whitespace-nowrap px-4 py-3 text-slate-500">{formatDate(r.completedAt)}</td>
+            <tr key={r.id} className="transition hover:bg-[#F8F8FB]">
+              {showStudent && <td className="px-4 py-3 font-medium text-[#14151C]">{r.studentName}</td>}
+              <td className="px-4 py-3 text-[#3A3C48]">{r.testTitle}</td>
+              <td className="px-4 py-3 tabular-nums text-[#3A3C48]">{r.score}</td>
+              <td className="px-4 py-3 font-semibold tabular-nums text-indigo-700">{r.nmtScore ?? '—'}</td>
+              <td className="whitespace-nowrap px-4 py-3 text-[#6B6E7B]">{formatDate(r.completedAt)}</td>
               <td className="px-4 py-3 text-xs">
                 <div className="flex flex-wrap gap-1">
-                  {r.leaveCount > 0 && <span className="rounded-xl bg-amber-100 px-2 py-0.5 font-medium text-slate-900">виходів: {r.leaveCount}</span>}
-                  {r.endReason === 'LEFT_PAGE' && <span className="rounded-xl bg-red-100 px-2 py-0.5 font-medium text-red-700">покинув сторінку</span>}
-                  {r.endReason === 'TIMEOUT' && <span className="rounded-xl bg-slate-100 px-2 py-0.5 font-medium text-slate-600">час вичерпано</span>}
-                  {r.late && <span className="rounded-xl bg-red-100 px-2 py-0.5 font-medium text-red-700">прострочено</span>}
+                  {r.leaveCount > 0 && <span className={badgeClass('amber')}>виходів: {r.leaveCount}</span>}
+                  {r.endReason === 'LEFT_PAGE' && <span className={badgeClass('red')}>покинув сторінку</span>}
+                  {r.endReason === 'TIMEOUT' && <span className={badgeClass('slate')}>час вичерпано</span>}
+                  {r.late && <span className={badgeClass('red')}>прострочено</span>}
                 </div>
               </td>
               <td className="whitespace-nowrap px-4 py-3 text-right">
-                <Link to={`/results/${r.id}`} className="font-medium text-blue-700 hover:underline">
+                <Link to={`/results/${r.id}`} className="text-[13px] font-semibold text-indigo-700 hover:underline">
                   Розбір
                 </Link>
               </td>

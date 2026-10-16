@@ -3,7 +3,7 @@ import { badgeClass, cardClass } from './styles.js'
 
 const PLAN_FEATURES = [
   'Необмежені тести, картки й модулі',
-  'Учні, коди запрошень і призначення тестів',
+  'Учні, коди запрошень і призначення',
   'Статистика по учнях, темах і питаннях',
   'Імпорт тестів із Google Forms',
 ]
@@ -12,30 +12,42 @@ const PERIOD = { MONTHLY: 'на місяць', YEARLY: 'на рік' }
 
 export default function PlanCards({ plans, highlight }) {
   return (
-    <div className="grid gap-5 md:grid-cols-2">
-      {plans.map((plan) => (
-        <article
-          key={plan.plan}
-          className={`${cardClass} flex flex-col p-6 transition ${highlight === plan.plan ? 'ring-2 ring-indigo-500 ring-offset-2' : 'hover:border-indigo-100'}`}
-        >
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-lg font-semibold text-[#20212B]">{plan.name}</h3>
-            {highlight === plan.plan && <span className={badgeClass('green')}>Ваш план</span>}
-          </div>
-          <p className="mt-1 text-sm text-[#73758A]">
-            Доступ {PERIOD[plan.plan]} · {plan.periodDays} днів
-          </p>
-          <p className="mt-4 text-sm font-medium text-slate-700">Вартість уточнюється</p>
-          <ul className="mt-5 space-y-2.5 text-sm text-slate-700">
-            {PLAN_FEATURES.map((feature) => (
-              <li key={feature} className="flex items-start gap-2.5">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" aria-hidden="true" />
-                {feature}
-              </li>
-            ))}
-          </ul>
-        </article>
-      ))}
+    <div className="grid gap-4 md:grid-cols-2">
+      {plans.map((plan) => {
+        const featured = plan.plan === 'YEARLY'
+        return (
+          <article
+            key={plan.plan}
+            className={`${cardClass} relative flex flex-col p-6 ${
+              highlight === plan.plan
+                ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-[#F3F4F8]'
+                : featured
+                  ? 'border-indigo-200'
+                  : ''
+            }`}
+          >
+            {featured && highlight !== plan.plan && (
+              <span className={`${badgeClass('indigo')} absolute right-4 top-4`}>Найкраще на рік</span>
+            )}
+            <div className="flex items-center justify-between gap-2 pr-24">
+              <h3 className="text-lg font-semibold text-[#14151C]">{plan.name}</h3>
+              {highlight === plan.plan && <span className={badgeClass('green')}>Ваш план</span>}
+            </div>
+            <p className="mt-1 text-sm text-[#6B6E7B]">
+              Доступ {PERIOD[plan.plan]} · {plan.periodDays} днів
+            </p>
+            <p className="mt-5 text-sm font-medium text-[#3A3C48]">Вартість уточнюється</p>
+            <ul className="mt-5 space-y-2.5 text-sm text-[#3A3C48]">
+              {PLAN_FEATURES.map((feature) => (
+                <li key={feature} className="flex items-start gap-2.5">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" aria-hidden="true" />
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </article>
+        )
+      })}
     </div>
   )
 }
