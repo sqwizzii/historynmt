@@ -35,18 +35,18 @@ export default function ResultReview() {
 
       <dl className="mt-5 grid grid-cols-3 gap-3 text-center stagger">
         <div className={`${cardClass} p-3.5 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift`}>
-          <dt className="text-[11px] font-medium text-[var(--color-mute)]">Первинний бал</dt>
+          <dt className="text-[0.6875rem] font-medium text-[var(--color-mute)]">Первинний бал</dt>
           <dd className="mt-1.5 text-lg font-semibold tabular-nums text-[var(--color-ink)]">
             {result.score}
             {result.maxScore != null && <span className="text-sm font-medium text-[var(--color-mute)]"> з {result.maxScore}</span>}
           </dd>
         </div>
         <div className={`${cardClass} p-3.5 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift`}>
-          <dt className="text-[11px] font-medium text-[var(--color-mute)]">Орієнт. бал НМТ</dt>
+          <dt className="text-[0.6875rem] font-medium text-[var(--color-mute)]">Орієнт. бал НМТ</dt>
           <dd className="mt-1.5 text-lg font-semibold tabular-nums text-indigo-700">{result.nmtScore}</dd>
         </div>
         <div className={`${cardClass} p-3.5 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift`}>
-          <dt className="text-[11px] font-medium text-[var(--color-mute)]">Правильність</dt>
+          <dt className="text-[0.6875rem] font-medium text-[var(--color-mute)]">Правильність</dt>
           <dd className="mt-1.5 text-lg font-semibold tabular-nums text-[var(--color-ink)]">
             {result.maxScore ? `${Math.round((result.score / result.maxScore) * 100)}%` : '-'}
           </dd>

@@ -52,14 +52,14 @@ function ProductPreview() {
           <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
           <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
           <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
-          <span className="ml-3 text-[11px] font-medium tracking-wide text-white/45">Кабінет вчителя · {BRAND_NAME}</span>
+          <span className="ml-3 text-[0.6875rem] font-medium tracking-wide text-white/45">Кабінет вчителя · {BRAND_NAME}</span>
         </div>
         <div className="grid gap-0 md:grid-cols-[12rem_1fr]">
           <div className="hidden space-y-1 border-r border-white/8 bg-black/20 p-3 md:block">
             {['Огляд', 'Тести', 'Картки', 'Учні'].map((item, i) => (
               <div
                 key={item}
-                className={`rounded-md px-2.5 py-2 text-[12px] transition-colors ${i === 1 ? 'bg-indigo-500/35 text-white' : 'text-white/50'}`}
+                className={`rounded-md px-2.5 py-2 text-[0.75rem] transition-colors ${i === 1 ? 'bg-indigo-500/35 text-white' : 'text-white/50'}`}
               >
                 {item}
               </div>
@@ -68,10 +68,10 @@ function ProductPreview() {
           <div className="space-y-4 p-4 sm:p-6">
             <div className="flex items-end justify-between gap-3">
               <div>
-                <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-white/35">Активний тест</p>
+                <p className="text-[0.6875rem] font-medium uppercase tracking-[0.12em] text-white/35">Активний тест</p>
                 <p className="mt-1.5 text-base font-semibold text-white sm:text-lg">Контрольна · Тема 3</p>
               </div>
-              <span className="rounded-md bg-emerald-400/15 px-2.5 py-1 text-[11px] font-semibold text-emerald-200">18 / 20</span>
+              <span className="rounded-md bg-emerald-400/15 px-2.5 py-1 text-[0.6875rem] font-semibold text-emerald-200">18 / 20</span>
             </div>
             <div className="h-1 overflow-hidden rounded-full bg-white/10">
               <div className="motion-progress-fill h-full w-[90%] rounded-full bg-indigo-400" style={{ animationDelay: '0.7s' }} />
@@ -83,7 +83,7 @@ function ProductPreview() {
                 ['Середній', '78%'],
               ].map(([label, value]) => (
                 <div key={label} className="rounded-lg border border-white/8 bg-white/[0.04] px-3.5 py-3 transition hover:bg-white/[0.07]">
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-white/40">{label}</p>
+                  <p className="text-[0.625rem] font-medium uppercase tracking-wider text-white/40">{label}</p>
                   <p className="mt-1 text-xl font-semibold tabular-nums text-white">{value}</p>
                 </div>
               ))}
@@ -108,7 +108,7 @@ function Landing() {
             <h1 className="mx-auto mt-6 max-w-xl text-lg font-medium leading-snug text-indigo-100/95 sm:text-xl">
               {BRAND_TAGLINE}
             </h1>
-            <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/55 sm:text-[15px]">
+            <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/55 sm:text-[0.9375rem]">
               {BRAND_DESCRIPTION}
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
@@ -139,7 +139,7 @@ function Landing() {
               <h2 id="features-title" className="max-w-md text-3xl font-semibold tracking-tight text-[var(--color-ink)] sm:text-4xl">
                 Менше хаосу в підготовці. Більше уваги учням.
               </h2>
-              <p className="mt-4 max-w-md text-[15px] leading-relaxed text-[var(--color-mute)]">
+              <p className="mt-4 max-w-md text-[0.9375rem] leading-relaxed text-[var(--color-mute)]">
                 Masterly збирає тести, картки й результати в одному робочому просторі — без зайвих сервісів і ручної звірки відповідей.
               </p>
             </Reveal>
@@ -150,7 +150,7 @@ function Landing() {
                     <Icon className="h-4 w-4" aria-hidden="true" />
                   </span>
                   <div>
-                    <h3 className="text-[15px] font-semibold text-[var(--color-ink)]">{title}</h3>
+                    <h3 className="text-[0.9375rem] font-semibold text-[var(--color-ink)]">{title}</h3>
                     <p className="mt-1 text-sm leading-relaxed text-[var(--color-mute)]">{text}</p>
                   </div>
                 </li>

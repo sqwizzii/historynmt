@@ -37,11 +37,11 @@ export default function TestList() {
                     <ClipboardList className="h-4 w-4" aria-hidden="true" />
                   </span>
                   <div className="min-w-0">
-                    <h2 className="text-[15px] font-semibold leading-snug text-[var(--color-ink)]">{test.title}</h2>
+                    <h2 className="text-[0.9375rem] font-semibold leading-snug text-[var(--color-ink)]">{test.title}</h2>
                     {test.description && (
-                      <p className="mt-1 line-clamp-1 text-[13px] text-[var(--color-mute)]">{test.description}</p>
+                      <p className="mt-1 line-clamp-1 text-[0.8125rem] text-[var(--color-mute)]">{test.description}</p>
                     )}
-                    <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium text-[var(--color-mute)]">
+                    <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.6875rem] font-medium text-[var(--color-mute)]">
                       <span>
                         {test.questionCount} {pluralize(test.questionCount, 'питання', 'питання', 'питань')}
                       </span>
@@ -56,7 +56,7 @@ export default function TestList() {
                     </p>
                   </div>
                 </div>
-                <span className="inline-flex items-center gap-1 self-start text-[13px] font-semibold text-indigo-700 sm:self-center">
+                <span className="inline-flex items-center gap-1 self-start text-[0.8125rem] font-semibold text-indigo-700 sm:self-center">
                   Розпочати
                   <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden="true" />
                 </span>

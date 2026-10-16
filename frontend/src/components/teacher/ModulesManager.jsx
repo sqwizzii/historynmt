@@ -49,14 +49,14 @@ export default function ModulesManager() {
                     active ? listRowActiveClass : listRowIdleClass
                   }`}
                 >
-                  <span className="block truncate text-[13px] font-semibold text-[var(--color-ink)]">{module.title}</span>
-                  <span className="block text-[11px] text-[var(--color-mute)]">Карток: {module.flashcards.length}</span>
+                  <span className="block truncate text-[0.8125rem] font-semibold text-[var(--color-ink)]">{module.title}</span>
+                  <span className="block text-[0.6875rem] text-[var(--color-mute)]">Карток: {module.flashcards.length}</span>
                 </button>
               </li>
             )
           })}
           {shown.length === 0 && (
-            <li className="px-2 py-6 text-center text-[13px] text-[var(--color-mute)]">
+            <li className="px-2 py-6 text-center text-[0.8125rem] text-[var(--color-mute)]">
               {modules.length === 0 ? 'Модулів ще немає' : 'Нічого не знайдено'}
             </li>
           )}

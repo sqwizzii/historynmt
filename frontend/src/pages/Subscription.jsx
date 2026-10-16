@@ -41,10 +41,10 @@ export default function Subscription() {
               <Clock className="h-4 w-4" aria-hidden="true" />
             </span>
             <div>
-              <p className="text-[14px] font-semibold text-[var(--color-ink)]">
+              <p className="text-[0.875rem] font-semibold text-[var(--color-ink)]">
                 {status.active ? 'Підписка активна' : 'Підписка не активна'}
               </p>
-              <p className="mt-0.5 text-[13px] text-[var(--color-mute)]">
+              <p className="mt-0.5 text-[0.8125rem] text-[var(--color-mute)]">
                 {status.expiresAt
                   ? `Діє до ${formatDate(status.expiresAt)}`
                   : status.legacyFreeAccess
@@ -57,8 +57,8 @@ export default function Subscription() {
       )}
       <PlanCards plans={plans.data} highlight={status?.active ? status.plan : null} />
       <Reveal className="mt-5" delay={120}>
-        <section className={`${cardClass} p-5 text-[13px] leading-relaxed text-[var(--color-mute)] sm:p-6`}>
-          <h2 className="mb-1.5 text-[14px] font-semibold text-[var(--color-ink)]">Як активувати доступ</h2>
+        <section className={`${cardClass} p-5 text-[0.8125rem] leading-relaxed text-[var(--color-mute)] sm:p-6`}>
+          <h2 className="mb-1.5 text-[0.875rem] font-semibold text-[var(--color-ink)]">Як активувати доступ</h2>
           <p>
             Онлайн-оплата поки не підключена. Підписку активує адміністратор платформи вручну; після цього доступ
             відкривається автоматично.

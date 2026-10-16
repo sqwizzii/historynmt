@@ -17,11 +17,11 @@ function QuickLink({ to, title, text, Icon }) {
         <Icon className="h-4 w-4" aria-hidden="true" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="flex items-center justify-between gap-2 text-[13px] font-semibold text-[var(--color-ink)]">
+        <span className="flex items-center justify-between gap-2 text-[0.8125rem] font-semibold text-[var(--color-ink)]">
           {title}
           <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[var(--color-mute-soft)] transition group-hover:translate-x-0.5 group-hover:text-indigo-600" aria-hidden="true" />
         </span>
-        <span className="mt-0.5 block text-[12px] leading-relaxed text-[var(--color-mute)]">{text}</span>
+        <span className="mt-0.5 block text-[0.75rem] leading-relaxed text-[var(--color-mute)]">{text}</span>
       </span>
     </Link>
   )
@@ -37,8 +37,8 @@ function ResultsList({ results, showStudent }) {
         <li key={r.id}>
           <Link to={`/results/${r.id}`} className="flex items-center justify-between gap-3 px-4 py-3.5 transition hover:bg-[var(--color-surface-muted)]">
             <span className="min-w-0">
-              <span className="block truncate text-[13px] font-medium text-[var(--color-ink)]">{r.testTitle}</span>
-              <span className="block text-[11px] text-[var(--color-mute)]">
+              <span className="block truncate text-[0.8125rem] font-medium text-[var(--color-ink)]">{r.testTitle}</span>
+              <span className="block text-[0.6875rem] text-[var(--color-mute)]">
                 {showStudent ? `${r.studentName} · ` : ''}
                 {formatDate(r.completedAt)}
               </span>
@@ -66,7 +66,7 @@ function StudentDashboard() {
       </Stagger>
       <div className="mt-5 grid gap-4 lg:grid-cols-[1.45fr_1fr]">
         <section className={`${cardClass} animate-fade-in`}>
-          <h2 className="border-b border-[var(--color-line-soft)] px-4 py-3.5 text-[13px] font-semibold text-[var(--color-ink)]">
+          <h2 className="border-b border-[var(--color-line-soft)] px-4 py-3.5 text-[0.8125rem] font-semibold text-[var(--color-ink)]">
             Останні результати
           </h2>
           <ResultsList results={results.data} />
@@ -104,8 +104,8 @@ function TeacherDashboard() {
       <div className="mt-5 grid gap-4 lg:grid-cols-[1.45fr_1fr]">
         <section className={`${cardClass} animate-fade-in`}>
           <div className="flex items-center justify-between border-b border-[var(--color-line-soft)] px-4 py-3.5">
-            <h2 className="text-[13px] font-semibold text-[var(--color-ink)]">Останні результати учнів</h2>
-            <Link to="/teacher/students" className="text-[12px] font-semibold text-indigo-700 transition hover:underline">
+            <h2 className="text-[0.8125rem] font-semibold text-[var(--color-ink)]">Останні результати учнів</h2>
+            <Link to="/teacher/students" className="text-[0.75rem] font-semibold text-indigo-700 transition hover:underline">
               Усі
             </Link>
           </div>

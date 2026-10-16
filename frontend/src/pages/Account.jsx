@@ -47,7 +47,7 @@ export default function Account() {
             {user.username.slice(0, 2).toUpperCase()}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-[15px] font-semibold text-[var(--color-ink)]">{user.username}</p>
+            <p className="truncate text-[0.9375rem] font-semibold text-[var(--color-ink)]">{user.username}</p>
             <p className="mt-1">
               <span className={badgeClass('indigo')}>{ROLE_LABEL[user.role] ?? user.role}</span>
             </p>
@@ -56,7 +56,7 @@ export default function Account() {
       </Reveal>
       <Reveal delay={80}>
       <form onSubmit={handleSubmit} className={`${cardClass} space-y-4 p-5 sm:p-6`} noValidate>
-        <h2 className="text-[15px] font-semibold text-[var(--color-ink)]">Зміна пароля</h2>
+        <h2 className="text-[0.9375rem] font-semibold text-[var(--color-ink)]">Зміна пароля</h2>
         <ErrorAlert message={error} />
         {success && (
           <div role="status" className="motion-alert flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">

@@ -165,7 +165,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
             {formatRemaining(remainingMs)}
           </span>
         </div>
-        <p className="mx-4 mb-4 flex items-start gap-2 rounded-lg bg-[#FFF8EB] px-3 py-2.5 text-[12px] leading-relaxed text-amber-950 sm:mx-5">
+        <p className="mx-4 mb-4 flex items-start gap-2 rounded-lg bg-[#FFF8EB] px-3 py-2.5 text-[0.75rem] leading-relaxed text-amber-950 sm:mx-5">
           <ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-700" aria-hidden="true" />
           <span>
             Не залишайте сторінку: виходи фіксуються ({leaves}), відсутність понад {AWAY_LIMIT_SECONDS} с завершить тест.
@@ -173,7 +173,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
           </span>
         </p>
         <div className="border-t border-[var(--color-line-soft)] px-4 py-3 sm:px-5">
-          <div className="mb-1.5 flex justify-between text-[11px] text-[var(--color-mute)]">
+          <div className="mb-1.5 flex justify-between text-[0.6875rem] text-[var(--color-mute)]">
             <span>
               Відповіли: {answeredCount} з {questions.length}
             </span>
@@ -199,7 +199,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
               onClick={() => setIndex(i)}
               aria-current={current ? 'step' : undefined}
               aria-label={`Питання ${i + 1}${done ? ', є відповідь' : ''}`}
-              className={`h-8 min-w-8 rounded-md border px-2 text-[12px] font-semibold transition-colors ${
+              className={`h-8 min-w-8 rounded-md border px-2 text-[0.75rem] font-semibold transition-colors ${
                 current
                   ? 'border-[var(--color-ink)] bg-[var(--color-ink)] text-white'
                   : done

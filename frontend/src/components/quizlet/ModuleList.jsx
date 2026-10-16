@@ -32,12 +32,12 @@ export default function ModuleList() {
                   <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white transition duration-200 group-hover:scale-105 group-hover:bg-indigo-600">
                     <Layers className="h-4 w-4" aria-hidden="true" />
                   </span>
-                  <h2 className="text-[15px] font-semibold text-[var(--color-ink)]">{module.title}</h2>
+                  <h2 className="text-[0.9375rem] font-semibold text-[var(--color-ink)]">{module.title}</h2>
                   {module.description && (
-                    <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-[var(--color-mute)]">{module.description}</p>
+                    <p className="mt-2 line-clamp-2 text-[0.8125rem] leading-relaxed text-[var(--color-mute)]">{module.description}</p>
                   )}
-                  <div className="mt-auto flex items-center justify-between pt-4 text-[13px]">
-                    <span className="text-[11px] font-medium text-[var(--color-mute)]">
+                  <div className="mt-auto flex items-center justify-between pt-4 text-[0.8125rem]">
+                    <span className="text-[0.6875rem] font-medium text-[var(--color-mute)]">
                       {count} {pluralize(count, 'картка', 'картки', 'карток')}
                     </span>
                     <span className="inline-flex items-center gap-1 font-semibold text-indigo-700">

@@ -73,8 +73,8 @@ export default function TestsManager() {
                   aria-current={active ? 'true' : undefined}
                   className={`w-full rounded-lg px-2.5 py-2.5 text-left transition duration-200 ${active ? listRowActiveClass : listRowIdleClass}`}
                 >
-                  <span className="block truncate text-[13px] font-semibold">{test.title}</span>
-                  <span className="mt-0.5 block text-[11px] text-[var(--color-mute)]">
+                  <span className="block truncate text-[0.8125rem] font-semibold">{test.title}</span>
+                  <span className="mt-0.5 block text-[0.6875rem] text-[var(--color-mute)]">
                     {test.questionCount} пит. · {test.timeLimitMinutes} хв
                   </span>
                 </button>
@@ -82,7 +82,7 @@ export default function TestsManager() {
             )
           })}
           {shown.length === 0 && (
-            <li className="px-2 py-6 text-center text-[13px] text-[var(--color-mute)]">
+            <li className="px-2 py-6 text-center text-[0.8125rem] text-[var(--color-mute)]">
               {tests.length === 0 ? 'Тестів ще немає' : 'Нічого не знайдено'}
             </li>
           )}
@@ -93,8 +93,8 @@ export default function TestsManager() {
         {creating ? (
           <section className="motion-alert rounded-xl border border-[var(--color-line)] bg-white p-5 shadow-card sm:p-6">
             <div className="mb-5 border-b border-[var(--color-line-soft)] pb-4">
-              <h2 className="text-[15px] font-semibold text-[var(--color-ink)]">Новий тест</h2>
-              <p className="mt-1 text-[13px] text-[var(--color-mute)]">Спочатку параметри, потім питання.</p>
+              <h2 className="text-[0.9375rem] font-semibold text-[var(--color-ink)]">Новий тест</h2>
+              <p className="mt-1 text-[0.8125rem] text-[var(--color-mute)]">Спочатку параметри, потім питання.</p>
             </div>
             <TestForm
               onSaved={(created) => {

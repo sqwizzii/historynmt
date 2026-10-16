@@ -14,9 +14,9 @@ export default function Brand({ to = '/', onClick, light = false, compact = fals
       <img
         src={src}
         alt={BRAND_NAME}
-        width={compact ? 32 : 148}
-        height={32}
-        className={compact ? 'h-8 w-8' : 'h-8 w-auto'}
+        width={compact ? 36 : 160}
+        height={36}
+        className={compact ? 'h-9 w-9' : 'h-9 w-auto'}
       />
     </Link>
   )

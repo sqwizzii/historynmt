@@ -19,7 +19,7 @@ export default function PlanCards({ plans, highlight }) {
         return (
           <article
             key={plan.plan}
-            className={`${cardClass} group relative flex flex-col overflow-hidden p-6 hover:-translate-y-1.5 hover:shadow-lift ${
+            className={`${cardClass} group relative flex flex-col overflow-hidden p-6 sm:p-7 hover:-translate-y-1.5 hover:shadow-lift ${
               highlight === plan.plan
                 ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-[var(--color-canvas)]'
                 : featured
@@ -34,13 +34,13 @@ export default function PlanCards({ plans, highlight }) {
               <h3 className="text-lg font-semibold text-[var(--color-ink)]">{plan.name}</h3>
               {highlight === plan.plan && <span className={badgeClass('green')}>Ваш план</span>}
             </div>
-            <p className="mt-1 text-sm text-[var(--color-mute)]">
+            <p className="mt-1 text-[0.9375rem] text-[var(--color-mute)]">
               Доступ {PERIOD[plan.plan]} · {plan.periodDays} днів
             </p>
             <p className="mt-6 font-display text-3xl font-semibold tracking-tight text-[var(--color-ink)] transition duration-300 group-hover:text-indigo-700">
               Вартість уточнюється
             </p>
-            <ul className="mt-6 space-y-2.5 border-t border-[var(--color-line-soft)] pt-5 text-sm text-[#2f313c]">
+            <ul className="mt-6 space-y-2.5 border-t border-[var(--color-line-soft)] pt-5 text-[0.9375rem] text-[#2f313c]">
               {PLAN_FEATURES.map((feature) => (
                 <li key={feature} className="flex items-start gap-2.5">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600 transition group-hover:scale-110" aria-hidden="true" />

@@ -6,7 +6,7 @@ export default function ResultsTable({ results, showStudent = false }) {
   return (
     <div className={tableWrapClass}>
       <table className="min-w-full divide-y divide-[var(--color-line-soft)] text-sm">
-        <thead className="bg-[var(--color-surface-muted)] text-left text-[11px] font-semibold uppercase tracking-wide text-[var(--color-mute)]">
+        <thead className="bg-[var(--color-surface-muted)] text-left text-[0.6875rem] font-semibold uppercase tracking-wide text-[var(--color-mute)]">
           <tr>
             {showStudent && <th className="px-4 py-3">Учень</th>}
             <th className="px-4 py-3">Тест</th>
@@ -38,7 +38,7 @@ export default function ResultsTable({ results, showStudent = false }) {
                 </div>
               </td>
               <td className="whitespace-nowrap px-4 py-3 text-right">
-                <Link to={`/results/${r.id}`} className="text-[13px] font-semibold text-indigo-700 hover:underline">
+                <Link to={`/results/${r.id}`} className="text-[0.8125rem] font-semibold text-indigo-700 hover:underline">
                   Розбір
                 </Link>
               </td>

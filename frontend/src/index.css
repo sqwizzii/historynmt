@@ -48,6 +48,20 @@
   --animate-fade-up: fade-up 0.55s var(--ease-out-expo) both;
   --animate-fade-in: fade-in 0.4s ease both;
   --animate-rise: rise 0.75s var(--ease-out-expo) both;
+
+  /* Comfortable reading density (~110% of default 16px), via rem — not zoom/scale */
+  --font-size-root: 110%;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --leading-body: 1.55;
 }
 
 @keyframes fade-up {
@@ -172,11 +186,21 @@
 }
 
 html {
+  font-size: var(--font-size-root);
   scroll-behavior: smooth;
+}
+
+/* Slightly softer density on narrow phones so 110% rem doesn't crowd the viewport */
+@media (max-width: 389px) {
+  html {
+    font-size: 106.25%;
+  }
 }
 
 body {
   @apply bg-[var(--color-canvas)] text-[var(--color-ink)] antialiased;
+  font-size: 1rem;
+  line-height: var(--leading-body);
   font-feature-settings: "ss01" on, "cv11" on;
 }
 
