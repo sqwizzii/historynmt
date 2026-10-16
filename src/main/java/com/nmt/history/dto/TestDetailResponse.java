@@ -13,5 +13,6 @@ public record TestDetailResponse(
         Long subjectId,
         Integer grade,
         ScoringScale scoringScale,
+        com.nmt.history.model.AnswerVisibilityMode answerVisibilityMode,
         List<QuestionResponse> questions) {
 }

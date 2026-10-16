@@ -51,6 +51,20 @@ app:
     username: ${ADMIN_USERNAME:}
     password: ${ADMIN_PASSWORD:}
     promote-existing: ${ADMIN_PROMOTE_EXISTING:false}
+  import:
+    # Імпорт за посиланням: лише дозволені домени. Джерело zno.osvita.ua вимкнене, бо угода сайту забороняє копіювання
+    # без письмового дозволу; вмикайте IMPORT_ZNO_ENABLED=true лише за наявності такого дозволу.
+    zno-enabled: ${IMPORT_ZNO_ENABLED:false}
+    allowed-hosts: zno.osvita.ua
+    timeout-seconds: 10
+  ai:
+    # Пояснення помилок від ШІ (OpenAI-сумісний API). Без AI_API_KEY інтеграція вимкнена, тести працюють як раніше.
+    api-key: ${AI_API_KEY:}
+    base-url: ${AI_BASE_URL:https://api.openai.com/v1}
+    model: ${AI_MODEL:gpt-4o-mini}
+    max-tokens: 300
+    timeout-seconds: 15
+    hourly-limit-per-user: ${AI_HOURLY_LIMIT_PER_USER:40}
   images:
     url-ttl-minutes: ${IMAGE_URL_TTL_MINUTES:360}
   login:

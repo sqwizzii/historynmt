@@ -1,10 +1,11 @@
-import { FileUp, Plus, Search } from 'lucide-react'
+import { Download, FileUp, Plus, Search } from 'lucide-react'
 import { useState } from 'react'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
 import { inputClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, testService } from '../../services/api.js'
 import ImportFormModal from './ImportFormModal.jsx'
+import ImportTestModal from './ImportTestModal.jsx'
 import TestEditor from './TestEditor.jsx'
 import TestForm from './TestForm.jsx'
 
@@ -13,6 +14,7 @@ export default function TestsManager() {
   const [selectedId, setSelectedId] = useState(null)
   const [creating, setCreating] = useState(false)
   const [importing, setImporting] = useState(false)
+  const [importingTest, setImportingTest] = useState(false)
   const [query, setQuery] = useState('')
 
   const tests = allTests ? allTests.filter((test) => test.editable) : null
@@ -33,6 +35,10 @@ export default function TestsManager() {
         >
           <Plus className="h-4 w-4" aria-hidden="true" />
           Новий тест
+        </button>
+        <button type="button" onClick={() => setImportingTest(true)} className={`${secondaryButtonClass} w-full`}>
+          <Download className="h-4 w-4" aria-hidden="true" />
+          Імпортувати тест
         </button>
         <button type="button" onClick={() => setImporting(true)} className={`${secondaryButtonClass} w-full`}>
           <FileUp className="h-4 w-4" aria-hidden="true" />
@@ -98,6 +104,17 @@ export default function TestsManager() {
         )}
       </div>
 
+      {importingTest && (
+        <ImportTestModal
+          onClose={() => setImportingTest(false)}
+          onImported={(testId) => {
+            setImportingTest(false)
+            setCreating(false)
+            setSelectedId(testId)
+            reload()
+          }}
+        />
+      )}
       {importing && (
         <ImportFormModal
           onClose={() => setImporting(false)}

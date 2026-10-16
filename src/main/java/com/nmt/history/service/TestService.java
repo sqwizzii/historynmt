@@ -66,6 +66,8 @@ public class TestService {
     private final SubjectRepository subjectRepository;
     private final ImageUrlSigner imageUrlSigner;
     private final com.nmt.history.repository.TestAssignmentRepository assignmentRepository;
+    private final com.nmt.history.repository.AttemptAnswerRepository attemptAnswerRepository;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     private static final int DEFAULT_TIME_LIMIT_MINUTES = 60;
 
@@ -102,7 +104,7 @@ public class TestService {
                 .toList();
         return new TestDetailResponse(test.getId(), test.getTitle(), test.getDescription(),
                 test.getTimeLimitMinutes(), test.getCreatedAt(), subjectId(test), test.getGrade(),
-                test.getScoringScale(), questions);
+                test.getScoringScale(), test.getAnswerVisibilityMode(), questions);
     }
 
     @Transactional(readOnly = true)
@@ -114,7 +116,7 @@ public class TestService {
                 .toList();
         return new TestEditResponse(test.getId(), test.getTitle(), test.getDescription(),
                 test.getTimeLimitMinutes(), test.getCreatedAt(), subjectId(test), test.getGrade(),
-                test.getScoringScale(), questions);
+                test.getScoringScale(), test.getAnswerVisibilityMode(), questions);
     }
 
     @Transactional
@@ -129,6 +131,8 @@ public class TestService {
                 .subject(resolveSubject(request.subjectId()))
                 .grade(request.grade())
                 .scoringScale(request.scoringScale() != null ? request.scoringScale() : ScoringScale.NMT)
+                .answerVisibilityMode(request.answerVisibilityMode() != null
+                        ? request.answerVisibilityMode() : com.nmt.history.model.AnswerVisibilityMode.AFTER_TEST_COMPLETION)
                 .build());
         return TestSummaryResponse.from(test, 0, true);
     }
@@ -149,6 +153,9 @@ public class TestService {
         }
         if (request.scoringScale() != null) {
             test.setScoringScale(request.scoringScale());
+        }
+        if (request.answerVisibilityMode() != null) {
+            test.setAnswerVisibilityMode(request.answerVisibilityMode());
         }
         return TestSummaryResponse.from(test, test.getQuestions().size(), true);
     }
@@ -298,12 +305,72 @@ public class TestService {
 
     private AttemptResponse toResponse(TestAttempt attempt, Test test) {
         long elapsed = Duration.between(attempt.getStartedAt(), LocalDateTime.now()).toSeconds();
-        return new AttemptResponse(Math.max(0, limit(test).toSeconds() - elapsed), attempt.getLeaveCount());
+        List<QuestionReview> checked = null;
+        if (test.getAnswerVisibilityMode() == com.nmt.history.model.AnswerVisibilityMode.AFTER_EACH_QUESTION) {
+            Map<Long, Question> byId = new HashMap<>();
+            questionRepository.findByTestIdOrderByIdAsc(test.getId()).forEach(q -> byId.put(q.getId(), q));
+            checked = attemptAnswerRepository.findByAttemptId(attempt.getId()).stream()
+                    .filter(a -> byId.containsKey(a.getQuestionId()))
+                    .map(a -> reviewOf(byId.get(a.getQuestionId()), readAnswer(a)))
+                    .toList();
+            checked = reviewService.withSignedImages(checked);
+        }
+        return new AttemptResponse(Math.max(0, limit(test).toSeconds() - elapsed), attempt.getLeaveCount(), checked);
     }
 
     private User findStudent(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Користувача не знайдено: " + username));
+    }
+
+    /** Перевірка однієї відповіді для режиму AFTER_EACH_QUESTION. Після перевірки відповідь фіксується на сервері. */
+    @Transactional
+    public QuestionReview checkAnswer(Long testId, Long questionId, AnswerRequest request, String username) {
+        Test test = findTest(testId);
+        User student = findStudent(username);
+        accessPolicy.requireView(ownerId(test), student);
+        requireAssigned(test, student);
+        if (test.getAnswerVisibilityMode() != com.nmt.history.model.AnswerVisibilityMode.AFTER_EACH_QUESTION) {
+            throw new com.nmt.history.exception.ForbiddenException("У цьому тесті відповіді не показуються після кожного питання");
+        }
+        TestAttempt attempt = attemptRepository.findFirstByStudentIdAndTestIdOrderByIdDesc(student.getId(), testId)
+                .orElseThrow(() -> new BadRequestException("Тест не розпочато. Відкрийте його заново."));
+        if (!LocalDateTime.now().isBefore(attempt.getStartedAt().plus(limit(test)).plus(SUBMIT_GRACE))) {
+            throw new BadRequestException("Час на тест вичерпано");
+        }
+        Question question = questionRepository.findById(questionId)
+                .filter(q -> q.getTest().getId().equals(testId))
+                .orElseThrow(() -> new ResourceNotFoundException("Питання не знайдено: " + questionId));
+        AnswerRequest locked = attemptAnswerRepository.findByAttemptIdAndQuestionId(attempt.getId(), questionId)
+                .map(this::readAnswer).orElse(null);
+        AnswerRequest answer = locked != null ? locked
+                : new AnswerRequest(questionId, request.selectedOptionIds(), request.matches(), request.orderedOptionIds());
+        if (locked == null) {
+            attemptAnswerRepository.save(com.nmt.history.model.AttemptAnswer.builder()
+                    .attempt(attempt).questionId(questionId).answerJson(writeAnswer(answer)).build());
+        }
+        return reviewService.withSignedImages(List.of(reviewOf(question, answer))).get(0);
+    }
+
+    private QuestionReview reviewOf(Question question, AnswerRequest answer) {
+        int max = scoringService.maxScore(question);
+        return reviewService.build(question, answer, Math.min(scoringService.score(question, answer), max), max);
+    }
+
+    private String writeAnswer(AnswerRequest answer) {
+        try {
+            return objectMapper.writeValueAsString(answer);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw new IllegalStateException("Не вдалося зберегти відповідь", e);
+        }
+    }
+
+    private AnswerRequest readAnswer(com.nmt.history.model.AttemptAnswer stored) {
+        try {
+            return objectMapper.readValue(stored.getAnswerJson(), AnswerRequest.class);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw new IllegalStateException("Пошкоджена збережена відповідь", e);
+        }
     }
 
     @Transactional
@@ -321,6 +388,8 @@ public class TestService {
         }
 
         Map<Long, AnswerRequest> answersByQuestion = indexAnswers(questions, request);
+        attemptAnswerRepository.findByAttemptId(attempt.getId())
+                .forEach(locked -> answersByQuestion.put(locked.getQuestionId(), readAnswer(locked)));
 
         int score = 0;
         int maxScore = 0;
@@ -345,7 +414,10 @@ public class TestService {
                 .endReason(request.endReason() == null ? "MANUAL" : request.endReason())
                 .build());
         attemptRepository.delete(attempt);
-        return TestResultResponse.from(saved, maxScore, reviewService.withSignedImages(review));
+        boolean hide = test.getAnswerVisibilityMode() == com.nmt.history.model.AnswerVisibilityMode.NEVER
+                && student.getRole() == com.nmt.history.model.Role.STUDENT;
+        List<QuestionReview> visible = hide ? reviewService.hideAnswers(review) : review;
+        return TestResultResponse.from(saved, maxScore, reviewService.withSignedImages(visible));
     }
 
     private Map<Long, AnswerRequest> indexAnswers(List<Question> questions, TestSubmitRequest request) {

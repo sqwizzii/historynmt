@@ -60,9 +60,13 @@ export const testService = {
   getForEdit: (testId) => api.get(`/teacher/tests/${testId}`).then((r) => r.data),
   updateQuestion: (questionId, payload) => api.put(`/tests/questions/${questionId}`, payload).then((r) => r.data),
   removeQuestion: (questionId) => api.delete(`/tests/questions/${questionId}`),
+  previewImport: (payload) => api.post('/teacher/import/preview', payload).then((r) => r.data),
+  createImport: (payload) => api.post('/teacher/import/create', payload).then((r) => r.data),
   importGoogleForm: (payload) => api.post('/teacher/import/google-form', payload).then((r) => r.data),
   getStats: (testId) => api.get(`/teacher/tests/${testId}/stats`).then((r) => r.data),
   start: (testId) => api.post(`/tests/${testId}/start`).then((r) => r.data),
+  check: (testId, questionId, answer) => api.post(`/tests/${testId}/questions/${questionId}/check`, answer).then((r) => r.data),
+  explain: (testId, questionId) => api.post(`/tests/${testId}/questions/${questionId}/explanation`).then((r) => r.data),
   recordLeave: (testId) => api.post(`/tests/${testId}/leave`).then((r) => r.data),
   submit: (testId, answers, endReason = 'MANUAL') => api.post(`/tests/${testId}/submit`, { answers, endReason }).then((r) => r.data),
 }

@@ -13,5 +13,6 @@ public record TestEditResponse(
         Long subjectId,
         Integer grade,
         ScoringScale scoringScale,
+        com.nmt.history.model.AnswerVisibilityMode answerVisibilityMode,
         List<QuestionEditResponse> questions) {
 }

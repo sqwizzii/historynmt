@@ -5,6 +5,12 @@ import { inputClass, labelClass, primaryButtonClass, secondaryButtonClass } from
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, subjectService, testService } from '../../services/api.js'
 
+const VISIBILITY_MODES = {
+  AFTER_EACH_QUESTION: { label: 'Після кожного питання', hint: 'Учень натискає «Перевірити» й одразу бачить результат, правильну відповідь і пояснення. Перевірену відповідь змінити не можна.' },
+  AFTER_TEST_COMPLETION: { label: 'Після завершення тесту', hint: 'Правильні відповіді та пояснення з’являються лише в розборі після здачі тесту.' },
+  NEVER: { label: 'Не показувати', hint: 'Учень бачить лише бали. Правильні відповіді й пояснення бачить тільки вчитель.' },
+}
+
 export default function TestForm({ initial, onSaved, onCancel }) {
   const isEdit = Boolean(initial)
   const [form, setForm] = useState({
@@ -14,6 +20,7 @@ export default function TestForm({ initial, onSaved, onCancel }) {
     subjectId: String(initial?.subjectId ?? ''),
     grade: String(initial?.grade ?? ''),
     scoringScale: initial?.scoringScale ?? 'NMT',
+    answerVisibilityMode: initial?.answerVisibilityMode ?? 'AFTER_TEST_COMPLETION',
   })
   const subjects = useAsyncData(subjectService.getAll).data ?? []
   const [error, setError] = useState('')
@@ -31,10 +38,11 @@ export default function TestForm({ initial, onSaved, onCancel }) {
     const payload = { title: form.title.trim(), description: form.description.trim() || null, timeLimitMinutes: minutes,
       subjectId: form.subjectId ? Number(form.subjectId) : null,
       grade: form.grade ? Number(form.grade) : null,
-      scoringScale: form.scoringScale }
+      scoringScale: form.scoringScale,
+      answerVisibilityMode: form.answerVisibilityMode }
     try {
       const saved = isEdit ? await testService.update(initial.id, payload) : await testService.create(payload)
-      if (!isEdit) setForm({ title: '', description: '', timeLimitMinutes: '60', subjectId: '', grade: '', scoringScale: 'NMT' })
+      if (!isEdit) setForm({ title: '', description: '', timeLimitMinutes: '60', subjectId: '', grade: '', scoringScale: 'NMT', answerVisibilityMode: 'AFTER_TEST_COMPLETION' })
       onSaved(saved)
     } catch (err) {
       setError(getErrorMessage(err))
@@ -82,6 +90,13 @@ export default function TestForm({ initial, onSaved, onCancel }) {
             <option value="PERCENT">Відсотки</option>
           </select>
         </div>
+      </div>
+      <div>
+        <label htmlFor="test-visibility" className={labelClass}>Показ правильних відповідей</label>
+        <select id="test-visibility" className={inputClass} value={form.answerVisibilityMode} onChange={update('answerVisibilityMode')} aria-describedby="test-visibility-hint">
+          {Object.entries(VISIBILITY_MODES).map(([value, mode]) => <option key={value} value={value}>{mode.label}</option>)}
+        </select>
+        <p id="test-visibility-hint" className="mt-1 text-xs text-slate-500">{VISIBILITY_MODES[form.answerVisibilityMode].hint}</p>
       </div>
       <div>
         <label htmlFor="test-description" className="mb-1.5 block text-sm font-medium text-slate-700">

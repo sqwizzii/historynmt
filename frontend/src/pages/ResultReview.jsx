@@ -59,7 +59,7 @@ export default function ResultReview() {
       ) : (
         <ol className="mt-8 space-y-4">
           {result.review.map((item, index) => (
-            <ReviewItem key={item.questionId} item={item} number={index + 1} />
+            <ReviewItem key={item.questionId} item={item} number={index + 1} testId={isTeacher ? undefined : result.testId} />
           ))}
         </ol>
       )}

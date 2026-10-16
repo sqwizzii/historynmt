@@ -16,9 +16,15 @@ public record CreateTestRequest(
         @Min(1) @Max(300) Integer timeLimitMinutes,
         Long subjectId,
         @Min(1) @Max(11) Integer grade,
-        ScoringScale scoringScale) {
+        ScoringScale scoringScale,
+        com.nmt.history.model.AnswerVisibilityMode answerVisibilityMode) {
+    public CreateTestRequest(String title, String description, Integer timeLimitMinutes, Long subjectId, Integer grade,
+                             ScoringScale scoringScale) {
+        this(title, description, timeLimitMinutes, subjectId, grade, scoringScale, null);
+    }
+
 
     public CreateTestRequest(String title, String description, Integer timeLimitMinutes) {
-        this(title, description, timeLimitMinutes, null, null, null);
+        this(title, description, timeLimitMinutes, null, null, null, null);
     }
 }

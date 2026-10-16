@@ -11,7 +11,7 @@ const QUESTION_TYPES = {
   CHRONOLOGY: { label: 'Хронологічна послідовність', Component: Chronology },
 }
 
-export default function QuestionCard({ question, number, total, value, onChange }) {
+export default function QuestionCard({ question, number, total, value, onChange, locked = false, children }) {
   const type = QUESTION_TYPES[question.questionType]
   const Input = type?.Component
 
@@ -28,7 +28,12 @@ export default function QuestionCard({ question, number, total, value, onChange 
 
       <h2 className="mb-5 text-lg font-semibold leading-snug text-slate-900">{question.questionText}</h2>
 
-      {Input ? <Input question={question} value={value} onChange={onChange} /> : <p className="text-sm text-red-700">Непідтримуваний тип питання.</p>}
+      {Input ? (
+        <fieldset disabled={locked} className="m-0 min-w-0 border-0 p-0">
+          <Input question={question} value={value} onChange={onChange} />
+        </fieldset>
+      ) : <p className="text-sm text-red-700">Непідтримуваний тип питання.</p>}
+      {children}
     </article>
   )
 }

@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/tests", "/api/tests/*", "/api/tests/questions/*/image", "/api/tests/options/*/image").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/quizlet", "/api/quizlet/**").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/tests/*/start", "/api/tests/*/leave", "/api/tests/*/submit").hasAnyRole(STUDENT, TEACHER)
+                        .requestMatchers(HttpMethod.POST, "/api/tests/*/start", "/api/tests/*/leave", "/api/tests/*/submit", "/api/tests/*/questions/*/check", "/api/tests/*/questions/*/explanation").hasAnyRole(STUDENT, TEACHER)
                         .requestMatchers("/api/practice/**").hasAnyRole(STUDENT, TEACHER)
                         .requestMatchers(HttpMethod.GET, "/api/results/my", "/api/results/my/topics").hasAnyRole(STUDENT, TEACHER)
 

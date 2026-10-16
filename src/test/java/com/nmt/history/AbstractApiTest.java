@@ -47,7 +47,7 @@ abstract class AbstractApiTest {
     }
 
     protected JsonNode body(ResultActions actions) throws Exception {
-        return json.readTree(actions.andReturn().getResponse().getContentAsString());
+        return json.readTree(actions.andReturn().getResponse().getContentAsString(java.nio.charset.StandardCharsets.UTF_8));
     }
 
     @Autowired

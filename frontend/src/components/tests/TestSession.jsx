@@ -12,6 +12,7 @@ import { useExamGuard } from '../../hooks/useExamGuard.js'
 import { getErrorMessage, testService } from '../../services/api.js'
 import { isAnswered } from '../../utils/answers.js'
 import { pluralize } from '../../utils/format.js'
+import AnswerFeedback from './AnswerFeedback.jsx'
 import ResultModal from './ResultModal.jsx'
 
 const AWAY_LIMIT_SECONDS = 15
@@ -49,6 +50,9 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
   const navigate = useNavigate()
   const questions = test.questions
   const [answers, setAnswers] = useState({})
+  const [feedback, setFeedback] = useState(() => Object.fromEntries((attempt.checked ?? []).map((item) => [item.questionId, item])))
+  const [checking, setChecking] = useState(false)
+  const showEach = test.answerVisibilityMode === 'AFTER_EACH_QUESTION'
   const [index, setIndex] = useState(0)
   const [confirming, setConfirming] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -60,7 +64,23 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
   const [deadline] = useState(() => Date.now() + attempt.remainingSeconds * 1000)
   const timedOut = autoReason !== null
 
-  const answeredCount = questions.filter((q) => isAnswered(answers[q.id])).length
+  const isDone = (q) => isAnswered(answers[q.id]) || Boolean(feedback[q.id])
+  const answeredCount = questions.filter(isDone).length
+
+  async function checkCurrent() {
+    const q = questions[index]
+    if (checking || feedback[q.id] || !isAnswered(answers[q.id])) return
+    setChecking(true)
+    setNotice('')
+    try {
+      const item = await testService.check(testId, q.id, answers[q.id])
+      setFeedback((prev) => ({ ...prev, [q.id]: item }))
+    } catch (err) {
+      setNotice(getErrorMessage(err))
+    } finally {
+      setChecking(false)
+    }
+  }
 
   async function submit(reason = autoReason ?? 'MANUAL') {
     if (submitting) return
@@ -145,7 +165,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
       <nav aria-label="Навігація по питаннях" className="mb-5 flex flex-wrap gap-2">
         {questions.map((q, i) => {
           const current = i === index
-          const done = isAnswered(answers[q.id])
+          const done = isDone(q)
           return (
             <button
               key={q.id}
@@ -174,7 +194,18 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
         total={questions.length}
         value={answers[question.id]}
         onChange={(value) => setAnswers((prev) => ({ ...prev, [question.id]: value }))}
-      />
+        locked={Boolean(feedback[question.id])}
+      >
+        {showEach && !feedback[question.id] && (
+          <div className="mt-5">
+            <button type="button" onClick={checkCurrent} disabled={checking || !isAnswered(answers[question.id])} className={secondaryButtonClass}>
+              {checking ? 'Перевіряємо…' : 'Перевірити відповідь'}
+            </button>
+            <p className="mt-2 text-xs text-slate-500">Після перевірки відповідь змінити не можна.</p>
+          </div>
+        )}
+        {feedback[question.id] && <AnswerFeedback item={feedback[question.id]} testId={testId} />}
+      </QuestionCard>
 
       <div className="mt-6 flex items-center justify-between gap-3">
         <button type="button" onClick={() => setIndex((i) => i - 1)} disabled={index === 0} className={secondaryButtonClass}>

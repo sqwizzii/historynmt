@@ -1,7 +1,7 @@
 import { X } from 'lucide-react'
 import { useEffect } from 'react'
 
-export default function Modal({ title, onClose, children, labelledBy = 'modal-title' }) {
+export default function Modal({ title, onClose, children, labelledBy = 'modal-title', wide = false }) {
   useEffect(() => {
     const onKeyDown = (event) => {
       if (event.key === 'Escape' && onClose) onClose()
@@ -22,7 +22,7 @@ export default function Modal({ title, onClose, children, labelledBy = 'modal-ti
         aria-modal="true"
         aria-labelledby={labelledBy}
         onMouseDown={(event) => event.stopPropagation()}
-        className="relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-lift"
+        className={`relative max-h-full w-full ${wide ? 'max-w-3xl' : 'max-w-md'} overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-lift`}
       >
         {onClose && (
           <button

@@ -15,6 +15,7 @@ public record TestSummaryResponse(
         Long subjectId,
         Integer grade,
         ScoringScale scoringScale,
+        com.nmt.history.model.AnswerVisibilityMode answerVisibilityMode,
         boolean system,
         boolean editable) {
 
@@ -22,6 +23,6 @@ public record TestSummaryResponse(
         return new TestSummaryResponse(test.getId(), test.getTitle(), test.getDescription(),
                 test.getTimeLimitMinutes(), test.getCreatedAt(), questionCount,
                 test.getSubject() == null ? null : test.getSubject().getId(), test.getGrade(),
-                test.getScoringScale(), test.getOwner() == null, editable);
+                test.getScoringScale(), test.getAnswerVisibilityMode(), test.getOwner() == null, editable);
     }
 }

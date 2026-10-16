@@ -108,6 +108,7 @@ public class PracticeService {
         Set<Long> existing = new HashSet<>();
         questionRepository.findAllById(open).stream()
                 .filter(q -> accessPolicy.canView(q.getTest().getOwner() == null ? null : q.getTest().getOwner().getId(), student))
+                .filter(q -> q.getTest().getAnswerVisibilityMode() != com.nmt.history.model.AnswerVisibilityMode.NEVER)
                 .forEach(q -> existing.add(q.getId()));
         return open.stream().filter(existing::contains).toList();
     }

@@ -53,6 +53,17 @@ public class ReviewService {
                 .toList();
     }
 
+    /** Прибирає правильні відповіді й пояснення (режим NEVER для учня); бали за питання лишаються. */
+    public List<QuestionReview> hideAnswers(List<QuestionReview> review) {
+        if (review == null) {
+            return null;
+        }
+        return review.stream()
+                .map(r -> new QuestionReview(r.questionId(), r.questionText(), r.imageUrl(), r.questionType(), r.earned(),
+                        r.max(), r.yourAnswer(), List.of(), null, r.topic()))
+                .toList();
+    }
+
     public String toJson(List<QuestionReview> review) {
         try {
             return objectMapper.writeValueAsString(review);

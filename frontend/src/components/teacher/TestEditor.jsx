@@ -115,7 +115,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
           </button>
           </div>
         </div>
-        <TestForm key={`${test.id}-${test.title}-${test.timeLimitMinutes}-${test.description}-${test.subjectId}-${test.grade}-${test.scoringScale}`} initial={test} onSaved={refreshQuestions} />
+        <TestForm key={`${test.id}-${test.title}-${test.timeLimitMinutes}-${test.description}-${test.subjectId}-${test.grade}-${test.scoringScale}-${test.answerVisibilityMode}`} initial={test} onSaved={refreshQuestions} />
       </section>
 
       <QuestionStats testId={testId} />

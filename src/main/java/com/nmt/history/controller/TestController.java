@@ -103,6 +103,13 @@ public class TestController {
         return testService.recordLeave(testId, authentication.getName());
     }
 
+    @PostMapping("/{testId}/questions/{questionId}/check")
+    public com.nmt.history.dto.QuestionReview checkAnswer(@PathVariable Long testId, @PathVariable Long questionId,
+                                                          @RequestBody com.nmt.history.dto.AnswerRequest request,
+                                                          Authentication authentication) {
+        return testService.checkAnswer(testId, questionId, request, authentication.getName());
+    }
+
     @PostMapping("/{testId}/submit")
     public TestResultResponse submitTest(@PathVariable Long testId,
                                          @Valid @RequestBody TestSubmitRequest request,

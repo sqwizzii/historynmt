@@ -68,6 +68,11 @@ public class Test {
     @Builder.Default
     private ScoringScale scoringScale = ScoringScale.NMT;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "answer_visibility_mode", nullable = false, length = 30)
+    @Builder.Default
+    private AnswerVisibilityMode answerVisibilityMode = AnswerVisibilityMode.AFTER_TEST_COMPLETION;
+
     @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Question> questions = new ArrayList<>();

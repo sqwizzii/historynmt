@@ -15,6 +15,8 @@ public interface TestResultRepository extends JpaRepository<TestResult, Long> {
     @EntityGraph(attributePaths = {"student", "test"})
     List<TestResult> findByStudentIdOrderByCompletedAtDesc(Long studentId);
 
+    java.util.Optional<TestResult> findFirstByStudentIdAndTestIdOrderByCompletedAtDesc(Long studentId, Long testId);
+
     @EntityGraph(attributePaths = {"student", "test"})
     List<TestResult> findByStudentTeacherIdOrderByCompletedAtDesc(Long teacherId);
 

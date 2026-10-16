@@ -77,6 +77,9 @@ public class ResultService {
                 .orElseThrow(() -> new ResourceNotFoundException("Результат не знайдено: " + resultId));
         List<QuestionReview> review = reviewService.fromJson(result.getReviewJson());
         Integer maxScore = review == null ? null : review.stream().mapToInt(QuestionReview::max).sum();
-        return TestResultResponse.from(result, maxScore, reviewService.withSignedImages(review));
+        boolean hide = result.getTest().getAnswerVisibilityMode() == com.nmt.history.model.AnswerVisibilityMode.NEVER
+                && actor.getRole() == Role.STUDENT;
+        return TestResultResponse.from(result, maxScore,
+                reviewService.withSignedImages(hide ? reviewService.hideAnswers(review) : review));
     }
 }

@@ -1,4 +1,5 @@
 import { CheckCircle2, Lightbulb, MinusCircle, XCircle } from 'lucide-react'
+import AiExplanation from './AiExplanation.jsx'
 import QuestionImage from './QuestionImage.jsx'
 
 function statusOf(item) {
@@ -24,7 +25,7 @@ function AnswerBlock({ title, lines, emptyText, tone }) {
   )
 }
 
-export default function ReviewItem({ item, number }) {
+export default function ReviewItem({ item, number, testId }) {
   const status = statusOf(item)
   return (
               <li className="rounded-xl border border-slate-200 bg-white p-5 shadow-card">
@@ -44,8 +45,15 @@ export default function ReviewItem({ item, number }) {
                     emptyText="Без відповіді"
                     tone={item.earned === item.max ? 'bg-emerald-50 text-emerald-900' : 'bg-red-50 text-red-900'}
                   />
-                  <AnswerBlock title="Правильна відповідь" lines={item.correctAnswer} emptyText="-" tone="bg-slate-50 text-slate-800" />
+                  {item.correctAnswer?.length > 0 ? (
+                    <AnswerBlock title="Правильна відповідь" lines={item.correctAnswer} emptyText="-" tone="bg-slate-50 text-slate-800" />
+                  ) : (
+                    <AnswerBlock title="Правильна відповідь" lines={[]} emptyText="Вчитель не відкриває правильні відповіді для цього тесту" tone="bg-slate-50 text-slate-800" />
+                  )}
                 </div>
+                {testId && !item.explanation && item.earned < item.max && item.correctAnswer?.length > 0 && (
+                  <AiExplanation testId={testId} questionId={item.questionId} />
+                )}
                 {item.explanation && (
                   <div className="mt-3 flex items-start gap-2 rounded-xl bg-blue-50 p-3.5 text-sm text-blue-900">
                     <Lightbulb className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
