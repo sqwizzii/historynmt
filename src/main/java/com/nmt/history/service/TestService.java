@@ -268,7 +268,8 @@ public class TestService {
     @Transactional
     public AttemptResponse startAttempt(Long testId, String username) {
         Test test = findTest(testId);
-        User student = findStudent(username);
+        User student = userRepository.findByUsernameForUpdate(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Користувача не знайдено: " + username));
         accessPolicy.requireView(ownerId(test), student);
         requireAssigned(test, student);
         if (questionRepository.findByTestIdOrderByIdAsc(testId).isEmpty()) {
@@ -306,16 +307,18 @@ public class TestService {
     private AttemptResponse toResponse(TestAttempt attempt, Test test) {
         long elapsed = Duration.between(attempt.getStartedAt(), LocalDateTime.now()).toSeconds();
         List<QuestionReview> checked = null;
+        List<AnswerRequest> locked = null;
         if (test.getAnswerVisibilityMode() == com.nmt.history.model.AnswerVisibilityMode.AFTER_EACH_QUESTION) {
             Map<Long, Question> byId = new HashMap<>();
             questionRepository.findByTestIdOrderByIdAsc(test.getId()).forEach(q -> byId.put(q.getId(), q));
-            checked = attemptAnswerRepository.findByAttemptId(attempt.getId()).stream()
-                    .filter(a -> byId.containsKey(a.getQuestionId()))
-                    .map(a -> reviewOf(byId.get(a.getQuestionId()), readAnswer(a)))
-                    .toList();
-            checked = reviewService.withSignedImages(checked);
+            List<com.nmt.history.model.AttemptAnswer> stored = attemptAnswerRepository.findByAttemptId(attempt.getId()).stream()
+                    .filter(a -> byId.containsKey(a.getQuestionId())).toList();
+            checked = reviewService.withSignedImages(stored.stream()
+                    .map(a -> reviewOf(byId.get(a.getQuestionId()), readAnswer(a))).toList());
+            locked = stored.stream().map(this::readAnswer).toList();
         }
-        return new AttemptResponse(Math.max(0, limit(test).toSeconds() - elapsed), attempt.getLeaveCount(), checked);
+        return new AttemptResponse(attempt.getId(), Math.max(0, limit(test).toSeconds() - elapsed), attempt.getLeaveCount(),
+                checked, locked);
     }
 
     private User findStudent(String username) {
@@ -346,8 +349,12 @@ public class TestService {
         AnswerRequest answer = locked != null ? locked
                 : new AnswerRequest(questionId, request.selectedOptionIds(), request.matches(), request.orderedOptionIds());
         if (locked == null) {
-            attemptAnswerRepository.save(com.nmt.history.model.AttemptAnswer.builder()
-                    .attempt(attempt).questionId(questionId).answerJson(writeAnswer(answer)).build());
+            try {
+                attemptAnswerRepository.saveAndFlush(com.nmt.history.model.AttemptAnswer.builder()
+                        .attempt(attempt).questionId(questionId).answerJson(writeAnswer(answer)).build());
+            } catch (org.springframework.dao.DataIntegrityViolationException e) {
+                throw new com.nmt.history.exception.ConflictException("Відповідь уже зафіксовано. Повторіть запит");
+            }
         }
         return reviewService.withSignedImages(List.of(reviewOf(question, answer))).get(0);
     }

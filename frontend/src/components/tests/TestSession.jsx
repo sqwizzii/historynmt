@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight, CheckCircle2, Clock, Flag, ShieldAlert } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Modal from '../Modal.jsx'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
@@ -17,6 +17,19 @@ import ResultModal from './ResultModal.jsx'
 
 const AWAY_LIMIT_SECONDS = 15
 const WARNING_THRESHOLD_MS = 5 * 60 * 1000
+
+function restoreAnswers(draftKey, lockedAnswers) {
+  let restored = {}
+  try {
+    restored = JSON.parse(localStorage.getItem(draftKey) ?? '{}') ?? {}
+  } catch {
+    restored = {}
+  }
+  for (const { questionId, ...value } of lockedAnswers ?? []) {
+    restored[questionId] = Object.fromEntries(Object.entries(value).filter(([, v]) => v != null))
+  }
+  return restored
+}
 
 function formatRemaining(ms) {
   const totalSeconds = Math.ceil(ms / 1000)
@@ -49,7 +62,8 @@ export default function TestSession({ testId }) {
 function ActiveTest({ testId, test, attempt, onRetry }) {
   const navigate = useNavigate()
   const questions = test.questions
-  const [answers, setAnswers] = useState({})
+  const draftKey = `test-draft:${attempt.attemptId}`
+  const [answers, setAnswers] = useState(() => restoreAnswers(draftKey, attempt.lockedAnswers))
   const [feedback, setFeedback] = useState(() => Object.fromEntries((attempt.checked ?? []).map((item) => [item.questionId, item])))
   const [checking, setChecking] = useState(false)
   const showEach = test.answerVisibilityMode === 'AFTER_EACH_QUESTION'
@@ -63,6 +77,14 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
   const [notice, setNotice] = useState('')
   const [deadline] = useState(() => Date.now() + attempt.remainingSeconds * 1000)
   const timedOut = autoReason !== null
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(draftKey, JSON.stringify(answers))
+    } catch {
+      // сховище недоступне: відповіді просто не відновлюватимуться після перезавантаження
+    }
+  }, [draftKey, answers])
 
   const isDone = (q) => isAnswered(answers[q.id]) || Boolean(feedback[q.id])
   const answeredCount = questions.filter(isDone).length
@@ -92,6 +114,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
     try {
       const data = await testService.submit(testId, payload, reason)
       setConfirming(false)
+      localStorage.removeItem(draftKey)
       setResult(data)
     } catch (err) {
       setSubmitError(getErrorMessage(err))

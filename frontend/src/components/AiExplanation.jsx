@@ -1,13 +1,28 @@
 import { Loader2, RefreshCw, Sparkles } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { testService } from '../services/api.js'
 
 /** Пояснення помилки від ШІ. Сервер сам вирішує, чи можна його показувати; без нього тест працює як звичайно. */
-export default function AiExplanation({ testId, questionId }) {
+export default function AiExplanation({ testId, questionId, lazy = false }) {
   const [state, setState] = useState({ status: 'loading' })
   const [attempt, setAttempt] = useState(0)
+  const ref = useRef(null)
+  const [visible, setVisible] = useState(() => !lazy || typeof IntersectionObserver === 'undefined')
 
   useEffect(() => {
+    if (visible) return undefined
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setVisible(true)
+        observer.disconnect()
+      }
+    })
+    observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [visible])
+
+  useEffect(() => {
+    if (!visible) return undefined
     let cancelled = false
     testService
       .explain(testId, questionId)
@@ -16,8 +31,9 @@ export default function AiExplanation({ testId, questionId }) {
     return () => {
       cancelled = true
     }
-  }, [testId, questionId, attempt])
+  }, [testId, questionId, attempt, visible])
 
+  if (!visible) return <div ref={ref} className="h-8" aria-hidden="true" />
   if (state.status === 'NOT_NEEDED' || state.status === 'NEEDS_REVIEW') return null
   if (state.status === 'loading') {
     return (

@@ -12,6 +12,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
+    /** Блокує рядок користувача до кінця транзакції: два одночасні старти тесту не створять дві спроби. */
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @org.springframework.data.jpa.repository.Query("select u from User u where u.username = :username")
+    Optional<User> findByUsernameForUpdate(@org.springframework.data.repository.query.Param("username") String username);
+
     Optional<User> findByEmail(String email);
 
     List<User> findByRoleOrderByUsernameAsc(Role role);

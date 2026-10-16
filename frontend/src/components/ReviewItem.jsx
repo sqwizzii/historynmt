@@ -52,7 +52,7 @@ export default function ReviewItem({ item, number, testId }) {
                   )}
                 </div>
                 {testId && !item.explanation && item.earned < item.max && item.correctAnswer?.length > 0 && (
-                  <AiExplanation testId={testId} questionId={item.questionId} />
+                  <AiExplanation testId={testId} questionId={item.questionId} lazy />
                 )}
                 {item.explanation && (
                   <div className="mt-3 flex items-start gap-2 rounded-xl bg-blue-50 p-3.5 text-sm text-blue-900">

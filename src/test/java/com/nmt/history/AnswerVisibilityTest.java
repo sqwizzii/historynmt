@@ -98,7 +98,10 @@ class AnswerVisibilityTest extends AbstractApiTest {
         long testId = createTest("NEVER");
         JsonNode q = addQuestion(testId);
         long qid = q.get("id").asLong();
-        send(post("/api/tests/" + testId + "/start"), student, null).andExpect(status().isOk());
+        send(post("/api/tests/" + testId + "/start"), student, null).andExpect(status().isOk())
+                .andExpect(jsonPath("$.lockedAnswers").doesNotExist()).andExpect(jsonPath("$.checked").doesNotExist());
+        send(post("/api/tests/" + testId + "/questions/" + qid + "/check"), student,
+                Map.of("selectedOptionIds", List.of(option(q, true)))).andExpect(status().isForbidden());
         long resultId = body(send(post("/api/tests/" + testId + "/submit"), student, answer(qid, option(q, false)))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.score", is(0)))
                 .andExpect(jsonPath("$.review[0].correctAnswer", hasSize(0)))
@@ -132,7 +135,10 @@ class AnswerVisibilityTest extends AbstractApiTest {
                 Map.of("selectedOptionIds", List.of(option(q, true)))).andExpect(status().isOk())
                 .andExpect(jsonPath("$.earned", is(0))).andExpect(jsonPath("$.yourAnswer[0]", is("Хибна")));
         send(post("/api/tests/" + testId + "/start"), student, null)
-                .andExpect(jsonPath("$.checked", hasSize(1)));
+                .andExpect(jsonPath("$.checked", hasSize(1))).andExpect(jsonPath("$.attemptId").isNumber())
+                .andExpect(jsonPath("$.lockedAnswers", hasSize(1)))
+                .andExpect(jsonPath("$.lockedAnswers[0].questionId", is((int) qid)))
+                .andExpect(jsonPath("$.lockedAnswers[0].selectedOptionIds[0]", is((int) option(q, false))));
         send(post("/api/tests/" + testId + "/submit"), student, answer(qid, option(q, true))).andExpect(status().isOk())
                 .andExpect(jsonPath("$.score", is(0))).andExpect(jsonPath("$.review[0].yourAnswer[0]", is("Хибна")));
         send(get("/api/results/my"), student, null).andExpect(jsonPath("$", hasSize(1)));

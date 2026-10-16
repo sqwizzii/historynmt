@@ -31,6 +31,8 @@ class AiExplanationTest extends AbstractApiTest {
 
     @MockBean
     private AiClient ai;
+    @MockBean
+    private com.nmt.history.ai.AiRateLimiter limiter;
     @Autowired
     private InviteCodeService inviteCodes;
 
@@ -40,7 +42,8 @@ class AiExplanationTest extends AbstractApiTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        Mockito.reset(ai);
+        Mockito.reset(ai, limiter);
+        when(limiter.tryAcquire(anyString())).thenReturn(true);
         when(ai.isConfigured()).thenReturn(true);
         when(ai.model()).thenReturn("test-model");
         grantSubscription("teacher");
@@ -185,6 +188,22 @@ class AiExplanationTest extends AbstractApiTest {
         send(post(url(testId, q)), student, null).andExpect(jsonPath("$.status", is("UNAVAILABLE")));
         when(ai.complete(anyString(), anyString())).thenReturn(Optional.of("Тепер працює"));
         send(post(url(testId, q)), student, null).andExpect(jsonPath("$.status", is("READY")));
+    }
+
+    @Test
+    void rateLimitStopsNewGenerationsButStoredExplanationsStillWork() throws Exception {
+        when(ai.complete(anyString(), anyString())).thenReturn(Optional.of("Пояснення"));
+        long testId = createTest("AFTER_TEST_COMPLETION");
+        JsonNode q = question(testId, null);
+        submit(student, testId, q, "Ярослав");
+        when(limiter.tryAcquire(anyString())).thenReturn(false);
+        send(post(url(testId, q)), student, null).andExpect(jsonPath("$.status", is("RATE_LIMITED")));
+        verify(ai, never()).complete(anyString(), anyString());
+        when(limiter.tryAcquire(anyString())).thenReturn(true);
+        send(post(url(testId, q)), student, null).andExpect(jsonPath("$.status", is("READY")));
+        when(limiter.tryAcquire(anyString())).thenReturn(false);
+        send(post(url(testId, q)), student, null).andExpect(jsonPath("$.status", is("READY")));
+        verify(ai, times(1)).complete(anyString(), anyString());
     }
 
     @Test
