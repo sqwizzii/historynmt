@@ -1,5 +1,5 @@
 import { CheckCircle2, Lightbulb, MinusCircle, XCircle } from 'lucide-react'
-import AiExplanation from '../AiExplanation.jsx'
+import QuestionExplanation from '../QuestionExplanation.jsx'
 
 function statusOf(item) {
   if (item.earned === item.max) return { label: 'Правильно', Icon: CheckCircle2, className: 'bg-emerald-50 text-emerald-900' }
@@ -26,7 +26,7 @@ export default function AnswerFeedback({ item, testId, children }) {
         </p>
       )}
       {testId && !item.explanation && item.earned < item.max && item.correctAnswer?.length > 0 && (
-        <AiExplanation testId={testId} questionId={item.questionId} />
+        <QuestionExplanation testId={testId} questionId={item.questionId} />
       )}
       {children}
     </section>

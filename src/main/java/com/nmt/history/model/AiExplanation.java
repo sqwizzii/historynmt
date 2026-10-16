@@ -20,6 +20,7 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+/** Збережені раніше пояснення (архів). Нові не створюються; таблицю й дані не видаляємо. */
 @Entity
 @Table(name = "ai_explanations", uniqueConstraints = @UniqueConstraint(name = "uq_ai_explanation",
         columnNames = {"question_id", "content_hash", "answer_hash"}))

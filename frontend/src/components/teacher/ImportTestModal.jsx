@@ -132,7 +132,7 @@ export default function ImportTestModal({ onClose, onImported }) {
               <label htmlFor="import-title" className={labelClass}>Назва тесту</label>
               <input id="import-title" className={inputClass} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={255} />
             </div>
-            <p className="text-sm text-slate-600">Знайдено питань: {questions.length}{problems > 0 ? `, потребують уваги: ${problems}` : ''}. Пояснення ШІ формує автоматично для неправильних відповідей учнів.</p>
+            <p className="text-sm text-slate-600">Знайдено питань: {questions.length}{problems > 0 ? `, потребують уваги: ${problems}` : ''}.</p>
             {questions.length === 0 ? <p className="rounded-lg border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">Питань немає.</p> : (
               <ul className="max-h-[50vh] space-y-3 overflow-y-auto pr-1">
                 {questions.map((q, i) => (

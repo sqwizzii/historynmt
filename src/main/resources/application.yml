@@ -57,17 +57,6 @@ app:
     zno-enabled: ${IMPORT_ZNO_ENABLED:false}
     allowed-hosts: zno.osvita.ua
     timeout-seconds: 10
-  ai:
-    # Пояснення помилок від ШІ (OpenAI-сумісний API). Без AI_API_KEY інтеграція вимкнена, тести працюють як раніше.
-    api-key: ${AI_API_KEY:}
-    base-url: ${AI_BASE_URL:https://api.openai.com/v1}
-    model: ${AI_MODEL:gpt-4o-mini}
-    # Моделі з «мисленням» (Gemini) витрачають токени й на міркування, тож запас більший за довжину пояснення.
-    max-tokens: ${AI_MAX_TOKENS:1000}
-    timeout-seconds: ${AI_TIMEOUT_SECONDS:25}
-    # Необов'язково: low/medium/high (для Gemini рекомендовано low). Порожнє: параметр не надсилається.
-    reasoning-effort: ${AI_REASONING_EFFORT:}
-    hourly-limit-per-user: ${AI_HOURLY_LIMIT_PER_USER:40}
   images:
     url-ttl-minutes: ${IMAGE_URL_TTL_MINUTES:360}
   login:

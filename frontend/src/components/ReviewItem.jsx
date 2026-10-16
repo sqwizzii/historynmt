@@ -1,5 +1,5 @@
 import { CheckCircle2, Lightbulb, MinusCircle, XCircle } from 'lucide-react'
-import AiExplanation from './AiExplanation.jsx'
+import QuestionExplanation, { NO_EXPLANATION } from './QuestionExplanation.jsx'
 import QuestionImage from './QuestionImage.jsx'
 
 function statusOf(item) {
@@ -51,8 +51,10 @@ export default function ReviewItem({ item, number, testId }) {
                     <AnswerBlock title="Правильна відповідь" lines={[]} emptyText="Вчитель не відкриває правильні відповіді для цього тесту" tone="bg-slate-50 text-slate-800" />
                   )}
                 </div>
-                {testId && !item.explanation && item.earned < item.max && item.correctAnswer?.length > 0 && (
-                  <AiExplanation testId={testId} questionId={item.questionId} lazy />
+                {!item.explanation && item.correctAnswer?.length > 0 && (
+                  testId && item.earned < item.max
+                    ? <QuestionExplanation testId={testId} questionId={item.questionId} lazy />
+                    : <p className="mt-3 text-xs text-slate-500">{NO_EXPLANATION}</p>
                 )}
                 {item.explanation && (
                   <div className="mt-3 flex items-start gap-2 rounded-xl bg-blue-50 p-3.5 text-sm text-blue-900">
