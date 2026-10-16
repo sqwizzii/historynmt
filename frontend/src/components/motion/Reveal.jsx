@@ -8,11 +8,12 @@ export default function Reveal({
   variant = 'up',
   delay = 0,
   once = true,
+  immediate = false,
   ...props
 }) {
   const reduced = usePrefersReducedMotion()
-  const [ref, inView] = useInView({ once, disabled: reduced })
-  const visible = inView || reduced
+  const [ref, inView] = useInView({ once, disabled: reduced || immediate })
+  const visible = immediate || inView || reduced
 
   return (
     <Tag

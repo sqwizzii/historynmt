@@ -64,14 +64,15 @@ function Session({ questions, onFinish }) {
       <p className="mb-4 text-sm text-slate-500">
         Відповіли: {answered} з {questions.length}
       </p>
-      <QuestionCard
-        key={question.id}
-        question={question}
-        number={index + 1}
-        total={questions.length}
-        value={answers[question.id]}
-        onChange={(value) => setAnswers((prev) => ({ ...prev, [question.id]: value }))}
-      />
+      <div key={question.id} className="motion-question">
+        <QuestionCard
+          question={question}
+          number={index + 1}
+          total={questions.length}
+          value={answers[question.id]}
+          onChange={(value) => setAnswers((prev) => ({ ...prev, [question.id]: value }))}
+        />
+      </div>
       <ErrorAlert message={error} />
       <div className="mt-6 flex items-center justify-between gap-3">
         <button type="button" onClick={() => setIndex((i) => i - 1)} disabled={index === 0} className={secondaryButtonClass}>

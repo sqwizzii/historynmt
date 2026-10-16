@@ -1,6 +1,7 @@
 import { Download, FileUp, Plus, Search } from 'lucide-react'
 import { useState } from 'react'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
+import Stagger from '../motion/Stagger.jsx'
 import { inputClass, listRowActiveClass, listRowIdleClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, testService } from '../../services/api.js'
@@ -53,7 +54,12 @@ export default function TestsManager() {
             className={`${inputClass} !py-2 pl-9`}
           />
         </div>
-        <ul className="max-h-[min(55vh,26rem)] space-y-0.5 overflow-y-auto rounded-xl border border-[var(--color-line)] bg-white p-1.5 shadow-card lg:max-h-[calc(100vh-15rem)]">
+        <Stagger
+          as="ul"
+          immediate
+          step={45}
+          className="max-h-[min(55vh,26rem)] space-y-0.5 overflow-y-auto rounded-xl border border-[var(--color-line)] bg-white p-1.5 shadow-card lg:max-h-[calc(100vh-15rem)]"
+        >
           {shown.map((test) => {
             const active = test.id === activeId
             return (
@@ -65,7 +71,7 @@ export default function TestsManager() {
                     setSelectedId(test.id)
                   }}
                   aria-current={active ? 'true' : undefined}
-                  className={`w-full rounded-lg px-2.5 py-2.5 text-left transition ${active ? listRowActiveClass : listRowIdleClass}`}
+                  className={`w-full rounded-lg px-2.5 py-2.5 text-left transition duration-200 ${active ? listRowActiveClass : listRowIdleClass}`}
                 >
                   <span className="block truncate text-[13px] font-semibold">{test.title}</span>
                   <span className="mt-0.5 block text-[11px] text-[var(--color-mute)]">
@@ -80,12 +86,12 @@ export default function TestsManager() {
               {tests.length === 0 ? 'Тестів ще немає' : 'Нічого не знайдено'}
             </li>
           )}
-        </ul>
+        </Stagger>
       </aside>
 
-      <div className="min-w-0">
+      <div className="min-w-0 animate-fade-in">
         {creating ? (
-          <section className="rounded-xl border border-[var(--color-line)] bg-white p-5 shadow-card sm:p-6">
+          <section className="motion-alert rounded-xl border border-[var(--color-line)] bg-white p-5 shadow-card sm:p-6">
             <div className="mb-5 border-b border-[var(--color-line-soft)] pb-4">
               <h2 className="text-[15px] font-semibold text-[var(--color-ink)]">Новий тест</h2>
               <p className="mt-1 text-[13px] text-[var(--color-mute)]">Спочатку параметри, потім питання.</p>

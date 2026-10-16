@@ -3,6 +3,7 @@ import PageHeader from '../components/PageHeader.jsx'
 import StatCard from '../components/StatCard.jsx'
 import { Link } from 'react-router-dom'
 import { EmptyState, ErrorState, LoadingState } from '../components/PageState.jsx'
+import Stagger from '../components/motion/Stagger.jsx'
 import TopicProgress from '../components/TopicProgress.jsx'
 import ResultsTable from '../components/ResultsTable.jsx'
 import { primaryButtonClass } from '../components/styles.js'
@@ -32,13 +33,15 @@ export default function StudentAnalytics() {
         </div>
       ) : (
         <>
-          <section className="mb-6 grid gap-4 sm:grid-cols-3">
+          <Stagger immediate className="mb-6 grid gap-4 sm:grid-cols-3" step={60}>
             <StatCard Icon={ClipboardList} label="Пройдено спроб" value={results.length} />
             <StatCard Icon={Award} label="Найкращий орієнт. бал" value={best} />
             <StatCard Icon={TrendingUp} label="Середній орієнт. бал" value={average} />
-          </section>
-          <TopicProgress fetcher={resultService.getMyTopics} dependency={results.length} />
-          <ResultsTable results={results} />
+          </Stagger>
+          <div className="animate-fade-in">
+            <TopicProgress fetcher={resultService.getMyTopics} dependency={results.length} />
+            <ResultsTable results={results} />
+          </div>
         </>
       )}
     </div>

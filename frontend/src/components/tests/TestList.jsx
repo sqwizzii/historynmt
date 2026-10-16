@@ -22,8 +22,9 @@ export default function TestList() {
       ) : (
         <Stagger
           as="ul"
+          immediate
           className="divide-y divide-[var(--color-line)] overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-card"
-          step={45}
+          step={55}
         >
           {tests.map((test) => (
             <li key={test.id}>

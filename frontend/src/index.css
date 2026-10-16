@@ -256,50 +256,129 @@ h3 {
     radial-gradient(ellipse 50% 40% at 90% 90%, rgb(57 48 184 / 0.25), transparent 50%);
 }
 
-/* —— Motion primitives —— */
+/* —— Motion primitives (keyframes so entrance always paints) —— */
+@keyframes motion-enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes motion-enter-left {
+  from {
+    opacity: 0;
+    transform: translateX(-22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes motion-enter-right {
+  from {
+    opacity: 0;
+    transform: translateX(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes motion-enter-scale {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shell-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.page-enter {
+  animation: page-enter 0.3s var(--ease-out-expo) both;
+}
+
+.shell-enter {
+  animation: shell-enter 0.4s var(--ease-out-expo) both;
+}
+
 .motion-reveal {
   --motion-delay: 0ms;
   opacity: 0;
-  transform: translateY(28px);
-  transition:
-    opacity 0.55s var(--ease-out-expo) var(--motion-delay),
-    transform 0.55s var(--ease-out-expo) var(--motion-delay);
-}
-
-.motion-reveal--left {
-  transform: translateX(-28px);
-}
-
-.motion-reveal--right {
-  transform: translateX(28px);
-}
-
-.motion-reveal--scale {
-  transform: translateY(16px) scale(0.94);
 }
 
 .motion-reveal.is-visible {
-  opacity: 1;
-  transform: none;
+  animation: motion-enter-up 0.5s var(--ease-out-expo) both;
+  animation-delay: var(--motion-delay);
+}
+
+.motion-reveal--left.is-visible {
+  animation-name: motion-enter-left;
+}
+
+.motion-reveal--right.is-visible {
+  animation-name: motion-enter-right;
+}
+
+.motion-reveal--scale.is-visible {
+  animation-name: motion-enter-scale;
 }
 
 .motion-stagger-item {
   --motion-delay: 0ms;
   opacity: 0;
-  transform: translateY(22px);
-  transition:
-    opacity 0.48s var(--ease-out-expo) var(--motion-delay),
-    transform 0.48s var(--ease-out-expo) var(--motion-delay);
 }
 
 .motion-stagger.is-visible .motion-stagger-item {
-  opacity: 1;
-  transform: none;
+  animation: motion-enter-up 0.45s var(--ease-out-expo) both;
+  animation-delay: var(--motion-delay);
 }
 
 .motion-tilt {
   transform-style: preserve-3d;
   transition: transform 0.28s var(--ease-out-expo);
+}
+
+.page-header-enter > * {
+  opacity: 0;
+  animation: motion-enter-up 0.42s var(--ease-out-expo) both;
+}
+
+.page-header-enter > *:nth-child(1) {
+  animation-delay: 0.02s;
+}
+
+.page-header-enter > *:nth-child(2) {
+  animation-delay: 0.08s;
 }
 
 .hero-enter > * {
@@ -364,7 +443,10 @@ h3 {
   .motion-reveal,
   .motion-stagger-item,
   .hero-enter > *,
-  .hero-preview-enter {
+  .hero-preview-enter,
+  .page-enter,
+  .page-header-enter > *,
+  .shell-enter {
     opacity: 1 !important;
     transform: none !important;
     animation: none !important;
@@ -422,9 +504,13 @@ h3 {
   }
 
   .motion-reveal,
-  .motion-stagger-item {
+  .motion-stagger-item,
+  .page-enter,
+  .page-header-enter > *,
+  .shell-enter {
     opacity: 1 !important;
     transform: none !important;
+    animation: none !important;
   }
 
   .hero-orbs::before,

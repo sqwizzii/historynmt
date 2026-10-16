@@ -1,6 +1,6 @@
 export default function PageHeader({ title, description, actions, eyebrow }) {
   return (
-    <header className="mb-6 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-end sm:justify-between">
+    <header className="page-header-enter mb-6 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
         {eyebrow && (
           <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-indigo-600">{eyebrow}</p>

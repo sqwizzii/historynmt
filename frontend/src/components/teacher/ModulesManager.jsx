@@ -1,7 +1,8 @@
 import { Plus, Search } from 'lucide-react'
 import { useState } from 'react'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
-import { inputClass, primaryButtonClass } from '../styles.js'
+import Stagger from '../motion/Stagger.jsx'
+import { inputClass, listRowActiveClass, listRowIdleClass, primaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, quizletService } from '../../services/api.js'
 import ModuleEditor from './ModuleEditor.jsx'
@@ -32,7 +33,7 @@ export default function ModulesManager() {
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
           <input type="search" aria-label="Пошук модулів" placeholder="Пошук за назвою" value={query} onChange={(e) => setQuery(e.target.value)} className={`${inputClass} pl-9`} />
         </div>
-        <ul className="space-y-1 rounded-xl border border-slate-200 bg-white p-2 shadow-card">
+        <Stagger as="ul" immediate step={45} className="space-y-0.5 rounded-xl border border-[var(--color-line)] bg-white p-1.5 shadow-card">
           {shown.map((module) => {
             const active = module.id === activeId
             return (
@@ -44,21 +45,25 @@ export default function ModulesManager() {
                     setSelectedId(module.id)
                   }}
                   aria-current={active ? 'true' : undefined}
-                  className={`w-full rounded-xl border px-3 py-2.5 text-left transition-colors ${
-                    active ? 'border-blue-600 bg-blue-50' : 'border-transparent hover:bg-slate-50'
+                  className={`w-full rounded-lg px-2.5 py-2.5 text-left transition duration-200 ${
+                    active ? listRowActiveClass : listRowIdleClass
                   }`}
                 >
-                  <span className="block truncate text-sm font-medium text-slate-900">{module.title}</span>
-                  <span className="block text-xs text-slate-500">Карток: {module.flashcards.length}</span>
+                  <span className="block truncate text-[13px] font-semibold text-[var(--color-ink)]">{module.title}</span>
+                  <span className="block text-[11px] text-[var(--color-mute)]">Карток: {module.flashcards.length}</span>
                 </button>
               </li>
             )
           })}
-          {shown.length === 0 && <li className="px-3 py-4 text-center text-sm text-slate-500">{modules.length === 0 ? 'Модулів ще немає' : 'Нічого не знайдено'}</li>}
-        </ul>
+          {shown.length === 0 && (
+            <li className="px-2 py-6 text-center text-[13px] text-[var(--color-mute)]">
+              {modules.length === 0 ? 'Модулів ще немає' : 'Нічого не знайдено'}
+            </li>
+          )}
+        </Stagger>
       </aside>
 
-      <div>
+      <div className="animate-fade-in">
         {creating ? (
           <ModuleForm
             onCreated={(created) => {

@@ -4,6 +4,7 @@ import ConfirmDialog from '../ConfirmDialog.jsx'
 import ErrorAlert from '../ErrorAlert.jsx'
 import Modal from '../Modal.jsx'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
+import Stagger from '../motion/Stagger.jsx'
 import TopicProgress from '../TopicProgress.jsx'
 import ResultsTable from '../ResultsTable.jsx'
 import { inputClass, listRowActiveClass, listRowIdleClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
@@ -30,7 +31,7 @@ function StudentList({ selectedId, onSelect, version }) {
         <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-mute-soft)]" aria-hidden="true" />
         <input className={`${inputClass} !py-2 pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Пошук учня" aria-label="Пошук учня" />
       </div>
-      <ul className="max-h-[28rem] space-y-0.5 overflow-y-auto">
+      <Stagger as="ul" immediate step={40} className="max-h-[28rem] space-y-0.5 overflow-y-auto">
         <li>
           <button type="button" onClick={() => onSelect(null)} className={itemClass(selectedId === null)}>
             <span className="flex items-center gap-2 font-semibold">
@@ -55,7 +56,7 @@ function StudentList({ selectedId, onSelect, version }) {
           </li>
         ))}
         {visible.length === 0 && <li className="px-2 py-4 text-center text-[13px] text-[var(--color-mute)]">Учнів не знайдено</li>}
-      </ul>
+      </Stagger>
     </div>
   )
 }

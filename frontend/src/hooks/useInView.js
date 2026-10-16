@@ -4,6 +4,18 @@ function canUseIntersectionObserver() {
   return typeof window !== 'undefined' && typeof IntersectionObserver !== 'undefined'
 }
 
+/** Wait two frames so the browser paints the hidden state before revealing. */
+function afterPaint(fn) {
+  let id2 = 0
+  const id1 = requestAnimationFrame(() => {
+    id2 = requestAnimationFrame(fn)
+  })
+  return () => {
+    cancelAnimationFrame(id1)
+    cancelAnimationFrame(id2)
+  }
+}
+
 /**
  * Observe element visibility. Content stays visible when:
  * - motion is disabled,
@@ -12,11 +24,11 @@ function canUseIntersectionObserver() {
  */
 export function useInView({
   root = null,
-  rootMargin = '0px 0px -10% 0px',
-  threshold = 0.08,
+  rootMargin = '0px 0px -6% 0px',
+  threshold = 0.05,
   once = true,
   disabled = false,
-  fallbackMs = 1600,
+  fallbackMs = 1400,
 } = {}) {
   const ref = useRef(null)
   const [observed, setObserved] = useState(false)
@@ -33,10 +45,11 @@ export function useInView({
     }
 
     let settled = false
+    let cancelPaint = () => {}
     const reveal = () => {
       if (settled) return
       settled = true
-      setObserved(true)
+      cancelPaint = afterPaint(() => setObserved(true))
     }
 
     const observer = new IntersectionObserver(
@@ -60,6 +73,7 @@ export function useInView({
     return () => {
       observer.disconnect()
       window.clearTimeout(timer)
+      cancelPaint()
     }
   }, [root, rootMargin, threshold, once, observe, fallbackMs])
 

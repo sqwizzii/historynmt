@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import { subscriptionService } from '../../services/api.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import Brand from '../Brand.jsx'
+import PageEnter from '../motion/PageEnter.jsx'
 import { ghostButtonClass, navActiveClass, navIdleClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 
 const ROLE_LABEL = { STUDENT: 'Учень', TEACHER: 'Вчитель', ADMIN: 'Адміністратор' }
@@ -135,7 +136,7 @@ function AppShell() {
 
   return (
     <div className="min-h-screen lg:pl-[15.75rem]">
-      <aside className="nav-rail fixed inset-y-0 left-0 z-30 hidden w-[15.75rem] flex-col lg:flex">
+      <aside className="nav-rail shell-enter fixed inset-y-0 left-0 z-30 hidden w-[15.75rem] flex-col lg:flex">
         <div className="flex h-14 items-center px-4">
           <Brand light />
         </div>
@@ -180,7 +181,9 @@ function AppShell() {
       </header>
       {user.role === 'TEACHER' && <SubscriptionBanner />}
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
-        <Outlet />
+        <PageEnter>
+          <Outlet />
+        </PageEnter>
       </main>
     </div>
   )
@@ -226,7 +229,7 @@ function PublicLayout() {
           </button>
         </div>
         {open && (
-          <div className="space-y-1 border-t border-[var(--color-line)] bg-white px-4 py-3 md:hidden">
+          <div className="motion-alert space-y-1 border-t border-[var(--color-line)] bg-white px-4 py-3 md:hidden">
             {links.map((l) => (
               <NavLink key={l.to} to={l.to} className={`${navClass({ isActive: false })} block`} onClick={() => setOpen(false)}>
                 {l.label}
@@ -247,7 +250,9 @@ function PublicLayout() {
         )}
       </header>
       <main className={fullBleed ? 'flex-1' : 'mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6'}>
-        <Outlet />
+        <PageEnter>
+          <Outlet />
+        </PageEnter>
       </main>
     </div>
   )

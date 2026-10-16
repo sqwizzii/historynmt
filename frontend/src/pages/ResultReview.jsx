@@ -33,19 +33,19 @@ export default function ResultReview() {
         {formatDate(result.completedAt)}
       </p>
 
-      <dl className="mt-5 grid grid-cols-3 gap-3 text-center">
-        <div className={`${cardClass} p-3.5`}>
+      <dl className="mt-5 grid grid-cols-3 gap-3 text-center stagger">
+        <div className={`${cardClass} p-3.5 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift`}>
           <dt className="text-[11px] font-medium text-[var(--color-mute)]">Первинний бал</dt>
           <dd className="mt-1.5 text-lg font-semibold tabular-nums text-[var(--color-ink)]">
             {result.score}
             {result.maxScore != null && <span className="text-sm font-medium text-[var(--color-mute)]"> з {result.maxScore}</span>}
           </dd>
         </div>
-        <div className={`${cardClass} p-3.5`}>
+        <div className={`${cardClass} p-3.5 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift`}>
           <dt className="text-[11px] font-medium text-[var(--color-mute)]">Орієнт. бал НМТ</dt>
           <dd className="mt-1.5 text-lg font-semibold tabular-nums text-indigo-700">{result.nmtScore}</dd>
         </div>
-        <div className={`${cardClass} p-3.5`}>
+        <div className={`${cardClass} p-3.5 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift`}>
           <dt className="text-[11px] font-medium text-[var(--color-mute)]">Правильність</dt>
           <dd className="mt-1.5 text-lg font-semibold tabular-nums text-[var(--color-ink)]">
             {result.maxScore ? `${Math.round((result.score / result.maxScore) * 100)}%` : '-'}
@@ -58,9 +58,11 @@ export default function ResultReview() {
           Для цього результату детальний розбір недоступний.
         </p>
       ) : (
-        <ol className="mt-8 space-y-4">
+        <ol className="mt-8 space-y-4 stagger">
           {result.review.map((item, index) => (
-            <ReviewItem key={item.questionId} item={item} number={index + 1} testId={isTeacher ? undefined : result.testId} />
+            <li key={item.questionId}>
+              <ReviewItem item={item} number={index + 1} testId={isTeacher ? undefined : result.testId} />
+            </li>
           ))}
         </ol>
       )}
