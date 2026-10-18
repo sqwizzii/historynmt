@@ -4,5 +4,9 @@ public enum QuestionType {
     SINGLE_CHOICE,
     MULTIPLE_CHOICE,
     MATCHING,
-    CHRONOLOGY
+    CHRONOLOGY,
+    /** Заповнення пропусків: варіанти — еталонні відповіді з orderIndex пропуску. */
+    FILL_BLANK,
+    /** Відкрита відповідь із ручним оцінюванням учителем. */
+    OPEN
 }

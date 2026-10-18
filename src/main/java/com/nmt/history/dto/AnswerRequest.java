@@ -10,11 +10,20 @@ import java.util.Map;
  *   <li>SINGLE_CHOICE / MULTIPLE_CHOICE - {@code selectedOptionIds}</li>
  *   <li>MATCHING - {@code matches}: id варіанта (елемент лівої колонки) -> обраний matchKey</li>
  *   <li>CHRONOLOGY - {@code orderedOptionIds}: id варіантів у порядку, який запропонував учень</li>
+ *   <li>FILL_BLANK - {@code blankAnswers}: відповіді на пропуски за індексом</li>
+ *   <li>OPEN - {@code textAnswer}: вільний текст</li>
  * </ul>
  */
 public record AnswerRequest(
         @NotNull Long questionId,
         List<Long> selectedOptionIds,
         Map<Long, String> matches,
-        List<Long> orderedOptionIds) {
+        List<Long> orderedOptionIds,
+        List<String> blankAnswers,
+        String textAnswer) {
+
+    public AnswerRequest(Long questionId, List<Long> selectedOptionIds, Map<Long, String> matches,
+                         List<Long> orderedOptionIds) {
+        this(questionId, selectedOptionIds, matches, orderedOptionIds, null, null);
+    }
 }

@@ -1,6 +1,7 @@
 package com.nmt.history.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.nmt.history.model.GradingStatus;
 import com.nmt.history.model.TestResult;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +21,9 @@ public record TestResultResponse(
         boolean late,
         int leaveCount,
         String endReason,
+        GradingStatus gradingStatus,
+        String teacherComment,
+        int pendingManualCount,
         List<QuestionReview> review) {
 
     public static TestResultResponse from(TestResult result) {
@@ -41,6 +45,9 @@ public record TestResultResponse(
                 result.isLate(),
                 result.getLeaveCount(),
                 result.getEndReason(),
+                result.getGradingStatus() != null ? result.getGradingStatus() : GradingStatus.COMPLETED,
+                result.getTeacherComment(),
+                result.getPendingManualCount(),
                 review);
     }
 }

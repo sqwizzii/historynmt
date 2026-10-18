@@ -1,6 +1,7 @@
 package com.nmt.history.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.nmt.history.dto.AnswerRequest;
 import com.nmt.history.model.Option;
@@ -15,7 +16,7 @@ class ScoringServiceTest {
     private final ScoringService scoring = new ScoringService();
 
     private Question question(QuestionType type, Option... options) {
-        Question q = Question.builder().id(1L).questionType(type).questionText("q").build();
+        Question q = Question.builder().id(1L).questionType(type).questionText("q").maxPoints(1).build();
         for (Option o : options) {
             q.addOption(o);
         }
@@ -70,5 +71,35 @@ class ScoringServiceTest {
         assertEquals(1, scoring.maxScore(q));
         assertEquals(1, scoring.score(q, new AnswerRequest(1L, null, null, List.of(11L, 12L, 10L))));
         assertEquals(0, scoring.score(q, new AnswerRequest(1L, null, null, List.of(10L, 11L, 12L))));
+    }
+
+    @Test
+    void fillBlankScoresEachBlankWithAlternatives() {
+        Question q = question(QuestionType.FILL_BLANK,
+                Option.builder().id(1L).optionText("Київ").orderIndex(0).isCorrect(true).build(),
+                Option.builder().id(2L).optionText("Kiev").orderIndex(0).isCorrect(true).build(),
+                Option.builder().id(3L).optionText("882").orderIndex(1).isCorrect(true).build());
+        assertEquals(2, scoring.maxScore(q));
+        assertEquals(2, scoring.score(q, new AnswerRequest(1L, null, null, null, List.of("київ", "882"), null)));
+        assertEquals(1, scoring.score(q, new AnswerRequest(1L, null, null, null, List.of("Kiev", "999"), null)));
+        assertEquals(0, scoring.score(q, new AnswerRequest(1L, null, null, null, List.of("", ""), null)));
+    }
+
+    @Test
+    void fillBlankRespectsCaseSensitivity() {
+        Question q = question(QuestionType.FILL_BLANK,
+                Option.builder().id(1L).optionText("UNESCO").orderIndex(0).isCorrect(true).build());
+        q.setCaseSensitive(true);
+        assertEquals(0, scoring.score(q, new AnswerRequest(1L, null, null, null, List.of("unesco"), null)));
+        assertEquals(1, scoring.score(q, new AnswerRequest(1L, null, null, null, List.of("UNESCO"), null)));
+    }
+
+    @Test
+    void openNeedsManualGradingAndScoresZero() {
+        Question q = question(QuestionType.OPEN);
+        q.setMaxPoints(5);
+        assertEquals(5, scoring.maxScore(q));
+        assertTrue(scoring.needsManualGrading(q));
+        assertEquals(0, scoring.score(q, new AnswerRequest(1L, null, null, null, null, "довга відповідь")));
     }
 }

@@ -33,8 +33,14 @@ public class TestController {
     private final TestService testService;
 
     @GetMapping
-    public List<TestSummaryResponse> getAllTests(Authentication authentication) {
-        return testService.getAllTests(name(authentication));
+    public List<TestSummaryResponse> getAllTests(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Long subjectId,
+            @RequestParam(required = false) Integer grade,
+            @RequestParam(required = false) String topic,
+            @RequestParam(required = false) String type,
+            Authentication authentication) {
+        return testService.getAllTests(name(authentication), q, subjectId, grade, topic, type);
     }
 
     @GetMapping("/{testId}")
@@ -48,10 +54,23 @@ public class TestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(testService.createTest(request, name(authentication)));
     }
 
+    @PostMapping("/{testId}/copy")
+    public ResponseEntity<TestSummaryResponse> copyTest(@PathVariable Long testId, Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(testService.copyTest(testId, name(authentication)));
+    }
+
     @PostMapping("/questions/create")
     public ResponseEntity<QuestionEditResponse> createQuestion(@Valid @RequestBody CreateQuestionRequest request,
                                                              Authentication authentication) {
         return ResponseEntity.status(HttpStatus.CREATED).body(testService.createQuestion(request, name(authentication)));
+    }
+
+    @PostMapping("/{testId}/questions/copy-from/{questionId}")
+    public ResponseEntity<QuestionEditResponse> copyQuestion(@PathVariable Long testId,
+                                                             @PathVariable Long questionId,
+                                                             Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(testService.copyQuestionToTest(testId, questionId, name(authentication)));
     }
 
     @PutMapping("/{testId}")

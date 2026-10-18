@@ -1,20 +1,31 @@
 package com.nmt.history.controller;
 
+import com.nmt.history.dto.AnalyticsSummaryResponse;
 import com.nmt.history.dto.FormImportRequest;
 import com.nmt.history.dto.FormImportResponse;
+import com.nmt.history.dto.GradeResultRequest;
 import com.nmt.history.dto.InviteCodeRequest;
 import com.nmt.history.dto.ResetPasswordRequest;
 import com.nmt.history.dto.TestEditResponse;
+import com.nmt.history.dto.TestResultResponse;
 import com.nmt.history.dto.TestStatsResponse;
+import com.nmt.history.imports.SpreadsheetImportDtos.ImportResult;
+import com.nmt.history.imports.SpreadsheetImportDtos.PreviewResponse;
+import com.nmt.history.imports.SpreadsheetImportService;
 import com.nmt.history.service.AccessPolicy;
 import com.nmt.history.service.FormImportService;
+import com.nmt.history.service.GradingService;
 import com.nmt.history.service.InviteCodeService;
+import com.nmt.history.service.ReportExportService;
 import com.nmt.history.service.TestService;
 import com.nmt.history.service.TestStatsService;
 import com.nmt.history.service.UserService;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +35,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/teacher")
@@ -38,6 +51,9 @@ public class TeacherController {
     private final FormImportService formImportService;
     private final AccessPolicy accessPolicy;
     private final com.nmt.history.service.AssignmentService assignmentService;
+    private final SpreadsheetImportService spreadsheetImportService;
+    private final ReportExportService reportExportService;
+    private final GradingService gradingService;
 
     @GetMapping("/tests/{testId}")
     public TestEditResponse getTestForEdit(@PathVariable Long testId, Authentication authentication) {
@@ -45,8 +61,78 @@ public class TeacherController {
     }
 
     @GetMapping("/tests/{testId}/stats")
-    public TestStatsResponse testStats(@PathVariable Long testId, Authentication authentication) {
-        return statsService.stats(testId, authentication.getName());
+    public TestStatsResponse testStats(@PathVariable Long testId,
+                                       @RequestParam(required = false) Long studentId,
+                                       Authentication authentication) {
+        return statsService.stats(testId, studentId, authentication.getName());
+    }
+
+    @GetMapping("/analytics")
+    public AnalyticsSummaryResponse analytics(@RequestParam(required = false) Long testId,
+                                              @RequestParam(required = false) Long studentId,
+                                              Authentication authentication) {
+        return statsService.analytics(authentication.getName(), testId, studentId);
+    }
+
+    @GetMapping("/results/pending")
+    public List<TestResultResponse> pendingResults(Authentication authentication) {
+        return gradingService.pendingForTeacher(authentication.getName());
+    }
+
+    @PostMapping("/results/{resultId}/grade")
+    public TestResultResponse gradeResult(@PathVariable Long resultId,
+                                          @Valid @RequestBody GradeResultRequest request,
+                                          Authentication authentication) {
+        return gradingService.grade(resultId, request, authentication.getName());
+    }
+
+    @PostMapping(value = "/tests/{testId}/import/spreadsheet/preview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public PreviewResponse previewSpreadsheet(@PathVariable Long testId,
+                                              @RequestParam("file") MultipartFile file,
+                                              Authentication authentication) {
+        return spreadsheetImportService.preview(testId, file, authentication.getName());
+    }
+
+    @PostMapping(value = "/tests/{testId}/import/spreadsheet", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImportResult importSpreadsheet(@PathVariable Long testId,
+                                          @RequestParam("file") MultipartFile file,
+                                          Authentication authentication) {
+        return spreadsheetImportService.importQuestions(testId, file, authentication.getName());
+    }
+
+    @GetMapping("/import/spreadsheet/template")
+    public ResponseEntity<byte[]> spreadsheetTemplate() {
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"masterly-questions-template.csv\"")
+                .contentType(new MediaType("text", "csv", java.nio.charset.StandardCharsets.UTF_8))
+                .body(spreadsheetImportService.templateCsv());
+    }
+
+    @GetMapping("/export/results")
+    public ResponseEntity<byte[]> exportResults(@RequestParam(required = false) Long testId,
+                                                @RequestParam(required = false) Long studentId,
+                                                @RequestParam(defaultValue = "csv") String format,
+                                                Authentication authentication) {
+        byte[] body = reportExportService.exportResults(testId, studentId, format, authentication.getName());
+        return exportResponse(body, "masterly-results." + format.toLowerCase(), format);
+    }
+
+    @GetMapping("/tests/{testId}/export/stats")
+    public ResponseEntity<byte[]> exportStats(@PathVariable Long testId,
+                                              @RequestParam(defaultValue = "csv") String format,
+                                              Authentication authentication) {
+        byte[] body = reportExportService.exportTestStats(testId, format, authentication.getName());
+        return exportResponse(body, "masterly-stats-" + testId + "." + format.toLowerCase(), format);
+    }
+
+    private static ResponseEntity<byte[]> exportResponse(byte[] body, String filename, String format) {
+        MediaType type = "xlsx".equalsIgnoreCase(format)
+                ? MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                : new MediaType("text", "csv", java.nio.charset.StandardCharsets.UTF_8);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(type)
+                .body(body);
     }
 
     @GetMapping("/tests/{testId}/assignments")

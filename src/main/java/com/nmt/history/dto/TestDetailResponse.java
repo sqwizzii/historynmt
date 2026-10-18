@@ -1,5 +1,6 @@
 package com.nmt.history.dto;
 
+import com.nmt.history.model.AnswerVisibilityMode;
 import com.nmt.history.model.ScoringScale;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +14,11 @@ public record TestDetailResponse(
         Long subjectId,
         Integer grade,
         ScoringScale scoringScale,
-        com.nmt.history.model.AnswerVisibilityMode answerVisibilityMode,
+        AnswerVisibilityMode answerVisibilityMode,
+        boolean shuffleQuestions,
+        boolean shuffleOptions,
+        Integer maxAttempts,
+        LocalDateTime availableFrom,
+        LocalDateTime availableUntil,
         List<QuestionResponse> questions) {
 }

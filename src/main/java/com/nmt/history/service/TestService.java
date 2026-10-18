@@ -73,6 +73,12 @@ public class TestService {
 
     @Transactional(readOnly = true)
     public List<TestSummaryResponse> getAllTests(String username) {
+        return getAllTests(username, null, null, null, null, null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TestSummaryResponse> getAllTests(String username, String query, Long subjectId, Integer grade,
+                                                 String topic, String type) {
         User actor = accessPolicy.actor(username);
         Long ownerId = accessPolicy.visibleOwnerId(actor);
         List<Test> tests = ownerId == null
@@ -87,10 +93,43 @@ public class TestService {
         }
         Map<Long, Long> counts = new HashMap<>();
         testRepository.countQuestions().forEach(c -> counts.put(c.getTestId(), c.getTotal()));
+        String q = query == null ? "" : query.trim().toLowerCase();
+        String topicFilter = topic == null ? "" : topic.trim().toLowerCase();
+        QuestionType typeFilter = parseType(type);
         return tests.stream()
+                .filter(t -> subjectId == null || (t.getSubject() != null && subjectId.equals(t.getSubject().getId())))
+                .filter(t -> grade == null || grade.equals(t.getGrade()))
+                .filter(t -> q.isEmpty() || containsIgnoreCase(t.getTitle(), q) || containsIgnoreCase(t.getDescription(), q))
+                .filter(t -> topicFilter.isEmpty() || hasTopic(t.getId(), topicFilter))
+                .filter(t -> typeFilter == null || hasQuestionType(t.getId(), typeFilter))
                 .map(t -> TestSummaryResponse.from(t, counts.getOrDefault(t.getId(), 0L),
                         accessPolicy.canEdit(ownerId(t), actor)))
                 .toList();
+    }
+
+    private static QuestionType parseType(String type) {
+        if (type == null || type.isBlank()) {
+            return null;
+        }
+        try {
+            return QuestionType.valueOf(type.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Невідомий тип матеріалу: " + type);
+        }
+    }
+
+    private boolean hasTopic(Long testId, String topicFilter) {
+        return questionRepository.findByTestIdOrderByIdAsc(testId).stream()
+                .anyMatch(q -> q.getTopic() != null && q.getTopic().toLowerCase().contains(topicFilter));
+    }
+
+    private boolean hasQuestionType(Long testId, QuestionType type) {
+        return questionRepository.findByTestIdOrderByIdAsc(testId).stream()
+                .anyMatch(q -> q.getQuestionType() == type);
+    }
+
+    private static boolean containsIgnoreCase(String value, String needle) {
+        return value != null && value.toLowerCase().contains(needle);
     }
 
     @Transactional(readOnly = true)
@@ -99,12 +138,18 @@ public class TestService {
         User viewer = accessPolicy.actor(username);
         accessPolicy.requireView(ownerId(test), viewer);
         requireAssigned(test, viewer);
+        requireAvailability(test, viewer);
         List<QuestionResponse> questions = questionRepository.findByTestIdOrderByIdAsc(testId).stream()
-                .map(this::toQuestionResponse)
-                .toList();
+                .map(q -> toQuestionResponse(q, test))
+                .collect(Collectors.toCollection(ArrayList::new));
+        if (test.isShuffleQuestions() && viewer != null && viewer.getRole() == com.nmt.history.model.Role.STUDENT) {
+            Collections.shuffle(questions);
+        }
         return new TestDetailResponse(test.getId(), test.getTitle(), test.getDescription(),
                 test.getTimeLimitMinutes(), test.getCreatedAt(), subjectId(test), test.getGrade(),
-                test.getScoringScale(), test.getAnswerVisibilityMode(), questions);
+                test.getScoringScale(), test.getAnswerVisibilityMode(),
+                test.isShuffleQuestions(), test.isShuffleOptions(), test.getMaxAttempts(),
+                test.getAvailableFrom(), test.getAvailableUntil(), questions);
     }
 
     @Transactional(readOnly = true)
@@ -116,13 +161,16 @@ public class TestService {
                 .toList();
         return new TestEditResponse(test.getId(), test.getTitle(), test.getDescription(),
                 test.getTimeLimitMinutes(), test.getCreatedAt(), subjectId(test), test.getGrade(),
-                test.getScoringScale(), test.getAnswerVisibilityMode(), questions);
+                test.getScoringScale(), test.getAnswerVisibilityMode(),
+                test.isShuffleQuestions(), test.isShuffleOptions(), test.getMaxAttempts(),
+                test.getAvailableFrom(), test.getAvailableUntil(), questions);
     }
 
     @Transactional
     public TestSummaryResponse createTest(CreateTestRequest request, String username) {
         User actor = accessPolicy.requireActor(username);
         User owner = accessPolicy.ownerForNew(actor);
+        validateAvailabilityWindow(request.availableFrom(), request.availableUntil());
         Test test = testRepository.save(Test.builder()
                 .title(request.title().trim())
                 .description(blankToNull(request.description()))
@@ -133,6 +181,11 @@ public class TestService {
                 .scoringScale(request.scoringScale() != null ? request.scoringScale() : ScoringScale.NMT)
                 .answerVisibilityMode(request.answerVisibilityMode() != null
                         ? request.answerVisibilityMode() : com.nmt.history.model.AnswerVisibilityMode.AFTER_TEST_COMPLETION)
+                .shuffleQuestions(Boolean.TRUE.equals(request.shuffleQuestions()))
+                .shuffleOptions(Boolean.TRUE.equals(request.shuffleOptions()))
+                .maxAttempts(request.maxAttempts())
+                .availableFrom(request.availableFrom())
+                .availableUntil(request.availableUntil())
                 .build());
         return TestSummaryResponse.from(test, 0, true);
     }
@@ -157,7 +210,107 @@ public class TestService {
         if (request.answerVisibilityMode() != null) {
             test.setAnswerVisibilityMode(request.answerVisibilityMode());
         }
+        if (request.shuffleQuestions() != null) {
+            test.setShuffleQuestions(request.shuffleQuestions());
+        }
+        if (request.shuffleOptions() != null) {
+            test.setShuffleOptions(request.shuffleOptions());
+        }
+        if (Boolean.TRUE.equals(request.clearMaxAttempts())) {
+            test.setMaxAttempts(null);
+        } else if (request.maxAttempts() != null) {
+            test.setMaxAttempts(request.maxAttempts());
+        }
+        if (Boolean.TRUE.equals(request.clearAvailability())) {
+            test.setAvailableFrom(null);
+            test.setAvailableUntil(null);
+        } else {
+            LocalDateTime from = request.availableFrom() != null ? request.availableFrom() : test.getAvailableFrom();
+            LocalDateTime until = request.availableUntil() != null ? request.availableUntil() : test.getAvailableUntil();
+            if (request.availableFrom() != null || request.availableUntil() != null) {
+                validateAvailabilityWindow(
+                        request.availableFrom() != null ? request.availableFrom() : from,
+                        request.availableUntil() != null ? request.availableUntil() : until);
+                if (request.availableFrom() != null) {
+                    test.setAvailableFrom(request.availableFrom());
+                }
+                if (request.availableUntil() != null) {
+                    test.setAvailableUntil(request.availableUntil());
+                }
+            }
+        }
         return TestSummaryResponse.from(test, test.getQuestions().size(), true);
+    }
+
+    @Transactional
+    public TestSummaryResponse copyTest(Long testId, String username) {
+        User actor = accessPolicy.requireActor(username);
+        Test source = findTest(testId);
+        accessPolicy.requireView(ownerId(source), actor);
+        User owner = accessPolicy.ownerForNew(actor);
+        Test copy = testRepository.save(Test.builder()
+                .title(source.getTitle() + " (копія)")
+                .description(source.getDescription())
+                .timeLimitMinutes(source.getTimeLimitMinutes())
+                .owner(owner)
+                .subject(source.getSubject())
+                .grade(source.getGrade())
+                .scoringScale(source.getScoringScale())
+                .answerVisibilityMode(source.getAnswerVisibilityMode())
+                .shuffleQuestions(source.isShuffleQuestions())
+                .shuffleOptions(source.isShuffleOptions())
+                .maxAttempts(source.getMaxAttempts())
+                .availableFrom(source.getAvailableFrom())
+                .availableUntil(source.getAvailableUntil())
+                .build());
+        for (Question q : questionRepository.findByTestIdOrderByIdAsc(testId)) {
+            copyQuestionInto(copy, q);
+        }
+        return TestSummaryResponse.from(copy, copy.getQuestions().size(), true);
+    }
+
+    @Transactional
+    public QuestionEditResponse copyQuestionToTest(Long targetTestId, Long sourceQuestionId, String username) {
+        Test target = findTest(targetTestId);
+        accessPolicy.requireEdit(ownerId(target), accessPolicy.actor(username));
+        Question source = findQuestion(sourceQuestionId);
+        accessPolicy.requireView(ownerId(source.getTest()), accessPolicy.actor(username));
+        Question copied = copyQuestionInto(target, source);
+        return toQuestionEditResponse(questionRepository.save(copied));
+    }
+
+    private Question copyQuestionInto(Test target, Question source) {
+        Question q = Question.builder()
+                .test(target)
+                .questionText(source.getQuestionText())
+                .imageUrl(source.getImageUrl())
+                .questionType(source.getQuestionType())
+                .explanation(source.getExplanation())
+                .topic(source.getTopic())
+                .maxPoints(source.getMaxPoints())
+                .caseSensitive(source.isCaseSensitive())
+                .build();
+        for (Option o : source.getOptions()) {
+            q.addOption(Option.builder()
+                    .optionText(o.getOptionText())
+                    .isCorrect(o.getIsCorrect())
+                    .matchKey(o.getMatchKey())
+                    .orderIndex(o.getOrderIndex())
+                    .imageUrl(o.getImageUrl())
+                    .build());
+        }
+        int pos = 1;
+        for (var img : source.getExtraImages()) {
+            q.getExtraImages().add(com.nmt.history.model.QuestionImage.builder()
+                    .question(q).position(pos++).imageUrl(img.getImageUrl()).build());
+        }
+        pos = 1;
+        for (var choice : source.getExtraMatchChoices()) {
+            q.getExtraMatchChoices().add(com.nmt.history.model.QuestionMatchChoice.builder()
+                    .question(q).position(pos++).text(choice.getText()).build());
+        }
+        target.addQuestion(q);
+        return q;
     }
 
     @Transactional
@@ -240,6 +393,14 @@ public class TestService {
         question.setExplanation(blankToNull(request.explanation()));
         question.setTopic(blankToNull(request.topic()));
         question.setQuestionType(request.questionType());
+        if (request.maxPoints() != null) {
+            question.setMaxPoints(request.maxPoints());
+        } else if (request.questionType() == QuestionType.OPEN && question.getMaxPoints() == null) {
+            question.setMaxPoints(1);
+        }
+        if (request.caseSensitive() != null) {
+            question.setCaseSensitive(request.caseSensitive());
+        }
         if (request.extraImageUrls() != null) {
             question.getExtraImages().clear();
             int position = 1;
@@ -258,10 +419,12 @@ public class TestService {
                         .position(position++).text(choice.trim()).build());
             }
         }
-        for (OptionRequest o : request.options()) {
+        List<OptionRequest> options = request.options() == null ? List.of() : request.options();
+        for (OptionRequest o : options) {
             question.addOption(Option.builder()
                     .optionText(o.optionText().trim())
-                    .isCorrect(Boolean.TRUE.equals(o.isCorrect()))
+                    .isCorrect(Boolean.TRUE.equals(o.isCorrect())
+                            || request.questionType() == QuestionType.FILL_BLANK)
                     .matchKey(blankToNull(o.matchKey()))
                     .orderIndex(o.orderIndex())
                     .imageUrl(resolveOptionImage(blankToNull(o.imageUrl()), previousImages))
@@ -292,6 +455,7 @@ public class TestService {
                 .orElseThrow(() -> new ResourceNotFoundException("Користувача не знайдено: " + username));
         accessPolicy.requireView(ownerId(test), student);
         requireAssigned(test, student);
+        requireAvailability(test, student);
         if (questionRepository.findByTestIdOrderByIdAsc(testId).isEmpty()) {
             throw new BadRequestException("У тесті немає питань");
         }
@@ -299,11 +463,41 @@ public class TestService {
                 .filter(existing -> LocalDateTime.now().isBefore(existing.getStartedAt().plus(limit(test)).plus(SUBMIT_GRACE)))
                 .orElse(null);
         if (attempt == null) {
+            enforceMaxAttempts(test, student);
             attemptRepository.deleteByStudentIdAndTestId(student.getId(), testId);
             attempt = attemptRepository.save(TestAttempt.builder()
                     .student(student).test(test).startedAt(LocalDateTime.now()).build());
         }
         return toResponse(attempt, test);
+    }
+
+    private void enforceMaxAttempts(Test test, User student) {
+        if (test.getMaxAttempts() == null) {
+            return;
+        }
+        long completed = testResultRepository.countByStudentIdAndTestId(student.getId(), test.getId());
+        if (completed >= test.getMaxAttempts()) {
+            throw new BadRequestException("Вичерпано ліміт спроб для цього тесту (" + test.getMaxAttempts() + ")");
+        }
+    }
+
+    private void requireAvailability(Test test, User actor) {
+        if (actor == null || actor.getRole() != com.nmt.history.model.Role.STUDENT) {
+            return;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        if (test.getAvailableFrom() != null && now.isBefore(test.getAvailableFrom())) {
+            throw new BadRequestException("Тест ще недоступний. Початок доступу: " + test.getAvailableFrom());
+        }
+        if (test.getAvailableUntil() != null && now.isAfter(test.getAvailableUntil())) {
+            throw new BadRequestException("Доступ до тесту закрито з " + test.getAvailableUntil());
+        }
+    }
+
+    private static void validateAvailabilityWindow(LocalDateTime from, LocalDateTime until) {
+        if (from != null && until != null && until.isBefore(from)) {
+            throw new BadRequestException("Дата завершення доступу не може бути раніше дати початку");
+        }
     }
 
     @Transactional
@@ -367,7 +561,8 @@ public class TestService {
         AnswerRequest locked = attemptAnswerRepository.findByAttemptIdAndQuestionId(attempt.getId(), questionId)
                 .map(this::readAnswer).orElse(null);
         AnswerRequest answer = locked != null ? locked
-                : new AnswerRequest(questionId, request.selectedOptionIds(), request.matches(), request.orderedOptionIds());
+                : new AnswerRequest(questionId, request.selectedOptionIds(), request.matches(),
+                        request.orderedOptionIds(), request.blankAnswers(), request.textAnswer());
         if (locked == null) {
             try {
                 attemptAnswerRepository.saveAndFlush(com.nmt.history.model.AttemptAnswer.builder()
@@ -381,7 +576,10 @@ public class TestService {
 
     private QuestionReview reviewOf(Question question, AnswerRequest answer) {
         int max = scoringService.maxScore(question);
-        return reviewService.build(question, answer, Math.min(scoringService.score(question, answer), max), max);
+        int earned = scoringService.needsManualGrading(question)
+                ? 0
+                : Math.min(scoringService.score(question, answer), max);
+        return reviewService.build(question, answer, earned, max);
     }
 
     private String writeAnswer(AnswerRequest answer) {
@@ -420,25 +618,36 @@ public class TestService {
 
         int score = 0;
         int maxScore = 0;
+        int pendingManual = 0;
         List<QuestionReview> review = new ArrayList<>();
         for (Question question : questions) {
             AnswerRequest answer = answersByQuestion.get(question.getId());
             int questionMax = scoringService.maxScore(question);
-            int earned = Math.min(scoringService.score(question, answer), questionMax);
+            boolean manual = scoringService.needsManualGrading(question);
+            int earned = manual ? 0 : Math.min(scoringService.score(question, answer), questionMax);
             maxScore += questionMax;
             score += earned;
+            if (manual) {
+                pendingManual++;
+            }
             review.add(reviewService.build(question, answer, earned, questionMax));
         }
 
+        com.nmt.history.model.GradingStatus gradingStatus = pendingManual > 0
+                ? com.nmt.history.model.GradingStatus.PENDING_REVIEW
+                : com.nmt.history.model.GradingStatus.COMPLETED;
         TestResult saved = testResultRepository.save(TestResult.builder()
                 .student(student)
                 .test(test)
                 .score(score)
-                .nmtScore(test.getScoringScale() == ScoringScale.NMT ? nmtScoreConverter.convert(score, maxScore) : null)
+                .nmtScore(test.getScoringScale() == ScoringScale.NMT && pendingManual == 0
+                        ? nmtScoreConverter.convert(score, maxScore) : null)
                 .reviewJson(reviewService.toJson(review))
                 .late(LocalDateTime.now().isAfter(attempt.getStartedAt().plus(limit(test)).plus(SUBMIT_GRACE)))
                 .leaveCount(attempt.getLeaveCount())
                 .endReason(request.endReason() == null ? "MANUAL" : request.endReason())
+                .gradingStatus(gradingStatus)
+                .pendingManualCount(pendingManual)
                 .build());
         attemptRepository.delete(attempt);
         boolean hide = test.getAnswerVisibilityMode() == com.nmt.history.model.AnswerVisibilityMode.NEVER
@@ -465,11 +674,12 @@ public class TestService {
     }
 
     private void validateOptions(QuestionType type, List<OptionRequest> options) {
-        long correctCount = options.stream().filter(o -> Boolean.TRUE.equals(o.isCorrect())).count();
+        List<OptionRequest> opts = options == null ? List.of() : options;
+        long correctCount = opts.stream().filter(o -> Boolean.TRUE.equals(o.isCorrect())).count();
 
         switch (type) {
             case SINGLE_CHOICE -> {
-                if (options.size() < 2) {
+                if (opts.size() < 2) {
                     throw new BadRequestException("SINGLE_CHOICE потребує щонайменше 2 варіантів");
                 }
                 if (correctCount != 1) {
@@ -477,7 +687,7 @@ public class TestService {
                 }
             }
             case MULTIPLE_CHOICE -> {
-                if (options.size() < 2) {
+                if (opts.size() < 2) {
                     throw new BadRequestException("MULTIPLE_CHOICE потребує щонайменше 2 варіантів");
                 }
                 if (correctCount < 1) {
@@ -485,24 +695,40 @@ public class TestService {
                 }
             }
             case MATCHING -> {
-                if (options.size() < 2) {
+                if (opts.size() < 2) {
                     throw new BadRequestException("MATCHING потребує щонайменше 2 пар");
                 }
-                if (options.stream().anyMatch(o -> o.matchKey() == null || o.matchKey().isBlank())) {
+                if (opts.stream().anyMatch(o -> o.matchKey() == null || o.matchKey().isBlank())) {
                     throw new BadRequestException("Кожен варіант MATCHING повинен мати matchKey");
                 }
             }
             case CHRONOLOGY -> {
-                if (options.size() < 2) {
+                if (opts.size() < 2) {
                     throw new BadRequestException("CHRONOLOGY потребує щонайменше 2 подій");
                 }
                 Set<Integer> indexes = new HashSet<>();
-                for (OptionRequest o : options) {
+                for (OptionRequest o : opts) {
                     if (o.orderIndex() == null || !indexes.add(o.orderIndex())) {
                         throw new BadRequestException(
                                 "Кожна подія CHRONOLOGY повинна мати унікальний orderIndex");
                     }
                 }
+            }
+            case FILL_BLANK -> {
+                if (opts.isEmpty()) {
+                    throw new BadRequestException("FILL_BLANK потребує щонайменше одну еталонну відповідь");
+                }
+                for (OptionRequest o : opts) {
+                    if (o.optionText() == null || o.optionText().isBlank()) {
+                        throw new BadRequestException("Еталонна відповідь FILL_BLANK не може бути порожньою");
+                    }
+                    if (o.orderIndex() == null || o.orderIndex() < 0) {
+                        throw new BadRequestException("Кожна відповідь FILL_BLANK повинна мати orderIndex пропуску (≥ 0)");
+                    }
+                }
+            }
+            case OPEN -> {
+                // Варіанти необов'язкові (зразок відповіді для вчителя). maxPoints перевіряється окремо.
             }
         }
     }
@@ -550,10 +776,17 @@ public class TestService {
     }
 
     QuestionResponse toQuestionResponse(Question question) {
+        return toQuestionResponse(question, question.getTest());
+    }
+
+    QuestionResponse toQuestionResponse(Question question, Test test) {
         List<Option> options = new ArrayList<>(question.getOptions());
         options.sort(Comparator.comparing(Option::getId, Comparator.nullsLast(Comparator.naturalOrder())));
 
         List<String> matchChoices = null;
+        Integer blankCount = null;
+        Integer maxPoints = null;
+        boolean shuffleOpts = test != null && test.isShuffleOptions();
         if (question.getQuestionType() == QuestionType.MATCHING) {
             matchChoices = options.stream()
                     .map(Option::getMatchKey)
@@ -564,6 +797,16 @@ public class TestService {
             Collections.shuffle(matchChoices);
         } else if (question.getQuestionType() == QuestionType.CHRONOLOGY) {
             Collections.shuffle(options);
+        } else if (question.getQuestionType() == QuestionType.FILL_BLANK) {
+            blankCount = scoringService.blankIndexes(question).size();
+            options = List.of();
+        } else if (question.getQuestionType() == QuestionType.OPEN) {
+            maxPoints = scoringService.maxScore(question);
+            options = List.of();
+        } else if (shuffleOpts
+                && (question.getQuestionType() == QuestionType.SINGLE_CHOICE
+                || question.getQuestionType() == QuestionType.MULTIPLE_CHOICE)) {
+            Collections.shuffle(options);
         }
 
         List<OptionResponse> optionResponses = options.stream()
@@ -571,7 +814,7 @@ public class TestService {
                 .toList();
         return new QuestionResponse(question.getId(), question.getQuestionText(),
                 imageUrlSigner.sign(QuestionImages.publicUrl(question)), question.extraImageUrls(),
-                question.getQuestionType(), optionResponses, matchChoices);
+                question.getQuestionType(), optionResponses, matchChoices, blankCount, maxPoints);
     }
 
     private QuestionEditResponse toQuestionEditResponse(Question question) {
@@ -583,7 +826,9 @@ public class TestService {
         return new QuestionEditResponse(question.getId(), question.getQuestionText(),
                 imageUrlSigner.sign(QuestionImages.publicUrl(question)),
                 question.getQuestionType(), question.getExplanation(), question.getTopic(), options,
-                question.extraImageUrls(), question.extraMatchChoiceTexts());
+                question.extraImageUrls(), question.extraMatchChoiceTexts(),
+                question.getMaxPoints() == null ? 1 : question.getMaxPoints(),
+                question.isCaseSensitive());
     }
 
     /** Системні зображення публічні; зображення приватних матеріалів потребують чинного підпису (інакше 404). */

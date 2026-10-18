@@ -1,5 +1,6 @@
 package com.nmt.history.dto;
 
+import com.nmt.history.model.AnswerVisibilityMode;
 import com.nmt.history.model.ScoringScale;
 import com.nmt.history.model.Test;
 import java.time.LocalDateTime;
@@ -15,7 +16,12 @@ public record TestSummaryResponse(
         Long subjectId,
         Integer grade,
         ScoringScale scoringScale,
-        com.nmt.history.model.AnswerVisibilityMode answerVisibilityMode,
+        AnswerVisibilityMode answerVisibilityMode,
+        boolean shuffleQuestions,
+        boolean shuffleOptions,
+        Integer maxAttempts,
+        LocalDateTime availableFrom,
+        LocalDateTime availableUntil,
         boolean system,
         boolean editable) {
 
@@ -23,6 +29,9 @@ public record TestSummaryResponse(
         return new TestSummaryResponse(test.getId(), test.getTitle(), test.getDescription(),
                 test.getTimeLimitMinutes(), test.getCreatedAt(), questionCount,
                 test.getSubject() == null ? null : test.getSubject().getId(), test.getGrade(),
-                test.getScoringScale(), test.getAnswerVisibilityMode(), test.getOwner() == null, editable);
+                test.getScoringScale(), test.getAnswerVisibilityMode(),
+                test.isShuffleQuestions(), test.isShuffleOptions(), test.getMaxAttempts(),
+                test.getAvailableFrom(), test.getAvailableUntil(),
+                test.getOwner() == null, editable);
     }
 }

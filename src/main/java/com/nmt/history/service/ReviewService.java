@@ -7,6 +7,7 @@ import com.nmt.history.dto.AnswerRequest;
 import com.nmt.history.dto.QuestionReview;
 import com.nmt.history.model.Option;
 import com.nmt.history.model.Question;
+import com.nmt.history.model.QuestionType;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,10 @@ public class ReviewService {
 
     private final ObjectMapper objectMapper;
     private final ImageUrlSigner imageUrlSigner;
+    private final ScoringService scoringService;
 
     public QuestionReview build(Question question, AnswerRequest answer, int earned, int max) {
+        boolean manual = scoringService.needsManualGrading(question);
         return new QuestionReview(
                 question.getId(),
                 question.getQuestionText(),
@@ -39,7 +42,10 @@ public class ReviewService {
                 correctAnswer(question),
                 question.getExplanation(),
                 question.getTopic(),
-                question.extraImageUrls());
+                question.extraImageUrls(),
+                manual,
+                manual,
+                null);
     }
 
     /** У БД зберігаються непідписані посилання; клієнту віддаємо їх зі свіжим підписом. */
@@ -50,7 +56,7 @@ public class ReviewService {
         return review.stream()
                 .map(r -> new QuestionReview(r.questionId(), r.questionText(), imageUrlSigner.sign(r.imageUrl()),
                         r.questionType(), r.earned(), r.max(), r.yourAnswer(), r.correctAnswer(), r.explanation(),
-                        r.topic(), r.extraImageUrls()))
+                        r.topic(), r.extraImageUrls(), r.needsManualGrading(), r.pendingManual(), r.teacherComment()))
                 .toList();
     }
 
@@ -61,7 +67,8 @@ public class ReviewService {
         }
         return review.stream()
                 .map(r -> new QuestionReview(r.questionId(), r.questionText(), r.imageUrl(), r.questionType(), r.earned(),
-                        r.max(), r.yourAnswer(), List.of(), null, r.topic(), r.extraImageUrls()))
+                        r.max(), r.yourAnswer(), List.of(), null, r.topic(), r.extraImageUrls(),
+                        r.needsManualGrading(), r.pendingManual(), r.teacherComment()))
                 .toList();
     }
 
@@ -99,6 +106,18 @@ public class ReviewService {
                     .sorted(Comparator.comparing(Option::getOrderIndex, Comparator.nullsLast(Comparator.naturalOrder())))
                     .map(Option::getOptionText)
                     .toList();
+            case FILL_BLANK -> scoringService.blankIndexes(question).stream()
+                    .map(idx -> options.stream()
+                            .filter(o -> idx.equals(o.getOrderIndex() == null ? 0 : o.getOrderIndex()))
+                            .map(Option::getOptionText)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.joining(" / ")))
+                    .map(alts -> alts.isBlank() ? UNANSWERED : alts)
+                    .toList();
+            case OPEN -> options.stream()
+                    .map(Option::getOptionText)
+                    .filter(t -> t != null && !t.isBlank())
+                    .toList();
         };
     }
 
@@ -119,6 +138,20 @@ public class ReviewService {
                         .filter(o -> o.getMatchKey() != null)
                         .map(o -> o.getOptionText() + " \u2192 " + answer.matches().getOrDefault(o.getId(), UNANSWERED))
                         .toList();
+            }
+            case FILL_BLANK -> {
+                if (answer.blankAnswers() == null || answer.blankAnswers().isEmpty()) {
+                    yield List.of();
+                }
+                yield answer.blankAnswers().stream()
+                        .map(s -> s == null || s.isBlank() ? UNANSWERED : s.trim())
+                        .toList();
+            }
+            case OPEN -> {
+                if (answer.textAnswer() == null || answer.textAnswer().isBlank()) {
+                    yield List.of();
+                }
+                yield List.of(answer.textAnswer().trim());
             }
         };
     }

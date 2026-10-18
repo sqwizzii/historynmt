@@ -2,8 +2,9 @@ package com.nmt.history.dto;
 
 import com.nmt.history.model.QuestionType;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -18,11 +19,21 @@ public record CreateQuestionRequest(
         @NotNull QuestionType questionType,
         String explanation,
         @Size(max = 100) String topic,
-        @NotEmpty @Valid List<OptionRequest> options,
+        @Valid List<OptionRequest> options,
         List<String> extraImageUrls,
-        List<String> extraMatchChoices) {
+        List<String> extraMatchChoices,
+        @Min(1) @Max(100) Integer maxPoints,
+        Boolean caseSensitive) {
+
     public CreateQuestionRequest(Long testId, String questionText, String imageUrl, QuestionType questionType,
                                  String explanation, String topic, List<OptionRequest> options) {
-        this(testId, questionText, imageUrl, questionType, explanation, topic, options, null, null);
+        this(testId, questionText, imageUrl, questionType, explanation, topic, options, null, null, null, null);
+    }
+
+    public CreateQuestionRequest(Long testId, String questionText, String imageUrl, QuestionType questionType,
+                                 String explanation, String topic, List<OptionRequest> options,
+                                 List<String> extraImageUrls, List<String> extraMatchChoices) {
+        this(testId, questionText, imageUrl, questionType, explanation, topic, options,
+                extraImageUrls, extraMatchChoices, null, null);
     }
 }

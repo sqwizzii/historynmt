@@ -1,6 +1,10 @@
 spring:
   application:
     name: nmt-history
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/nmt_history_db}
     username: ${DB_USERNAME:postgres}

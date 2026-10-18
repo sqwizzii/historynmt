@@ -57,6 +57,16 @@ public class Question {
     @Column(length = 100)
     private String topic;
 
+    /** Максимум балів для OPEN (та запасний максимум). Для інших типів зазвичай обчислюється з варіантів. */
+    @Column(name = "max_points", nullable = false)
+    @Builder.Default
+    private Integer maxPoints = 1;
+
+    /** Чи враховувати регістр при перевірці FILL_BLANK. */
+    @Column(name = "case_sensitive", nullable = false)
+    @Builder.Default
+    private boolean caseSensitive = false;
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Option> options = new ArrayList<>();

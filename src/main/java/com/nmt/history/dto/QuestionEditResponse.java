@@ -13,5 +13,14 @@ public record QuestionEditResponse(
         String topic,
         List<OptionEditResponse> options,
         List<String> extraImageUrls,
-        List<String> extraMatchChoices) {
+        List<String> extraMatchChoices,
+        Integer maxPoints,
+        boolean caseSensitive) {
+
+    public QuestionEditResponse(Long id, String questionText, String imageUrl, QuestionType questionType,
+                                String explanation, String topic, List<OptionEditResponse> options,
+                                List<String> extraImageUrls, List<String> extraMatchChoices) {
+        this(id, questionText, imageUrl, questionType, explanation, topic, options,
+                extraImageUrls, extraMatchChoices, 1, false);
+    }
 }

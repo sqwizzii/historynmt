@@ -73,6 +73,24 @@ public class Test {
     @Builder.Default
     private AnswerVisibilityMode answerVisibilityMode = AnswerVisibilityMode.AFTER_TEST_COMPLETION;
 
+    @Column(name = "shuffle_questions", nullable = false)
+    @Builder.Default
+    private boolean shuffleQuestions = false;
+
+    @Column(name = "shuffle_options", nullable = false)
+    @Builder.Default
+    private boolean shuffleOptions = false;
+
+    /** NULL — необмежена кількість спроб. */
+    @Column(name = "max_attempts")
+    private Integer maxAttempts;
+
+    @Column(name = "available_from")
+    private LocalDateTime availableFrom;
+
+    @Column(name = "available_until")
+    private LocalDateTime availableUntil;
+
     @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Question> questions = new ArrayList<>();

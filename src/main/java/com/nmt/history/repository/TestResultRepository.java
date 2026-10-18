@@ -24,6 +24,10 @@ public interface TestResultRepository extends JpaRepository<TestResult, Long> {
 
     List<TestResult> findByTestId(Long testId);
 
+    long countByStudentIdAndTestId(Long studentId, Long testId);
+
+    List<TestResult> findByTestIdAndStudentTeacherIdAndStudentId(Long testId, Long teacherId, Long studentId);
+
     @Query("select r.student.id as studentId, count(r) as attempts, max(r.nmtScore) as bestNmtScore "
             + "from TestResult r where r.student.teacherId = :teacherId group by r.student.id")
     List<StudentStats> findStudentStats(@Param("teacherId") Long teacherId);

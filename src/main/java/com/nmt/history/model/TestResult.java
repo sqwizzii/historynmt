@@ -2,6 +2,8 @@ package com.nmt.history.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -63,6 +65,18 @@ public class TestResult {
     /** MANUAL, TIMEOUT або LEFT_PAGE. */
     @Column(name = "end_reason", length = 20)
     private String endReason;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "grading_status", nullable = false, length = 30)
+    @Builder.Default
+    private GradingStatus gradingStatus = GradingStatus.COMPLETED;
+
+    @Column(name = "teacher_comment", columnDefinition = "TEXT")
+    private String teacherComment;
+
+    @Column(name = "pending_manual_count", nullable = false)
+    @Builder.Default
+    private int pendingManualCount = 0;
 
     @Column(name = "completed_at", nullable = false)
     private LocalDateTime completedAt;
