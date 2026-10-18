@@ -230,6 +230,16 @@ h3 {
   color: #fff;
 }
 
+/* Landing-only: quiet light hero (no orbs / mesh) */
+.landing-hero {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #ffffff 42%, var(--color-canvas) 100%);
+}
+
+.landing-preview {
+  transform-origin: center top;
+}
+
 .hero-orbs {
   pointer-events: none;
   position: absolute;
