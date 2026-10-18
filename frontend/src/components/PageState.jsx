@@ -13,7 +13,7 @@ export function LoadingState({ label = 'Завантаження…' }) {
 export function ErrorState({ message, onRetry }) {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-3 py-16 text-center" role="alert">
-      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-red-600">
+      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--color-danger-soft)] text-[var(--color-danger-fg)]">
         <AlertCircle className="h-5 w-5" aria-hidden="true" />
       </span>
       <p className="text-sm leading-relaxed text-[var(--color-ink-soft)]">{message}</p>
