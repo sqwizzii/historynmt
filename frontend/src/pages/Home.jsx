@@ -4,6 +4,7 @@ import { BRAND_NAME } from '../config/brand.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import Reveal from '../components/motion/Reveal.jsx'
 import Stagger from '../components/motion/Stagger.jsx'
+import SocialLinks from '../components/SocialLinks.jsx'
 import { primaryButtonClass, secondaryButtonClass } from '../components/styles.js'
 import Dashboard from './Dashboard.jsx'
 import PlanCards from '../components/PlanCards.jsx'
@@ -307,6 +308,10 @@ function Landing() {
             <p className="mt-2 max-w-sm text-[0.875rem] text-[var(--color-mute)]">
               Освітня платформа для вчителів, репетиторів і онлайн-шкіл.
             </p>
+            <div className="mt-5">
+              <p className="mb-2.5 text-[0.75rem] font-medium text-[var(--color-mute)]">Зв’язок</p>
+              <SocialLinks />
+            </div>
           </div>
           <nav className="flex flex-wrap gap-x-6 gap-y-2 text-[0.875rem] text-[var(--color-mute)]" aria-label="Футер">
             <Link to="/subscription" className="transition hover:text-[var(--color-ink)]">

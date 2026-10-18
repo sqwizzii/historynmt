@@ -758,3 +758,295 @@ html.dark .bg-auth-panel {
 .surface-quiet {
   @apply rounded-xl border border-[var(--color-line-soft)] bg-[var(--color-surface-muted)];
 }
+
+/* -------------------------------------------------------------------------- */
+/* Theme switch — adapted from Uiverse.io by alexruix (splendid-liger-23)     */
+/* -------------------------------------------------------------------------- */
+.theme-switch {
+  --theme-switch-track: var(--color-indigo-200);
+  --theme-switch-knob-face: var(--color-indigo-200);
+  --theme-switch-glow: #f5e6a6;
+  font-size: 15px;
+  position: relative;
+  display: inline-block;
+  width: 3.35em;
+  height: 1.9em;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.theme-switch input {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.theme-switch__slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background-color: var(--theme-switch-track);
+  box-shadow: inset 0 0 0 1px rgb(11 12 16 / 0.08);
+  transition: background-color 0.45s ease, box-shadow 0.45s ease;
+}
+
+.theme-switch__slider::before {
+  content: "";
+  position: absolute;
+  height: 1.35em;
+  width: 1.35em;
+  border-radius: 50%;
+  left: 12%;
+  bottom: 14%;
+  background: var(--theme-switch-knob-face);
+  /* Light mode: filled sun */
+  box-shadow: inset 14px -3px 0 14px var(--theme-switch-glow);
+  transition: transform 0.45s ease, box-shadow 0.45s ease, background-color 0.45s ease;
+}
+
+.theme-switch input:checked + .theme-switch__slider {
+  --theme-switch-track: var(--color-indigo-800);
+  --theme-switch-knob-face: var(--color-indigo-800);
+  background-color: var(--theme-switch-track);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+.theme-switch input:checked + .theme-switch__slider::before {
+  transform: translateX(100%);
+  /* Dark mode: crescent moon */
+  box-shadow: inset 7px -3px 0 0 var(--theme-switch-glow);
+}
+
+.theme-switch input:focus-visible + .theme-switch__slider {
+  outline: 2px solid rgb(81 70 229 / 0.45);
+  outline-offset: 3px;
+}
+
+html.dark .theme-switch {
+  --theme-switch-track: var(--color-indigo-900);
+  --theme-switch-knob-face: var(--color-indigo-900);
+}
+
+html.dark .theme-switch input:not(:checked) + .theme-switch__slider {
+  --theme-switch-track: var(--color-indigo-300);
+  --theme-switch-knob-face: var(--color-indigo-300);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Blob card — adapted from Uiverse.io by dylanharriscameron (stupid-mole-90) */
+/* -------------------------------------------------------------------------- */
+.blob-card {
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  min-height: 100%;
+  box-shadow:
+    10px 10px 28px rgb(11 12 16 / 0.08),
+    -8px -8px 22px rgb(255 255 255 / 0.85);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.blob-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    12px 16px 34px rgb(11 12 16 / 0.1),
+    -8px -8px 22px rgb(255 255 255 / 0.9);
+}
+
+.blob-card__blob {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  width: min(11rem, 55%);
+  height: min(11rem, 55%);
+  border-radius: 50%;
+  background: var(--color-indigo-500);
+  opacity: 0.55;
+  filter: blur(14px);
+  animation: blob-card-bounce 6s infinite ease;
+  pointer-events: none;
+}
+
+.blob-card__panel {
+  position: relative;
+  z-index: 1;
+  margin: 5px;
+  height: calc(100% - 10px);
+  min-height: inherit;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.94);
+  backdrop-filter: blur(18px);
+  outline: 1px solid rgb(255 255 255 / 0.85);
+  padding: 1.35rem 1.5rem;
+  color: var(--color-ink);
+}
+
+@media (min-width: 640px) {
+  .blob-card__panel {
+    padding: 1.55rem 1.65rem;
+  }
+}
+
+.blob-card--featured .blob-card__blob {
+  background: var(--color-indigo-400);
+  opacity: 0.72;
+}
+
+.blob-card--selected {
+  box-shadow:
+    0 0 0 2px var(--color-indigo-500),
+    10px 10px 28px rgb(11 12 16 / 0.08),
+    -8px -8px 22px rgb(255 255 255 / 0.85);
+}
+
+html.dark .blob-card {
+  box-shadow:
+    10px 10px 28px rgb(0 0 0 / 0.45),
+    -6px -6px 18px rgb(255 255 255 / 0.03),
+    inset 0 0 0 1px rgb(255 255 255 / 0.04);
+}
+
+html.dark .blob-card:hover {
+  box-shadow:
+    12px 16px 34px rgb(0 0 0 / 0.5),
+    -6px -6px 18px rgb(255 255 255 / 0.04),
+    inset 0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+html.dark .blob-card__panel {
+  background: rgb(26 29 39 / 0.92);
+  outline-color: rgb(255 255 255 / 0.06);
+}
+
+html.dark .blob-card--selected {
+  box-shadow:
+    0 0 0 2px var(--color-indigo-400),
+    10px 10px 28px rgb(0 0 0 / 0.45),
+    -6px -6px 18px rgb(255 255 255 / 0.03);
+}
+
+@keyframes blob-card-bounce {
+  0% {
+    transform: translate(-100%, -100%) translate3d(0, 0, 0);
+  }
+  25% {
+    transform: translate(-100%, -100%) translate3d(100%, 0, 0);
+  }
+  50% {
+    transform: translate(-100%, -100%) translate3d(100%, 100%, 0);
+  }
+  75% {
+    transform: translate(-100%, -100%) translate3d(0, 100%, 0);
+  }
+  100% {
+    transform: translate(-100%, -100%) translate3d(0, 0, 0);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Social links — adapted from Uiverse.io by vinodjangid07 (horrible-eel-23)  */
+/* -------------------------------------------------------------------------- */
+.social-links {
+  width: fit-content;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 0 20px rgb(11 12 16 / 0.04);
+}
+
+.social-links__btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--color-inverse);
+  color: var(--color-on-inverse);
+  transition:
+    background-color 0.25s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.social-links__btn:hover {
+  transform: translateY(-1px);
+}
+
+.social-links__btn:active {
+  transform: scale(0.94);
+}
+
+.social-links__btn:focus-visible {
+  outline: 2px solid rgb(81 70 229 / 0.45);
+  outline-offset: 3px;
+}
+
+.social-links__btn--instagram:hover,
+.social-links__btn--instagram:focus-visible {
+  background-color: #d62976;
+}
+
+.social-links__btn--telegram:hover,
+.social-links__btn--telegram:focus-visible {
+  background-color: #229ed9;
+}
+
+.social-links__btn--whatsapp:hover,
+.social-links__btn--whatsapp:focus-visible {
+  background-color: #128c7e;
+}
+
+.social-links__icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: currentColor;
+}
+
+.social-links__btn:hover .social-links__icon,
+.social-links__btn:focus-visible .social-links__icon {
+  animation: social-slide-in 0.28s both;
+}
+
+@keyframes social-slide-in {
+  0% {
+    transform: translateY(-1.75rem);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-switch__slider,
+  .theme-switch__slider::before,
+  .blob-card,
+  .social-links__btn {
+    transition: none !important;
+  }
+
+  .blob-card__blob {
+    animation: none !important;
+    transform: translate(-50%, -50%);
+    opacity: 0.35;
+  }
+
+  .social-links__btn:hover .social-links__icon,
+  .social-links__btn:focus-visible .social-links__icon {
+    animation: none !important;
+  }
+}

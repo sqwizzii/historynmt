@@ -1,6 +1,7 @@
 import { CheckCircle2 } from 'lucide-react'
+import BlobCard from './BlobCard.jsx'
 import Stagger from './motion/Stagger.jsx'
-import { badgeClass, cardClass } from './styles.js'
+import { badgeClass } from './styles.js'
 
 const PLAN_FEATURES = [
   'Необмежені тести, картки й модулі',
@@ -16,23 +17,20 @@ export default function PlanCards({ plans, highlight }) {
     <Stagger immediate className="grid gap-4 md:grid-cols-2" step={100}>
       {plans.map((plan) => {
         const featured = plan.plan === 'YEARLY'
+        const selected = highlight === plan.plan
         return (
-          <article
+          <BlobCard
             key={plan.plan}
-            className={`${cardClass} group relative flex flex-col overflow-hidden p-6 sm:p-7 hover:-translate-y-1.5 hover:shadow-lift ${
-              highlight === plan.plan
-                ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-[var(--color-canvas)]'
-                : featured
-                  ? 'border-indigo-200 bg-gradient-to-b from-[var(--color-accent-soft)] to-[var(--color-surface)]'
-                  : ''
+            className={`group relative flex flex-col ${
+              selected ? 'blob-card--selected' : featured ? 'blob-card--featured' : ''
             }`}
           >
-            {featured && highlight !== plan.plan && (
-              <span className={`${badgeClass('indigo')} absolute right-4 top-4`}>{`Найкраще на рік`}</span>
+            {featured && !selected && (
+              <span className={`${badgeClass('indigo')} absolute right-4 top-4 z-10`}>{`Найкраще на рік`}</span>
             )}
             <div className="flex items-center justify-between gap-2 pr-24">
               <h3 className="text-lg font-semibold text-[var(--color-ink)]">{plan.name}</h3>
-              {highlight === plan.plan && <span className={badgeClass('green')}>Ваш план</span>}
+              {selected && <span className={badgeClass('green')}>Ваш план</span>}
             </div>
             <p className="mt-1 text-[0.9375rem] text-[var(--color-mute)]">
               Доступ {PERIOD[plan.plan]} · {plan.periodDays} днів
@@ -48,7 +46,7 @@ export default function PlanCards({ plans, highlight }) {
                 </li>
               ))}
             </ul>
-          </article>
+          </BlobCard>
         )
       })}
     </Stagger>
