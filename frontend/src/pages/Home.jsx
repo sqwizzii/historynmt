@@ -50,13 +50,13 @@ function ProductPreview() {
         </div>
         <div className="grid md:grid-cols-[11.5rem_1fr]">
           <aside className="hidden border-r border-[var(--color-line)] bg-[var(--color-nav)] p-3 md:block" aria-hidden="true">
-            <p className="mb-3 px-2.5 text-[0.625rem] font-semibold uppercase tracking-[0.1em] text-white/35">Робота</p>
+            <p className="mb-3 px-2.5 text-[0.625rem] font-semibold uppercase tracking-[0.1em] text-white/55">Робота</p>
             <ul className="space-y-0.5">
               {['Огляд', 'Тести', 'Картки', 'Учні'].map((item, i) => (
                 <li
                   key={item}
                   className={`rounded-lg px-2.5 py-2 text-[0.8125rem] ${
-                    i === 1 ? 'bg-white/10 font-medium text-white' : 'text-white/50'
+                    i === 1 ? 'bg-white/10 font-medium text-white' : 'text-white/65'
                   }`}
                 >
                   {item}
@@ -114,7 +114,7 @@ function ResultSnippet() {
   return (
     <div className="overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] shadow-[0_1px_0_rgb(11_12_16/0.04),0_16px_36px_-24px_rgb(11_12_16/0.22)]">
       <div className="border-b border-[var(--color-line)] px-5 py-4">
-        <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-indigo-600">Результат спроби</p>
+        <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-[var(--color-accent-fg)]">Результат спроби</p>
         <p className="mt-1.5 text-[1.0625rem] font-semibold tracking-tight text-[var(--color-ink)]">
           Контрольна · Тема 3
         </p>
@@ -214,7 +214,7 @@ function Landing() {
                   key={item.title}
                   className="grid gap-2 border-b border-[var(--color-line)] py-6 sm:grid-cols-[6.5rem_1fr] sm:gap-6"
                 >
-                  <span className="font-display text-2xl font-semibold tabular-nums text-indigo-600/75">
+                  <span className="font-display text-2xl font-semibold tabular-nums text-[var(--color-accent-fg)] opacity-80">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                   <div className="min-w-0">
@@ -246,7 +246,7 @@ function Landing() {
                   'Робота над помилками з попередніх спроб',
                 ].map((line) => (
                   <li key={line} className="flex items-start gap-2.5 text-[0.9375rem] text-[var(--color-ink)]">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" aria-hidden="true" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-accent-fg)]" aria-hidden="true" />
                     {line}
                   </li>
                 ))}

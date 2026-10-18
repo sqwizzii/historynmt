@@ -21,7 +21,7 @@ export default function FormField({ label, icon: Icon, type = 'text', hint, erro
           type={isPassword && revealed ? 'text' : type}
           aria-invalid={error ? true : undefined}
           className={`${inputClass} ${Icon ? 'pl-11' : ''} ${isPassword ? 'pr-12' : ''} ${
-            error ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''
+            error ? 'border-[var(--color-danger-fg)]/40 focus:border-red-500 focus:ring-red-500/20' : ''
           }`}
           {...inputProps}
         />
@@ -37,7 +37,7 @@ export default function FormField({ label, icon: Icon, type = 'text', hint, erro
         )}
       </div>
       {error ? (
-        <p className="mt-1.5 text-[0.75rem] text-red-600">{error}</p>
+        <p className="mt-1.5 text-[0.75rem] text-[var(--color-danger-fg)]">{error}</p>
       ) : hint ? (
         <p className="mt-1.5 text-[0.75rem] text-[var(--color-mute)]">{hint}</p>
       ) : null}

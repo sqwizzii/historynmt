@@ -100,13 +100,13 @@ export default function ImportFormModal({ onClose, onImported }) {
   if (result) {
     return (
       <Modal title="Тест імпортовано" onClose={() => onImported(result.testId)}>
-        <div className="mt-3 space-y-3 text-sm text-slate-700">
+        <div className="mt-3 space-y-3 text-sm text-[var(--color-ink-soft)]">
           <p className="flex items-start gap-2">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-success-fg)]" aria-hidden="true" />
             «{result.title}»: додано питань {result.imported}.
           </p>
           {result.skipped.length > 0 && (
-            <div className="rounded-xl bg-slate-100 p-3.5 text-slate-900">
+            <div className="rounded-xl bg-[var(--color-surface-muted)] p-3.5 text-[var(--color-ink)]">
               <p className="mb-1.5 flex items-center gap-2 font-semibold">
                 <TriangleAlert className="h-4 w-4" aria-hidden="true" />
                 Пропущено: {result.skipped.length}
@@ -121,13 +121,13 @@ export default function ImportFormModal({ onClose, onImported }) {
             </div>
           )}
           {result.warnings?.length > 0 && (
-            <ul className="list-disc space-y-1 rounded-xl bg-slate-100 p-3.5 pl-8 text-xs text-slate-900">
+            <ul className="list-disc space-y-1 rounded-xl bg-[var(--color-surface-muted)] p-3.5 pl-8 text-xs text-[var(--color-ink)]">
               {result.warnings.map((w, i) => (
                 <li key={i}>{w}</li>
               ))}
             </ul>
           )}
-          <p className="text-xs text-slate-500">Перегляньте питання у редакторі й додайте теми та пояснення за потреби.</p>
+          <p className="text-xs text-[var(--color-mute)]">Перегляньте питання у редакторі й додайте теми та пояснення за потреби.</p>
         </div>
         <button type="button" onClick={() => onImported(result.testId)} className={`${primaryButtonClass} mt-5 w-full`}>
           Відкрити тест
@@ -138,7 +138,7 @@ export default function ImportFormModal({ onClose, onImported }) {
 
   return (
     <Modal title="Імпорт тесту з Google Forms" onClose={loading ? undefined : onClose}>
-      <div className="mt-3 space-y-4 text-sm text-slate-700">
+      <div className="mt-3 space-y-4 text-sm text-[var(--color-ink-soft)]">
         <ol className="list-decimal space-y-1.5 pl-5">
           <li>Відкрийте свою форму в Google Forms на редагування. Для правильних відповідей форма має бути у режимі «Тест».</li>
           <li>
@@ -155,7 +155,7 @@ export default function ImportFormModal({ onClose, onImported }) {
         </div>
 
         <div>
-          <label htmlFor="import-json" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="import-json" className="mb-1.5 block text-sm font-medium text-[var(--color-ink-soft)]">
             Файл зі скрипта (або вставлені дані)
           </label>
           <textarea
@@ -167,20 +167,20 @@ export default function ImportFormModal({ onClose, onImported }) {
             placeholder='{"title":"...","questions":[...]}'
           />
           <input ref={fileInput} type="file" accept=".json,.txt,application/json" onChange={handleFile} className="hidden" aria-label="Файл з даними" />
-          <button type="button" onClick={() => fileInput.current?.click()} className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-blue-700 hover:underline">
+          <button type="button" onClick={() => fileInput.current?.click()} className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-accent-fg)] hover:underline">
             <FileUp className="h-3.5 w-3.5" aria-hidden="true" />
             Обрати файл
           </button>
         </div>
 
         <div className="w-40">
-          <label htmlFor="import-minutes" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="import-minutes" className="mb-1.5 block text-sm font-medium text-[var(--color-ink-soft)]">
             Час, хвилин
           </label>
           <input id="import-minutes" type="number" min="1" max="300" className={inputClass} value={minutes} onChange={(e) => setMinutes(e.target.value)} />
         </div>
 
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-[var(--color-mute)]">
           Імпортуються питання з однією відповіддю, списки й «прапорці». Текстові відповіді та інші типи пропускаються. Переноситься фото, додане у формі окремим блоком «Зображення» перед питанням; фото всередині самого питання чи варіантів Google не віддає, їх додайте вже на сайті.
         </p>
         <ErrorAlert message={error} />

@@ -30,7 +30,7 @@ export default function ModulesManager() {
           Новий модуль
         </button>
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-mute-soft)]" aria-hidden="true" />
           <input type="search" aria-label="Пошук модулів" placeholder="Пошук за назвою" value={query} onChange={(e) => setQuery(e.target.value)} className={`${inputClass} pl-9`} />
         </div>
         <Stagger as="ul" immediate step={45} className="space-y-0.5 rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-1.5 shadow-card">

@@ -2,9 +2,9 @@ import { CheckCircle2, Lightbulb, MinusCircle, XCircle } from 'lucide-react'
 import QuestionExplanation from '../QuestionExplanation.jsx'
 
 function statusOf(item) {
-  if (item.earned === item.max) return { label: 'Правильно', Icon: CheckCircle2, className: 'bg-emerald-50 text-emerald-900' }
-  if (item.earned === 0) return { label: 'Неправильно', Icon: XCircle, className: 'bg-red-50 text-red-900' }
-  return { label: 'Частково правильно', Icon: MinusCircle, className: 'bg-amber-50 text-amber-900' }
+  if (item.earned === item.max) return { label: 'Правильно', Icon: CheckCircle2, className: 'bg-[var(--color-success-soft)] text-[var(--color-success-fg)]' }
+  if (item.earned === 0) return { label: 'Неправильно', Icon: XCircle, className: 'bg-[var(--color-danger-soft)] text-[var(--color-danger-fg)]' }
+  return { label: 'Частково правильно', Icon: MinusCircle, className: 'bg-[var(--color-warning-soft)] text-[var(--color-warning-fg)]' }
 }
 
 export default function AnswerFeedback({ item, testId, children }) {
@@ -20,8 +20,8 @@ export default function AnswerFeedback({ item, testId, children }) {
         <p className="mt-1"><span className="font-medium">Правильна відповідь:</span> {item.correctAnswer.join('; ')}</p>
       )}
       {item.explanation && (
-        <p className="mt-2 flex items-start gap-2 text-slate-800">
-          <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" aria-hidden="true" />
+        <p className="mt-2 flex items-start gap-2 text-[var(--color-ink)]">
+          <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-accent-fg)]" aria-hidden="true" />
           {item.explanation}
         </p>
       )}

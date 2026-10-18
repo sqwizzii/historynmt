@@ -172,7 +172,7 @@ export default function TestsManager() {
             </button>
           </div>
         )}
-        {actionError && <p className="text-xs text-red-700">{actionError}</p>}
+        {actionError && <p className="text-xs text-[var(--color-danger-fg)]">{actionError}</p>}
 
         <Stagger
           as="ul"

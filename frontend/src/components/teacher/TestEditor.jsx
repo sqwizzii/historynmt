@@ -42,7 +42,7 @@ function QuestionStats({ testId }) {
     <section className="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-card sm:p-6">
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
         <h2 className="flex items-center gap-2 text-[0.9375rem] font-semibold text-[var(--color-ink)]">
-          <BarChart3 className="h-4 w-4 text-indigo-600" aria-hidden="true" />
+          <BarChart3 className="h-4 w-4 text-[var(--color-accent-fg)]" aria-hidden="true" />
           Статистика по питаннях
         </h2>
         <div className="flex flex-wrap gap-2">
@@ -56,7 +56,7 @@ function QuestionStats({ testId }) {
           </button>
         </div>
       </div>
-      {exportError && <p className="mb-3 text-xs text-red-700">{exportError}</p>}
+      {exportError && <p className="mb-3 text-xs text-[var(--color-danger-fg)]">{exportError}</p>}
       {stats.questions.length === 0 ? (
         <p className="text-sm text-[var(--color-mute)]">Тест ще ніхто не проходив.</p>
       ) : (
@@ -169,7 +169,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
         )}
 
         {test.questions.length === 0 && editing !== 'new' && (
-          <p className="rounded-xl border border-dashed border-[#c9ced9] bg-[var(--color-surface)] px-4 py-10 text-center text-[0.8125rem] text-[var(--color-mute)]">
+          <p className="rounded-xl border border-dashed border-[var(--color-line)] bg-[var(--color-surface)] px-4 py-10 text-center text-[0.8125rem] text-[var(--color-mute)]">
             У цьому тесті ще немає питань. Натисніть «Додати питання».
           </p>
         )}
@@ -240,7 +240,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
                   <button
                     type="button"
                     onClick={() => setToDelete({ kind: 'question', id: question.id })}
-                    className={`${secondaryButtonClass} !px-2.5 !py-2 hover:!border-red-200 hover:!bg-red-50 hover:!text-red-600`}
+                    className={`${secondaryButtonClass} !px-2.5 !py-2 hover:!border-[var(--color-danger-fg)]/25 hover:!bg-[var(--color-danger-soft)] hover:!text-[var(--color-danger-fg)]`}
                     aria-label={`Видалити питання ${index + 1}`}
                   >
                     <Trash2 className="h-4 w-4" />

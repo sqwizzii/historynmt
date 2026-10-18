@@ -95,7 +95,7 @@ export default function ImportSpreadsheetModal({ testId, testTitle, onClose, onI
 
         {file && (
           <p className="flex items-center gap-2 text-sm text-[var(--color-ink-soft)]">
-            <FileSpreadsheet className="h-4 w-4 text-indigo-600" aria-hidden="true" />
+            <FileSpreadsheet className="h-4 w-4 text-[var(--color-accent-fg)]" aria-hidden="true" />
             {file.name}
           </p>
         )}
@@ -116,7 +116,7 @@ export default function ImportSpreadsheetModal({ testId, testTitle, onClose, onI
             </div>
 
             {preview.errors?.length > 0 && (
-              <ul className="space-y-1.5 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-950">
+              <ul className="space-y-1.5 rounded-lg border border-[var(--color-warning-fg)]/25 bg-[var(--color-warning-soft)] p-3 text-xs text-[var(--color-warning-fg)]">
                 {preview.errors.map((err, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />

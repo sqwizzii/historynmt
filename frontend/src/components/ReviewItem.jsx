@@ -7,10 +7,10 @@ import { inputClass, primaryButtonClass, secondaryButtonClass } from './styles.j
 import { getErrorMessage, resultService } from '../services/api.js'
 
 function statusOf(item) {
-  if (item.pendingManual) return { label: 'Очікує оцінки', Icon: Clock3, className: 'bg-amber-100 text-amber-900' }
-  if (item.earned === item.max) return { label: 'Правильно', Icon: CheckCircle2, className: 'bg-emerald-100 text-emerald-800' }
-  if (item.earned === 0) return { label: 'Неправильно', Icon: XCircle, className: 'bg-red-100 text-red-800' }
-  return { label: 'Частково', Icon: MinusCircle, className: 'bg-slate-200 text-slate-900' }
+  if (item.pendingManual) return { label: 'Очікує оцінки', Icon: Clock3, className: 'bg-[var(--color-warning-soft)] text-[var(--color-warning-fg)]' }
+  if (item.earned === item.max) return { label: 'Правильно', Icon: CheckCircle2, className: 'bg-[var(--color-success-soft)] text-[var(--color-success-fg)]' }
+  if (item.earned === 0) return { label: 'Неправильно', Icon: XCircle, className: 'bg-[var(--color-danger-soft)] text-[var(--color-danger-fg)]' }
+  return { label: 'Частково', Icon: MinusCircle, className: 'bg-[var(--color-line)] text-[var(--color-ink)]' }
 }
 
 function AnswerBlock({ title, lines, emptyText, tone }) {
@@ -57,12 +57,12 @@ function TeacherGradeForm({ resultId, item, onGraded }) {
   }
 
   return (
-    <div className="mt-4 space-y-3 rounded-xl border border-amber-200 bg-amber-50/60 p-3.5">
-      <p className="text-sm font-semibold text-amber-950">Оцінити відкриту відповідь</p>
+    <div className="mt-4 space-y-3 rounded-xl border border-[var(--color-warning-fg)]/25 bg-[var(--color-warning-soft)]/60 p-3.5">
+      <p className="text-sm font-semibold text-[var(--color-warning-fg)]">Оцінити відкриту відповідь</p>
       <ErrorAlert message={error} />
       <div className="grid gap-3 sm:grid-cols-[8rem_minmax(0,1fr)]">
         <div>
-          <label htmlFor={`grade-${item.questionId}`} className="mb-1.5 block text-xs font-medium text-amber-900">
+          <label htmlFor={`grade-${item.questionId}`} className="mb-1.5 block text-xs font-medium text-[var(--color-warning-fg)]">
             Бали (0–{item.max})
           </label>
           <input
@@ -76,7 +76,7 @@ function TeacherGradeForm({ resultId, item, onGraded }) {
           />
         </div>
         <div>
-          <label htmlFor={`comment-${item.questionId}`} className="mb-1.5 block text-xs font-medium text-amber-900">
+          <label htmlFor={`comment-${item.questionId}`} className="mb-1.5 block text-xs font-medium text-[var(--color-warning-fg)]">
             Коментар до питання
           </label>
           <input
@@ -118,7 +118,7 @@ export default function ReviewItem({ item, number, testId, resultId, canGrade = 
           title="Ваша відповідь"
           lines={item.yourAnswer ?? []}
           emptyText="Без відповіді"
-          tone={item.pendingManual ? 'bg-amber-50 text-amber-950' : item.earned === item.max ? 'bg-emerald-50 text-emerald-900' : 'bg-red-50 text-red-900'}
+          tone={item.pendingManual ? 'bg-[var(--color-warning-soft)] text-[var(--color-warning-fg)]' : item.earned === item.max ? 'bg-[var(--color-success-soft)] text-[var(--color-success-fg)]' : 'bg-[var(--color-danger-soft)] text-[var(--color-danger-fg)]'}
         />
         {item.correctAnswer?.length > 0 ? (
           <AnswerBlock title="Правильна відповідь" lines={item.correctAnswer} emptyText="-" tone="bg-[var(--color-surface-muted)] text-[var(--color-ink-soft)]" />
@@ -145,7 +145,7 @@ export default function ReviewItem({ item, number, testId, resultId, canGrade = 
           : <p className="mt-3 text-xs text-[var(--color-mute)]">{NO_EXPLANATION}</p>
       )}
       {item.explanation && (
-        <div className="mt-3 flex items-start gap-2 rounded-xl bg-blue-50 p-3.5 text-sm text-blue-900">
+        <div className="mt-3 flex items-start gap-2 rounded-xl bg-[var(--color-accent-soft)] p-3.5 text-sm text-[var(--color-accent-fg)]">
           <Lightbulb className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           <p>{item.explanation}</p>
         </div>

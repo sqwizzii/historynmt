@@ -59,7 +59,7 @@ export default function Account() {
         <h2 className="text-[0.9375rem] font-semibold text-[var(--color-ink)]">Зміна пароля</h2>
         <ErrorAlert message={error} />
         {success && (
-          <div role="status" className="motion-alert flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+          <div role="status" className="motion-alert flex items-center gap-2 rounded-lg border border-[var(--color-success-fg)]/25 bg-[var(--color-success-soft)] px-3 py-2.5 text-sm text-[var(--color-success-fg)]">
             <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />
             Пароль змінено.
           </div>

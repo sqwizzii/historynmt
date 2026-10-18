@@ -33,27 +33,27 @@ function AssignForm({ testId, students, assigned, onClose }) {
     }
   }
 
-  const radio = 'flex cursor-pointer items-start gap-2.5 rounded-lg border border-slate-200 p-3 text-sm has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50'
+  const radio = 'flex cursor-pointer items-start gap-2.5 rounded-lg border border-[var(--color-line)] p-3 text-sm has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50'
   return (
     <div className="mt-4 space-y-3">
       <ErrorAlert message={error} />
       <label className={radio}>
         <input type="radio" name="mode" checked={mode === 'all'} onChange={() => setMode('all')} className="mt-0.5 accent-indigo-600" />
-        <span><span className="block font-medium text-slate-900">Усім моїм учням</span><span className="text-slate-500">Тест бачать усі учні, прив'язані до вас.</span></span>
+        <span><span className="block font-medium text-[var(--color-ink)]">Усім моїм учням</span><span className="text-[var(--color-mute)]">Тест бачать усі учні, прив'язані до вас.</span></span>
       </label>
       <label className={radio}>
         <input type="radio" name="mode" checked={mode === 'selected'} onChange={() => setMode('selected')} className="mt-0.5 accent-indigo-600" />
-        <span><span className="block font-medium text-slate-900">Лише вибраним</span><span className="text-slate-500">Решта учнів тест не побачать.</span></span>
+        <span><span className="block font-medium text-[var(--color-ink)]">Лише вибраним</span><span className="text-[var(--color-mute)]">Решта учнів тест не побачать.</span></span>
       </label>
       {mode === 'selected' && (
-        <ul className="max-h-56 divide-y divide-slate-100 overflow-y-auto rounded-lg border border-slate-200" aria-label="Учні">
-          {students.length === 0 && <li className="p-4 text-center text-sm text-slate-500">Учнів поки немає. Поділіться кодом запрошення.</li>}
+        <ul className="max-h-56 divide-y divide-[var(--color-line-soft)] overflow-y-auto rounded-lg border border-[var(--color-line)]" aria-label="Учні">
+          {students.length === 0 && <li className="p-4 text-center text-sm text-[var(--color-mute)]">Учнів поки немає. Поділіться кодом запрошення.</li>}
           {students.map((s) => (
             <li key={s.id}>
-              <label className="flex cursor-pointer items-center gap-3 px-3 py-2.5 text-sm hover:bg-slate-50">
+              <label className="flex cursor-pointer items-center gap-3 px-3 py-2.5 text-sm hover:bg-[var(--color-surface-muted)]">
                 <input type="checkbox" checked={selected.has(s.id)} onChange={() => toggle(s.id)} className="h-4 w-4 accent-indigo-600" />
-                <span className="font-medium text-slate-900">{s.fullName}</span>
-                <span className="text-slate-500">{s.username}</span>
+                <span className="font-medium text-[var(--color-ink)]">{s.fullName}</span>
+                <span className="text-[var(--color-mute)]">{s.username}</span>
               </label>
             </li>
           ))}

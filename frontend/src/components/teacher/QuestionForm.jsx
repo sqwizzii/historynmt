@@ -219,7 +219,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
       <h3 className="text-base font-semibold text-[var(--color-ink)]">{isEdit ? 'Редагування питання' : 'Нове питання'}</h3>
       <ErrorAlert message={error} />
       {success && (
-        <div role="status" className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+        <div role="status" className="flex items-center gap-2 rounded-lg border border-[var(--color-success-fg)]/25 bg-[var(--color-success-soft)] px-3 py-2.5 text-sm text-[var(--color-success-fg)]">
           <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
           {success}
         </div>
@@ -278,7 +278,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
             </button>
           )}
         </div>
-        {fileError && <p className="mt-1 text-xs text-red-700">{fileError}</p>}
+        {fileError && <p className="mt-1 text-xs text-[var(--color-danger-fg)]">{fileError}</p>}
         <p className="mt-1 text-xs text-[var(--color-mute)]">Карта, портрет чи пам&apos;ятка. Зображення буде показано перед текстом питання.</p>
         {(uploaded || URL_PATTERN.test(imageUrl.trim())) && (
           <div className="mt-3">
@@ -297,7 +297,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
               <li key={`${url}-${i}`} className="flex items-center gap-2 text-sm">
                 <span className="w-6 shrink-0 text-center font-semibold text-[var(--color-mute)]">{i + 2}</span>
                 <span className="min-w-0 flex-1 truncate text-[var(--color-mute)]">{url}</span>
-                <button type="button" onClick={() => setExtraImages((prev) => prev.filter((_, j) => j !== i))} className="rounded-lg p-1.5 text-[var(--color-mute)] hover:bg-red-50 hover:text-red-600" aria-label={`Прибрати додаткове зображення ${i + 1}`}>
+                <button type="button" onClick={() => setExtraImages((prev) => prev.filter((_, j) => j !== i))} className="rounded-lg p-1.5 text-[var(--color-mute)] hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger-fg)]" aria-label={`Прибрати додаткове зображення ${i + 1}`}>
                   <Trash2 className="h-4 w-4" />
                 </button>
               </li>
@@ -361,7 +361,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
                 type="button"
                 onClick={() => setRows((prev) => prev.filter((_, i) => i !== index))}
                 disabled={rows.length <= 2}
-                className="shrink-0 rounded-lg p-2 text-[var(--color-mute)] hover:bg-red-50 hover:text-red-600 disabled:opacity-30"
+                className="shrink-0 rounded-lg p-2 text-[var(--color-mute)] hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger-fg)] disabled:opacity-30"
                 aria-label={`Видалити ${optionLabel.toLowerCase()} ${index + 1}`}
               >
                 <Trash2 className="h-4 w-4" />
@@ -390,7 +390,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
                   type="button"
                   onClick={() => setBlanks((prev) => prev.filter((_, i) => i !== blankIndex))}
                   disabled={blanks.length <= 1}
-                  className="rounded-lg p-1.5 text-[var(--color-mute)] hover:bg-red-50 hover:text-red-600 disabled:opacity-30"
+                  className="rounded-lg p-1.5 text-[var(--color-mute)] hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger-fg)] disabled:opacity-30"
                   aria-label={`Видалити пропуск ${blankIndex + 1}`}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -424,7 +424,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
                         )
                       }
                       disabled={blank.alternatives.length <= 1}
-                      className="rounded-lg p-2 text-[var(--color-mute)] hover:bg-red-50 hover:text-red-600 disabled:opacity-30"
+                      className="rounded-lg p-2 text-[var(--color-mute)] hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger-fg)] disabled:opacity-30"
                       aria-label={`Видалити альтернативу ${altIndex + 1}`}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -486,7 +486,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
                   <button
                     type="button"
                     onClick={() => setSamples((prev) => prev.filter((_, i) => i !== index))}
-                    className="rounded-lg p-2 text-[var(--color-mute)] hover:bg-red-50 hover:text-red-600"
+                    className="rounded-lg p-2 text-[var(--color-mute)] hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger-fg)]"
                     aria-label={`Видалити зразок ${index + 1}`}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -510,7 +510,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
           {distractors.map((choice, i) => (
             <div key={i} className="flex items-center gap-2">
               <input aria-label={`Зайвий варіант ${i + 1}`} className={inputClass} value={choice} onChange={(e) => setDistractors((prev) => prev.map((d, j) => (j === i ? e.target.value : d)))} />
-              <button type="button" onClick={() => setDistractors((prev) => prev.filter((_, j) => j !== i))} className="rounded-lg p-2 text-[var(--color-mute)] hover:bg-red-50 hover:text-red-600" aria-label={`Видалити зайвий варіант ${i + 1}`}>
+              <button type="button" onClick={() => setDistractors((prev) => prev.filter((_, j) => j !== i))} className="rounded-lg p-2 text-[var(--color-mute)] hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger-fg)]" aria-label={`Видалити зайвий варіант ${i + 1}`}>
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>

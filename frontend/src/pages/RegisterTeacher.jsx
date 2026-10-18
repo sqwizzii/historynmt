@@ -52,7 +52,7 @@ export default function RegisterTeacher() {
     <AuthCard
       title="Акаунт вчителя"
       subtitle="Створіть кабінет, щоб готувати тести й картки та відстежувати прогрес учнів."
-      footer={<>Вже є акаунт? <Link to="/login" className="font-semibold text-indigo-700 hover:underline">Увійти</Link></>}
+      footer={<>Вже є акаунт? <Link to="/login" className="font-semibold text-[var(--color-accent-fg)] hover:underline">Увійти</Link></>}
     >
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <ErrorAlert message={error} />

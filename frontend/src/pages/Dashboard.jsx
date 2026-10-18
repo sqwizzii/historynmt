@@ -19,7 +19,7 @@ function QuickLink({ to, title, text, Icon }) {
       <span className="min-w-0 flex-1">
         <span className="flex items-center justify-between gap-2 text-[0.8125rem] font-semibold text-[var(--color-ink)]">
           {title}
-          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[var(--color-mute-soft)] transition group-hover:translate-x-0.5 group-hover:text-indigo-600" aria-hidden="true" />
+          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[var(--color-mute-soft)] transition group-hover:translate-x-0.5 group-hover:text-[var(--color-accent-fg)]" aria-hidden="true" />
         </span>
         <span className="mt-0.5 block text-[0.75rem] leading-relaxed text-[var(--color-mute)]">{text}</span>
       </span>
@@ -105,7 +105,7 @@ function TeacherDashboard() {
         <section className={`${cardClass} animate-fade-in`}>
           <div className="flex items-center justify-between border-b border-[var(--color-line-soft)] px-4 py-3.5">
             <h2 className="text-[0.8125rem] font-semibold text-[var(--color-ink)]">Останні результати учнів</h2>
-            <Link to="/teacher/students" className="text-[0.75rem] font-semibold text-indigo-700 transition hover:underline">
+            <Link to="/teacher/students" className="text-[0.75rem] font-semibold text-[var(--color-accent-fg)] transition hover:underline">
               Усі
             </Link>
           </div>

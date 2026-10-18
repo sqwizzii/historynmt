@@ -34,7 +34,7 @@ function Session({ questions, onFinish }) {
     return (
       <div>
         <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-5 text-center">
-          <PartyPopper className="mx-auto h-8 w-8 text-indigo-700" aria-hidden="true" />
+          <PartyPopper className="mx-auto h-8 w-8 text-[var(--color-accent-fg)]" aria-hidden="true" />
           <p className="mt-2 text-lg font-semibold text-[var(--color-ink)]">
             Виправлено: {result.fixed} з {result.total}
           </p>
@@ -63,7 +63,7 @@ function Session({ questions, onFinish }) {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-slate-500">
+      <p className="mb-4 text-sm text-[var(--color-mute)]">
         Відповіли: {answered} з {questions.length}
       </p>
       <div key={question.id} className="motion-question">
@@ -113,10 +113,10 @@ export default function Practice() {
     )
   } else if (!started) {
     content = (
-      <div className="rounded-xl border border-slate-200 bg-[var(--color-surface)] p-6 text-center shadow-card">
-        <CheckCircle2 className="mx-auto h-8 w-8 text-blue-700" aria-hidden="true" />
-        <p className="mt-3 text-lg font-bold text-slate-900">Питань для повторення: {data.total}</p>
-        <p className="mt-1 text-sm text-slate-600">
+      <div className="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6 text-center shadow-card">
+        <CheckCircle2 className="mx-auto h-8 w-8 text-[var(--color-accent-fg)]" aria-hidden="true" />
+        <p className="mt-3 text-lg font-bold text-[var(--color-ink)]">Питань для повторення: {data.total}</p>
+        <p className="mt-1 text-sm text-[var(--color-mute)]">
           Зараз у підборці {data.questions.length}. Правильна відповідь прибирає питання зі списку, помилка залишає його.
         </p>
         <button type="button" onClick={() => setStarted(true)} className={`${primaryButtonClass} mt-5`}>
@@ -138,11 +138,11 @@ export default function Practice() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link to="/results" className="mb-3 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800">
+      <Link to="/results" className="mb-3 inline-flex items-center gap-1 text-sm text-[var(--color-mute)] hover:text-[var(--color-ink)]">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         До моїх результатів
       </Link>
-      <h1 className="mb-6 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Робота над помилками</h1>
+      <h1 className="mb-6 text-xl font-bold tracking-tight text-[var(--color-ink)] sm:text-2xl">Робота над помилками</h1>
       {content}
     </div>
   )

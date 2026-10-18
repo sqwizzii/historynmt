@@ -28,11 +28,11 @@ export default function ImagePicker({ value, onChange, label = 'Фото' }) {
       <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} className="hidden" aria-label={label} />
       {value ? (
         <span className="relative">
-          <img src={resolveImageUrl(value)} alt="" className="h-10 w-10 rounded-lg border border-slate-200 object-cover" />
+          <img src={resolveImageUrl(value)} alt="" className="h-10 w-10 rounded-lg border border-[var(--color-line)] object-cover" />
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="absolute -right-1.5 -top-1.5 rounded-xl bg-slate-700 p-0.5 text-white hover:bg-red-600"
+            className="absolute -right-1.5 -top-1.5 rounded-xl bg-[var(--color-inverse)] p-0.5 text-[var(--color-on-inverse)] hover:bg-red-600"
             aria-label="Прибрати фото"
           >
             <X className="h-3 w-3" />
@@ -42,14 +42,14 @@ export default function ImagePicker({ value, onChange, label = 'Фото' }) {
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="rounded-lg border border-dashed border-slate-300 p-2 text-slate-500 hover:border-blue-500 hover:text-blue-600"
+          className="rounded-lg border border-dashed border-[var(--color-line-strong)] p-2 text-[var(--color-mute)] hover:border-blue-500 hover:text-blue-600"
           aria-label={label}
           title={label}
         >
           <ImagePlus className="h-5 w-5" />
         </button>
       )}
-      {error && <span className="text-xs text-red-700">{error}</span>}
+      {error && <span className="text-xs text-[var(--color-danger-fg)]">{error}</span>}
     </div>
   )
 }

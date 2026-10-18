@@ -60,7 +60,7 @@ function Sidebar({ user, onNavigate, dark = true }) {
     <nav aria-label="Основна навігація" className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
       {NAV[user.role].map((group) => (
         <div key={group.section}>
-          <p className={`mb-1.5 px-2.5 text-[0.625rem] font-semibold uppercase tracking-[0.1em] ${dark ? 'text-white/35' : 'text-[var(--color-mute-soft)]'}`}>
+          <p className={`mb-1.5 px-2.5 text-[0.625rem] font-semibold uppercase tracking-[0.1em] ${dark ? 'text-white/55' : 'text-[var(--color-mute-soft)]'}`}>
             {group.section}
           </p>
           <ul className="space-y-0.5">
@@ -147,7 +147,7 @@ function AppShell() {
         </div>
         <Sidebar user={user} />
         {user.role === 'ADMIN' && (
-          <p className="mx-3 mb-4 flex items-center gap-2 rounded-lg bg-white/5 px-2.5 py-2 text-[0.6875rem] text-white/50">
+          <p className="mx-3 mb-4 flex items-center gap-2 rounded-lg bg-white/5 px-2.5 py-2 text-[0.6875rem] text-white/65">
             <ShieldCheck className="h-3.5 w-3.5 text-indigo-300" aria-hidden="true" /> Адміністратор
           </p>
         )}

@@ -24,14 +24,14 @@ export default function FlipCard({ card }) {
         className="relative block h-64 w-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 sm:h-80"
       >
         <span className="flip-card absolute inset-0 block" data-flipped={flipped}>
-          <Face label="Термін / питання" text={card.termOrQuestion} image={card.imageUrl} className="border-slate-200 bg-[var(--color-surface)] text-slate-900" />
+          <Face label="Термін / питання" text={card.termOrQuestion} image={card.imageUrl} className="border-[var(--color-line)] bg-[var(--color-surface)] text-[var(--color-ink)]" />
           <Face
             label="Відповідь / дата"
             text={card.answerOrDate}
-            className="flip-face-back bg-hero ornament border-slate-200 text-white"
+            className="flip-face-back bg-hero ornament border-[var(--color-line)] text-white"
           />
         </span>
-        <span className="pointer-events-none absolute bottom-3 right-4 z-10 flex items-center gap-1 text-xs text-slate-400">
+        <span className="pointer-events-none absolute bottom-3 right-4 z-10 flex items-center gap-1 text-xs text-[var(--color-mute-soft)]">
           <RotateCw className="h-3.5 w-3.5" aria-hidden="true" />
           {flipped ? 'Натисніть, щоб повернути' : 'Натисніть, щоб перевернути'}
         </span>

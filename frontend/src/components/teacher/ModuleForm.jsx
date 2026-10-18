@@ -52,18 +52,18 @@ export default function ModuleForm({ onCreated, onCancel }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-slate-200 bg-[var(--color-surface)] p-5 shadow-card sm:p-6" noValidate>
-      <h2 className="text-base font-semibold text-slate-900">Новий модуль карток</h2>
+    <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-card sm:p-6" noValidate>
+      <h2 className="text-base font-semibold text-[var(--color-ink)]">Новий модуль карток</h2>
       <ErrorAlert message={error} />
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="m-title" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="m-title" className="mb-1.5 block text-sm font-medium text-[var(--color-ink-soft)]">
             Назва
           </label>
           <input id="m-title" className={inputClass} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Наприклад, Ключові дати" />
         </div>
         <div>
-          <label htmlFor="m-description" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="m-description" className="mb-1.5 block text-sm font-medium text-[var(--color-ink-soft)]">
             Опис
           </label>
           <input id="m-description" className={inputClass} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Необов'язково" />
@@ -72,14 +72,14 @@ export default function ModuleForm({ onCreated, onCancel }) {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="m-subject" className="mb-1.5 block text-sm font-medium text-slate-700">Предмет</label>
+          <label htmlFor="m-subject" className="mb-1.5 block text-sm font-medium text-[var(--color-ink-soft)]">Предмет</label>
           <select id="m-subject" className={inputClass} value={subjectId} onChange={(e) => setSubjectId(e.target.value)}>
             <option value="">Без предмета</option>
             {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
         </div>
         <div>
-          <label htmlFor="m-grade" className="mb-1.5 block text-sm font-medium text-slate-700">Клас</label>
+          <label htmlFor="m-grade" className="mb-1.5 block text-sm font-medium text-[var(--color-ink-soft)]">Клас</label>
           <select id="m-grade" className={inputClass} value={grade} onChange={(e) => setGrade(e.target.value)}>
             <option value="">Не вказано</option>
             {Array.from({ length: 11 }, (_, i) => i + 1).map((g) => <option key={g} value={g}>{g} клас</option>)}
@@ -88,10 +88,10 @@ export default function ModuleForm({ onCreated, onCancel }) {
       </div>
 
       <fieldset className="space-y-2.5">
-        <legend className="mb-1 text-sm font-medium text-slate-700">Картки</legend>
+        <legend className="mb-1 text-sm font-medium text-[var(--color-ink-soft)]">Картки</legend>
         {cards.map((card, index) => (
           <div key={index} className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
-            <span className="w-6 shrink-0 text-center text-sm font-bold text-slate-400">{index + 1}</span>
+            <span className="w-6 shrink-0 text-center text-sm font-bold text-[var(--color-mute-soft)]">{index + 1}</span>
             <input
               className={`${inputClass} min-w-0 flex-1`}
               value={card.termOrQuestion}
@@ -111,7 +111,7 @@ export default function ModuleForm({ onCreated, onCancel }) {
               type="button"
               onClick={() => setCards((prev) => prev.filter((_, i) => i !== index))}
               disabled={cards.length <= 1}
-              className="shrink-0 rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-30"
+              className="shrink-0 rounded-lg p-2 text-[var(--color-mute-soft)] hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger-fg)] disabled:opacity-30"
               aria-label={`Видалити картку ${index + 1}`}
             >
               <Trash2 className="h-4 w-4" />

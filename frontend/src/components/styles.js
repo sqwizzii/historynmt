@@ -22,7 +22,7 @@ export const softButtonClass =
 export const dangerButtonClass =
   `${buttonBase} bg-red-600 text-white hover:-translate-y-0.5 hover:bg-red-700 active:translate-y-0 active:bg-red-800`
 
-export const dangerGhostButtonClass = `${buttonBase} text-red-600 hover:bg-[var(--color-danger-soft)]`
+export const dangerGhostButtonClass = `${buttonBase} text-[var(--color-danger-fg)] hover:bg-[var(--color-danger-soft)]`
 
 export const cardClass =
   'rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] shadow-card transition duration-200'
@@ -48,7 +48,7 @@ export const badgeClass = (tone = 'slate') =>
   })[tone] + ' inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[0.6875rem] font-semibold tracking-tight transition duration-150'
 
 export const iconTileClass =
-  'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent-soft)] text-indigo-600 transition duration-200 group-hover:scale-105 group-hover:brightness-110'
+  'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent-soft)] text-[var(--color-accent-fg)] transition duration-200 group-hover:scale-105 group-hover:brightness-110'
 
 /** Dark solid tile with light glyph — safe in both themes (unlike bg-ink + text-white). */
 export const inverseIconTileClass =

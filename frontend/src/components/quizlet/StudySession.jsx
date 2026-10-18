@@ -29,7 +29,7 @@ export default function StudySession({ moduleId }) {
   if (!module) return <LoadingState label="Завантажуємо картки…" />
 
   const backLink = (
-    <Link to="/quizlet" className="mb-3 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800">
+    <Link to="/quizlet" className="mb-3 inline-flex items-center gap-1 text-sm text-[var(--color-mute)] hover:text-[var(--color-ink)]">
       <ArrowLeft className="h-4 w-4" aria-hidden="true" />
       До модулів
     </Link>
@@ -51,23 +51,23 @@ export default function StudySession({ moduleId }) {
     <div className="mx-auto max-w-2xl">
       <header className="mb-6">
         {backLink}
-        <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">{module.title}</h1>
-        {module.description && <p className="mt-1 text-sm text-slate-600">{module.description}</p>}
+        <h1 className="text-xl font-bold tracking-tight text-[var(--color-ink)] sm:text-2xl">{module.title}</h1>
+        {module.description && <p className="mt-1 text-sm text-[var(--color-mute)]">{module.description}</p>}
         <div className="mt-4">
-          <div className="mb-1.5 flex justify-between text-xs text-slate-500">
+          <div className="mb-1.5 flex justify-between text-xs text-[var(--color-mute)]">
             <span>
               Картка {index + 1} з {total}
             </span>
             <span>{Math.round(progress)}%</span>
           </div>
           <div
-            className="h-2 overflow-hidden rounded-xl bg-slate-200"
+            className="h-2 overflow-hidden rounded-xl bg-[var(--color-line)]"
             role="progressbar"
             aria-valuemin={1}
             aria-valuemax={total}
             aria-valuenow={index + 1}
           >
-            <div className="h-full rounded-xl bg-slate-500 transition-all duration-300" style={{ width: `${progress}%` }} />
+            <div className="h-full rounded-xl bg-[var(--color-mute)] transition-all duration-300" style={{ width: `${progress}%` }} />
           </div>
         </div>
       </header>
@@ -79,7 +79,7 @@ export default function StudySession({ moduleId }) {
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Назад
         </button>
-        <button type="button" onClick={() => setIndex(0)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800" aria-label="Почати спочатку" title="Почати спочатку">
+        <button type="button" onClick={() => setIndex(0)} className="rounded-lg p-2 text-[var(--color-mute)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-ink)]" aria-label="Почати спочатку" title="Почати спочатку">
           <RotateCcw className="h-5 w-5" />
         </button>
         <button type="button" onClick={() => setIndex((i) => i + 1)} disabled={index === total - 1} className={primaryButtonClass}>
@@ -87,7 +87,7 @@ export default function StudySession({ moduleId }) {
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
-      <p className="mt-4 text-center text-xs text-slate-400">Підказка: клавіші ← та → перемикають картки.</p>
+      <p className="mt-4 text-center text-xs text-[var(--color-mute-soft)]">Підказка: клавіші ← та → перемикають картки.</p>
     </div>
   )
 }

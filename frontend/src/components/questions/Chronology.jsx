@@ -16,7 +16,7 @@ export default function Chronology({ question, value, onChange }) {
 
   return (
     <div>
-      <p className="mb-3 text-xs text-slate-500">
+      <p className="mb-3 text-xs text-[var(--color-mute)]">
         Розташуйте події в хронологічному порядку: від найраніших (зверху) до найпізніших (знизу).
         {!touched && ' Змініть порядок, щоб зарахувати відповідь.'}
       </p>
@@ -24,12 +24,12 @@ export default function Chronology({ question, value, onChange }) {
         {orderedIds.map((id, index) => (
           <li
             key={id}
-            className={`flex items-center gap-3 rounded-xl border p-3 ${touched ? 'border-indigo-200 bg-indigo-50/50' : 'border-[#E6E8F0]'}`}
+            className={`flex items-center gap-3 rounded-xl border p-3 ${touched ? 'border-indigo-200 bg-indigo-50/50' : 'border-[var(--color-line)]'}`}
           >
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-xs font-bold text-slate-700">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[var(--color-surface-muted)] text-xs font-bold text-[var(--color-ink-soft)]">
               {index + 1}
             </span>
-            <span className="flex-1 text-sm text-slate-800">
+            <span className="flex-1 text-sm text-[var(--color-ink)]">
               {byId.get(id)?.optionText}
               <OptionImage src={byId.get(id)?.imageUrl} />
             </span>
@@ -38,7 +38,7 @@ export default function Chronology({ question, value, onChange }) {
                 type="button"
                 onClick={() => move(index, -1)}
                 disabled={index === 0}
-                className="rounded-lg border border-slate-200 p-1.5 text-slate-600 hover:bg-slate-100 disabled:opacity-30"
+                className="rounded-lg border border-[var(--color-line)] p-1.5 text-[var(--color-mute)] hover:bg-[var(--color-surface-muted)] disabled:opacity-30"
                 aria-label="Перемістити вище"
               >
                 <ArrowUp className="h-4 w-4" />
@@ -47,7 +47,7 @@ export default function Chronology({ question, value, onChange }) {
                 type="button"
                 onClick={() => move(index, 1)}
                 disabled={index === orderedIds.length - 1}
-                className="rounded-lg border border-slate-200 p-1.5 text-slate-600 hover:bg-slate-100 disabled:opacity-30"
+                className="rounded-lg border border-[var(--color-line)] p-1.5 text-[var(--color-mute)] hover:bg-[var(--color-surface-muted)] disabled:opacity-30"
                 aria-label="Перемістити нижче"
               >
                 <ArrowDown className="h-4 w-4" />

@@ -6,8 +6,8 @@ export const NO_EXPLANATION = 'Пояснення для цього питанн
 
 function Box({ children }) {
   return (
-    <div className="mt-3 flex items-start gap-2 rounded-xl bg-slate-50 p-3.5 text-sm text-slate-700">
-      <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" aria-hidden="true" />
+    <div className="mt-3 flex items-start gap-2 rounded-xl bg-[var(--color-surface-muted)] p-3.5 text-sm text-[var(--color-ink-soft)]">
+      <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-accent-fg)]" aria-hidden="true" />
       <p>{children}</p>
     </div>
   )

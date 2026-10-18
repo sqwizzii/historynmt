@@ -4,7 +4,7 @@ import { primaryButtonClass, secondaryButtonClass } from './styles.js'
 export function LoadingState({ label = 'Завантаження…' }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-20 text-[var(--color-mute)]" role="status">
-      <Loader2 className="h-7 w-7 animate-spin text-indigo-600" aria-hidden="true" />
+      <Loader2 className="h-7 w-7 animate-spin text-[var(--color-accent-fg)]" aria-hidden="true" />
       <span className="text-sm">{label}</span>
     </div>
   )

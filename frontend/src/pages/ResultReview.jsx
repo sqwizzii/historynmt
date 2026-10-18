@@ -86,7 +86,7 @@ export default function ResultReview() {
         </div>
         <div className={`${cardClass} p-3.5 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift`}>
           <dt className="text-[0.6875rem] font-medium text-[var(--color-mute)]">Орієнт. бал НМТ</dt>
-          <dd className="mt-1.5 text-lg font-semibold tabular-nums text-indigo-700">{current.nmtScore ?? '—'}</dd>
+          <dd className="mt-1.5 text-lg font-semibold tabular-nums text-[var(--color-accent-fg)]">{current.nmtScore ?? '—'}</dd>
         </div>
         <div className={`${cardClass} p-3.5 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift`}>
           <dt className="text-[0.6875rem] font-medium text-[var(--color-mute)]">Правильність</dt>
@@ -104,14 +104,14 @@ export default function ResultReview() {
       )}
 
       {canGrade && (
-        <section className="mt-5 space-y-3 rounded-xl border border-amber-200 bg-amber-50/50 p-4 sm:p-5">
-          <h2 className="text-sm font-semibold text-amber-950">Перевірка вчителя</h2>
-          <p className="text-xs text-amber-900/80">
+        <section className="mt-5 space-y-3 rounded-xl border border-[var(--color-warning-fg)]/25 bg-[var(--color-warning-soft)]/50 p-4 sm:p-5">
+          <h2 className="text-sm font-semibold text-[var(--color-warning-fg)]">Перевірка вчителя</h2>
+          <p className="text-xs text-[var(--color-warning-fg)] opacity-90">
             Відкриті відповіді нижче потребують оцінки. Після виставлення балів можна завершити перевірку.
           </p>
           <ErrorAlert message={gradeError} />
           <div>
-            <label htmlFor="result-teacher-comment" className="mb-1.5 block text-sm font-medium text-amber-950">
+            <label htmlFor="result-teacher-comment" className="mb-1.5 block text-sm font-medium text-[var(--color-warning-fg)]">
               Загальний коментар
             </label>
             <textarea
@@ -135,7 +135,7 @@ export default function ResultReview() {
       )}
 
       {!current.review ? (
-        <p className="mt-8 rounded-xl border border-dashed border-[#c9ced9] bg-[var(--color-surface)] px-4 py-8 text-center text-sm text-[var(--color-mute)]">
+        <p className="mt-8 rounded-xl border border-dashed border-[var(--color-line)] bg-[var(--color-surface)] px-4 py-8 text-center text-sm text-[var(--color-mute)]">
           Для цього результату детальний розбір недоступний.
         </p>
       ) : (

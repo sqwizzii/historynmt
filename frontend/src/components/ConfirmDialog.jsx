@@ -5,7 +5,7 @@ import { secondaryButtonClass } from './styles.js'
 export default function ConfirmDialog({ title, message, confirmLabel = 'Видалити', loading = false, error = '', onConfirm, onCancel }) {
   return (
     <Modal title={title} onClose={loading ? undefined : onCancel}>
-      <div className="mt-3 space-y-3 text-sm text-slate-600">
+      <div className="mt-3 space-y-3 text-sm text-[var(--color-mute)]">
         <p>{message}</p>
         <ErrorAlert message={error} />
       </div>

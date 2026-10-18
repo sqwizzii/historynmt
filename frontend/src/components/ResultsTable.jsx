@@ -27,7 +27,7 @@ export default function ResultsTable({ results, showStudent = false }) {
               {showStudent && <td className="px-4 py-3 font-medium text-[var(--color-ink)]">{r.studentName}</td>}
               <td className="px-4 py-3 text-[var(--color-ink-soft)]">{r.testTitle}</td>
               <td className="px-4 py-3 tabular-nums text-[var(--color-ink-soft)]">{r.score}</td>
-              <td className="px-4 py-3 font-semibold tabular-nums text-indigo-700">{r.nmtScore ?? '—'}</td>
+              <td className="px-4 py-3 font-semibold tabular-nums text-[var(--color-accent-fg)]">{r.nmtScore ?? '—'}</td>
               <td className="whitespace-nowrap px-4 py-3 text-[var(--color-mute)]">{formatDate(r.completedAt)}</td>
               <td className="px-4 py-3 text-xs">
                 <div className="flex flex-wrap gap-1">
@@ -43,7 +43,7 @@ export default function ResultsTable({ results, showStudent = false }) {
                 </div>
               </td>
               <td className="whitespace-nowrap px-4 py-3 text-right">
-                <Link to={`/results/${r.id}`} className="text-[0.8125rem] font-semibold text-indigo-700 hover:underline">
+                <Link to={`/results/${r.id}`} className="text-[0.8125rem] font-semibold text-[var(--color-accent-fg)] hover:underline">
                   Розбір
                 </Link>
               </td>

@@ -35,7 +35,7 @@ export default function Subscription() {
           <div className="flex items-start gap-3">
             <span
               className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                status.active ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'
+                status.active ? 'bg-[var(--color-success-soft)] text-[var(--color-success-fg)]' : 'bg-[var(--color-warning-soft)] text-[var(--color-warning-fg)]'
               }`}
             >
               <Clock className="h-4 w-4" aria-hidden="true" />

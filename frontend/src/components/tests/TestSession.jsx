@@ -229,7 +229,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
             <button type="button" onClick={checkCurrent} disabled={checking || !isAnswered(answers[question.id])} className={secondaryButtonClass}>
               {checking ? 'Перевіряємо…' : 'Перевірити відповідь'}
             </button>
-            <p className="mt-2 text-xs text-slate-500">Після перевірки відповідь змінити не можна.</p>
+            <p className="mt-2 text-xs text-[var(--color-mute)]">Після перевірки відповідь змінити не можна.</p>
           </div>
         )}
         {feedback[question.id] && <AnswerFeedback item={feedback[question.id]} testId={testId} />}
@@ -256,7 +256,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
 
       {!isLast && (
         <div className="mt-4 text-center">
-          <button type="button" onClick={() => setConfirming(true)} className="text-sm font-medium text-slate-500 underline-offset-2 hover:text-blue-700 hover:underline">
+          <button type="button" onClick={() => setConfirming(true)} className="text-sm font-medium text-[var(--color-mute)] underline-offset-2 hover:text-[var(--color-accent-fg)] hover:underline">
             Завершити тест достроково
           </button>
         </div>
@@ -267,13 +267,13 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
           title={autoReason === 'LEFT_PAGE' ? 'Тест завершено: ви залишили сторінку' : timedOut ? 'Час вичерпано' : 'Завершити тест?'}
           onClose={submitting || timedOut ? undefined : () => setConfirming(false)}
         >
-          <div className="mt-3 space-y-3 text-sm text-slate-600">
+          <div className="mt-3 space-y-3 text-sm text-[var(--color-mute)]">
             {timedOut ? (
               <p>{submitting ? 'Надсилаємо ваші відповіді на перевірку…' : 'Відповіді не вдалося надіслати автоматично.'}</p>
             ) : (
               <>
                 <p className="flex items-start gap-2">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-blue-700" aria-hidden="true" />
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-accent-fg)]" aria-hidden="true" />
                   Ви відповіли на {answeredCount} з {questions.length} {pluralize(questions.length, 'питання', 'питання', 'питань')}.
                 </p>
                 {unanswered > 0 && <p>Питань без відповіді: {unanswered}. Їх буде зараховано як неправильні.</p>}

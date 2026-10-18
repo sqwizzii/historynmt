@@ -7,7 +7,7 @@ export default function StatCard({ label, value, hint, Icon }) {
       <div className="flex items-start justify-between gap-3">
         <p className="text-[0.75rem] font-medium text-[var(--color-mute)]">{label}</p>
         {Icon && (
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-surface-muted)] text-[var(--color-ink)] transition duration-200 group-hover:scale-105 group-hover:bg-indigo-50 group-hover:text-indigo-700">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-surface-muted)] text-[var(--color-ink)] transition duration-200 group-hover:scale-105 group-hover:bg-indigo-50 group-hover:text-[var(--color-accent-fg)]">
             <Icon className="h-4 w-4" aria-hidden="true" />
           </span>
         )}

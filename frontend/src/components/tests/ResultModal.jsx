@@ -12,11 +12,11 @@ export default function ResultModal({ result, autoReason = null, onReview, onRet
 
   return (
     <Modal title="Тест завершено" onClose={onClose}>
-      <p className="mt-1 text-sm text-slate-600">{result.testTitle}</p>
-      {autoReason === 'TIMEOUT' && <p className="mt-1 text-sm font-medium text-slate-900">Час вичерпано: відповіді надіслано автоматично.</p>}
-      {autoReason === 'LEFT_PAGE' && <p className="mt-1 text-sm font-medium text-slate-900">Ви залишили сторінку: тест завершено автоматично.</p>}
+      <p className="mt-1 text-sm text-[var(--color-mute)]">{result.testTitle}</p>
+      {autoReason === 'TIMEOUT' && <p className="mt-1 text-sm font-medium text-[var(--color-ink)]">Час вичерпано: відповіді надіслано автоматично.</p>}
+      {autoReason === 'LEFT_PAGE' && <p className="mt-1 text-sm font-medium text-[var(--color-ink)]">Ви залишили сторінку: тест завершено автоматично.</p>}
       {(result.gradingStatus === 'PENDING_REVIEW' || (result.pendingManualCount ?? 0) > 0) && (
-        <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+        <p className="mt-2 rounded-lg bg-[var(--color-warning-soft)] px-3 py-2 text-sm text-[var(--color-warning-fg)]">
           Частина відповідей очікує перевірки вчителя{result.pendingManualCount ? ` (${result.pendingManualCount})` : ''}. Бал може змінитись.
         </p>
       )}
@@ -37,15 +37,15 @@ export default function ResultModal({ result, autoReason = null, onReview, onRet
       </div>
 
       <dl className="mt-5 grid grid-cols-2 gap-3 text-center">
-        <div className="rounded-xl bg-slate-50 p-3">
-          <dt className="text-xs text-slate-500">Первинний бал</dt>
-          <dd className="mt-1 text-lg font-bold text-slate-900">
-            {result.score} <span className="text-sm font-medium text-slate-500">з {result.maxScore}</span>
+        <div className="rounded-xl bg-[var(--color-surface-muted)] p-3">
+          <dt className="text-xs text-[var(--color-mute)]">Первинний бал</dt>
+          <dd className="mt-1 text-lg font-bold text-[var(--color-ink)]">
+            {result.score} <span className="text-sm font-medium text-[var(--color-mute)]">з {result.maxScore}</span>
           </dd>
         </div>
-        <div className="rounded-xl bg-slate-50 p-3">
-          <dt className="text-xs text-slate-500">Правильність</dt>
-          <dd className="mt-1 text-lg font-bold text-slate-900">{percent}%</dd>
+        <div className="rounded-xl bg-[var(--color-surface-muted)] p-3">
+          <dt className="text-xs text-[var(--color-mute)]">Правильність</dt>
+          <dd className="mt-1 text-lg font-bold text-[var(--color-ink)]">{percent}%</dd>
         </div>
       </dl>
 

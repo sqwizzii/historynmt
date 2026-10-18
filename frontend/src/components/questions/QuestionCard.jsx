@@ -38,7 +38,7 @@ export default function QuestionCard({ question, number, total, value, onChange,
           <Input question={question} value={value} onChange={onChange} />
         </fieldset>
       ) : (
-        <p className="text-sm text-red-700">Непідтримуваний тип питання.</p>
+        <p className="text-sm text-[var(--color-danger-fg)]">Непідтримуваний тип питання.</p>
       )}
       {children}
     </article>

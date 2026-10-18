@@ -70,12 +70,12 @@ export default function Register() {
       footer={
         <>
           Вже зареєстровані?{' '}
-          <Link to="/login" className="font-semibold text-indigo-700 hover:underline">
+          <Link to="/login" className="font-semibold text-[var(--color-accent-fg)] hover:underline">
             Увійти
           </Link>
           <br />
           Ви вчитель?{' '}
-          <Link to="/register/teacher" className="font-semibold text-indigo-700 hover:underline">
+          <Link to="/register/teacher" className="font-semibold text-[var(--color-accent-fg)] hover:underline">
             Створити акаунт вчителя
           </Link>
         </>

@@ -34,13 +34,13 @@ function ModuleHeaderForm({ module, onSaved }) {
       <ErrorAlert message={error} />
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="edit-m-title" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="edit-m-title" className="mb-1.5 block text-sm font-medium text-[var(--color-ink-soft)]">
             Назва
           </label>
           <input id="edit-m-title" className={inputClass} value={title} onChange={(e) => setTitle(e.target.value)} />
         </div>
         <div>
-          <label htmlFor="edit-m-description" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="edit-m-description" className="mb-1.5 block text-sm font-medium text-[var(--color-ink-soft)]">
             Опис
           </label>
           <input id="edit-m-description" className={inputClass} value={description} onChange={(e) => setDescription(e.target.value)} />
@@ -95,12 +95,12 @@ function CardRow({ card, moduleId, onChanged, onDelete }) {
           {isNew ? <Plus className="h-4 w-4" /> : <Save className="h-4 w-4" />}
         </button>
         {!isNew && (
-          <button type="button" onClick={() => onDelete(card)} className="shrink-0 rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label="Видалити картку">
+          <button type="button" onClick={() => onDelete(card)} className="shrink-0 rounded-lg p-2 text-[var(--color-mute-soft)] hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger-fg)]" aria-label="Видалити картку">
             <Trash2 className="h-4 w-4" />
           </button>
         )}
       </div>
-      {error && <p className="text-xs text-red-700">{error}</p>}
+      {error && <p className="text-xs text-[var(--color-danger-fg)]">{error}</p>}
     </li>
   )
 }
@@ -140,10 +140,10 @@ export default function ModuleEditor({ moduleId, onChanged, onDeleted }) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-xl border border-slate-200 bg-[var(--color-surface)] p-5 shadow-card sm:p-6">
+      <section className="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-card sm:p-6">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-base font-semibold text-slate-900">Модуль</h2>
-          <button type="button" onClick={() => setToDelete({ kind: 'module' })} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50">
+          <h2 className="text-base font-semibold text-[var(--color-ink)]">Модуль</h2>
+          <button type="button" onClick={() => setToDelete({ kind: 'module' })} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-[var(--color-danger-fg)] hover:bg-[var(--color-danger-soft)]">
             <Trash2 className="h-4 w-4" aria-hidden="true" />
             Видалити модуль
           </button>
@@ -151,15 +151,15 @@ export default function ModuleEditor({ moduleId, onChanged, onDeleted }) {
         <ModuleHeaderForm key={`${module.id}-${module.title}-${module.description}`} module={module} onSaved={refresh} />
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-[var(--color-surface)] p-5 shadow-card sm:p-6">
-        <h2 className="mb-4 text-base font-semibold text-slate-900">Картки ({module.flashcards.length})</h2>
+      <section className="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-card sm:p-6">
+        <h2 className="mb-4 text-base font-semibold text-[var(--color-ink)]">Картки ({module.flashcards.length})</h2>
         <ul className="space-y-3">
           {module.flashcards.map((card) => (
             <CardRow key={`${card.id}-${card.termOrQuestion}-${card.answerOrDate}-${card.imageUrl?.length ?? 0}`} card={card} moduleId={module.id} onChanged={refresh} onDelete={(c) => setToDelete({ kind: 'card', id: c.id })} />
           ))}
           <CardRow key="new" moduleId={module.id} onChanged={refresh} />
         </ul>
-        <p className="mt-3 text-xs text-slate-500">Останній рядок додає нову картку.</p>
+        <p className="mt-3 text-xs text-[var(--color-mute)]">Останній рядок додає нову картку.</p>
       </section>
 
       {toDelete && (

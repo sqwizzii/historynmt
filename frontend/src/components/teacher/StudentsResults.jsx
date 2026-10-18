@@ -50,7 +50,7 @@ function StudentList({ selectedId, onSelect, version }) {
               </span>
               <span className="shrink-0 text-right text-[0.6875rem] text-[var(--color-mute)]">
                 <span className="block">Спроб: {student.attempts}</span>
-                {student.bestNmtScore != null && <span className="block font-semibold text-indigo-700">Кращий: {student.bestNmtScore}</span>}
+                {student.bestNmtScore != null && <span className="block font-semibold text-[var(--color-accent-fg)]">Кращий: {student.bestNmtScore}</span>}
               </span>
             </button>
           </li>
@@ -147,7 +147,7 @@ function ResultsPanel({ student, version }) {
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="text-xs text-[var(--color-mute)]">
           {pendingCount > 0 ? (
-            <span className="font-semibold text-amber-800">Очікують перевірки: {pendingCount}</span>
+            <span className="font-semibold text-[var(--color-warning-fg)]">Очікують перевірки: {pendingCount}</span>
           ) : (
             <span>Експорт результатів</span>
           )}
@@ -163,7 +163,7 @@ function ResultsPanel({ student, version }) {
           </button>
         </div>
       </div>
-      {exportError && <p className="mb-3 text-xs text-red-700">{exportError}</p>}
+      {exportError && <p className="mb-3 text-xs text-[var(--color-danger-fg)]">{exportError}</p>}
       {studentId !== null && <TopicProgress fetcher={() => resultService.getStudentTopics(studentId)} dependency={`${studentId}:${version}`} />}
       <ResultsTable results={results} showStudent={studentId === null} />
     </>
@@ -202,9 +202,9 @@ function InviteCodeCard() {
     <div className="mb-6 overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-inverse)] p-5 text-[var(--color-on-inverse)] shadow-card sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-white/45">Код запрошення</p>
+          <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-white/60">Код запрошення</p>
           <p className="mt-2 font-mono text-3xl font-semibold tracking-wide text-white">{shown ?? '…'}</p>
-          <p className="mt-2 max-w-lg text-xs leading-relaxed text-white/50">
+          <p className="mt-2 max-w-lg text-xs leading-relaxed text-white/65">
             Передайте учням. Після зміни коду старий перестає працювати; вже створені акаунти це не зачіпає.
           </p>
           {actionError && <p className="mt-2 text-xs text-red-300">{actionError}</p>}
@@ -278,7 +278,7 @@ export default function StudentsResults() {
                 <button
                   type="button"
                   onClick={() => setDeleting(true)}
-                  className={`${secondaryButtonClass} hover:!border-red-200 hover:!bg-red-50 hover:!text-red-600`}
+                  className={`${secondaryButtonClass} hover:!border-[var(--color-danger-fg)]/25 hover:!bg-[var(--color-danger-soft)] hover:!text-[var(--color-danger-fg)]`}
                 >
                   <Trash2 className="h-4 w-4" aria-hidden="true" />
                   Видалити

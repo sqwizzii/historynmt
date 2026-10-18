@@ -84,9 +84,9 @@ html.dark {
   color-scheme: dark;
 
   --color-ink: #eef0f6;
-  --color-ink-soft: #d7dae6;
-  --color-mute: #9aa0b2;
-  --color-mute-soft: #7d8396;
+  --color-ink-soft: #dce0ec;
+  --color-mute: #b0b6c8;
+  --color-mute-soft: #949aab;
   --color-line: #2c3040;
   --color-line-soft: #242836;
   --color-line-strong: #3d4356;

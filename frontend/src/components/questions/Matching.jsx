@@ -18,11 +18,11 @@ export default function Matching({ question, value, onChange }) {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <div>
-        <h3 className="mb-2 text-xs font-semibold text-slate-500">Варіанти для підбору</h3>
+        <h3 className="mb-2 text-xs font-semibold text-[var(--color-mute)]">Варіанти для підбору</h3>
         <ul className="space-y-2">
           {choices.map((choice, index) => (
-            <li key={choice} className="flex items-start gap-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-800">
-              <span className="font-bold text-indigo-700">{LETTERS[index]}</span>
+            <li key={choice} className="flex items-start gap-3 rounded-lg bg-[var(--color-surface-muted)] px-3 py-2 text-sm text-[var(--color-ink)]">
+              <span className="font-bold text-[var(--color-accent-fg)]">{LETTERS[index]}</span>
               <span>{choice}</span>
             </li>
           ))}
@@ -30,13 +30,13 @@ export default function Matching({ question, value, onChange }) {
       </div>
 
       <div>
-        <h3 className="mb-2 text-xs font-semibold text-slate-500">Встановіть відповідність</h3>
+        <h3 className="mb-2 text-xs font-semibold text-[var(--color-mute)]">Встановіть відповідність</h3>
         <ul className="space-y-3">
           {question.options.map((option, index) => (
-            <li key={option.id} className="rounded-xl border border-slate-200 p-3">
+            <li key={option.id} className="rounded-xl border border-[var(--color-line)] p-3">
               <label className="block">
-                <span className="mb-2 flex items-start gap-2 text-sm text-slate-800">
-                  <span className="font-bold text-slate-500">{index + 1}.</span>
+                <span className="mb-2 flex items-start gap-2 text-sm text-[var(--color-ink)]">
+                  <span className="font-bold text-[var(--color-mute)]">{index + 1}.</span>
                   <span>
                     {option.optionText}
                     <OptionImage src={option.imageUrl} />
@@ -45,7 +45,7 @@ export default function Matching({ question, value, onChange }) {
                 <select
                   value={matches[option.id] ?? ''}
                   onChange={(event) => select(option.id, event.target.value)}
-                  className="block w-full rounded-xl border border-[#E6E8F0] bg-[var(--color-surface)] px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  className="block w-full rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 >
                   <option value="">Оберіть відповідь…</option>
                   {choices.map((choice, choiceIndex) => (

@@ -10,7 +10,7 @@ export default function QuestionImage({ src, alt = 'Ілюстрація до п
 
   if (failedSrc === src) {
     return (
-      <div className="mb-5 flex items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-sm text-slate-500">
+      <div className="mb-5 flex items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--color-line-strong)] bg-[var(--color-surface-muted)] px-4 py-6 text-sm text-[var(--color-mute)]">
         <ImageOff className="h-4 w-4" aria-hidden="true" />
         Не вдалося завантажити зображення
       </div>
@@ -18,7 +18,7 @@ export default function QuestionImage({ src, alt = 'Ілюстрація до п
   }
 
   return (
-    <figure className="mb-5 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+    <figure className="mb-5 overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-surface-muted)]">
       <img
         src={resolved}
         alt={alt}
