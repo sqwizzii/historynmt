@@ -31,7 +31,7 @@ export default function AuthCard({ title, subtitle, children, footer }) {
         <p className="relative text-xs text-white/35">Для вчителів, репетиторів і онлайн-шкіл</p>
       </aside>
       <div className="bg-mesh flex items-center justify-center px-4 py-10 sm:px-8">
-        <div className="motion-modal-panel w-full max-w-[28rem] rounded-2xl border border-[var(--color-line)] bg-white p-6 shadow-lift sm:p-8">
+        <div className="motion-modal-panel w-full max-w-[28rem] rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6 shadow-lift sm:p-8">
           <div className="mb-6 lg:hidden">
             <Brand />
           </div>

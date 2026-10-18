@@ -25,8 +25,8 @@ export default function ResultsTable({ results, showStudent = false }) {
           {results.map((r) => (
             <tr key={r.id} className="transition-colors duration-150 hover:bg-[var(--color-surface-muted)]">
               {showStudent && <td className="px-4 py-3 font-medium text-[var(--color-ink)]">{r.studentName}</td>}
-              <td className="px-4 py-3 text-[#2f313c]">{r.testTitle}</td>
-              <td className="px-4 py-3 tabular-nums text-[#2f313c]">{r.score}</td>
+              <td className="px-4 py-3 text-[var(--color-ink-soft)]">{r.testTitle}</td>
+              <td className="px-4 py-3 tabular-nums text-[var(--color-ink-soft)]">{r.score}</td>
               <td className="px-4 py-3 font-semibold tabular-nums text-indigo-700">{r.nmtScore ?? '—'}</td>
               <td className="whitespace-nowrap px-4 py-3 text-[var(--color-mute)]">{formatDate(r.completedAt)}</td>
               <td className="px-4 py-3 text-xs">

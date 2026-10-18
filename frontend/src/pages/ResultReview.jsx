@@ -54,7 +54,7 @@ export default function ResultReview() {
       </dl>
 
       {!result.review ? (
-        <p className="mt-8 rounded-xl border border-dashed border-[#c9ced9] bg-white px-4 py-8 text-center text-sm text-[var(--color-mute)]">
+        <p className="mt-8 rounded-xl border border-dashed border-[#c9ced9] bg-[var(--color-surface)] px-4 py-8 text-center text-sm text-[var(--color-mute)]">
           Для цього результату детальний розбір недоступний.
         </p>
       ) : (

@@ -146,7 +146,7 @@ export default function QuestionForm({ testId, initial, onSaved, onCancel }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-slate-200 bg-white p-5 shadow-card sm:p-6" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-slate-200 bg-[var(--color-surface)] p-5 shadow-card sm:p-6" noValidate>
       <h3 className="text-base font-semibold text-slate-900">{isEdit ? 'Редагування питання' : 'Нове питання'}</h3>
       <ErrorAlert message={error} />
       {success && (

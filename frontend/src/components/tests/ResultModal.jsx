@@ -20,8 +20,8 @@ export default function ResultModal({ result, autoReason = null, onReview, onRet
         <span className="text-xs font-semibold text-blue-100">Орієнтовний бал НМТ (лінійна шкала)</span>
         <span className="mt-1 text-5xl font-extrabold tabular-nums">{result.nmtScore}</span>
         <div className="mt-4 w-full">
-          <div className="h-2 overflow-hidden rounded-xl bg-white/20">
-            <div className="h-full rounded-xl bg-white transition-all" style={{ width: `${nmtPosition}%` }} />
+          <div className="h-2 overflow-hidden rounded-xl bg-[var(--color-surface)]/20">
+            <div className="h-full rounded-xl bg-[var(--color-surface)] transition-all" style={{ width: `${nmtPosition}%` }} />
           </div>
           <div className="mt-1 flex justify-between text-xs text-blue-100">
             <span>{NMT_MIN}</span>

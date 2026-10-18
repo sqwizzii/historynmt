@@ -58,7 +58,7 @@ export default function TestsManager() {
           as="ul"
           immediate
           step={45}
-          className="max-h-[min(55vh,26rem)] space-y-0.5 overflow-y-auto rounded-xl border border-[var(--color-line)] bg-white p-1.5 shadow-card lg:max-h-[calc(100vh-15rem)]"
+          className="max-h-[min(55vh,26rem)] space-y-0.5 overflow-y-auto rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-1.5 shadow-card lg:max-h-[calc(100vh-15rem)]"
         >
           {shown.map((test) => {
             const active = test.id === activeId
@@ -91,7 +91,7 @@ export default function TestsManager() {
 
       <div className="min-w-0 animate-fade-in">
         {creating ? (
-          <section className="motion-alert rounded-xl border border-[var(--color-line)] bg-white p-5 shadow-card sm:p-6">
+          <section className="motion-alert rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-card sm:p-6">
             <div className="mb-5 border-b border-[var(--color-line-soft)] pb-4">
               <h2 className="text-[0.9375rem] font-semibold text-[var(--color-ink)]">Новий тест</h2>
               <p className="mt-1 text-[0.8125rem] text-[var(--color-mute)]">Спочатку параметри, потім питання.</p>

@@ -7,7 +7,7 @@ export default function TopicProgress({ fetcher, dependency, title = 'Успіш
   if (error || !topics || topics.length === 0) return null
 
   return (
-    <section className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-card sm:p-6">
+    <section className="mb-6 rounded-xl border border-slate-200 bg-[var(--color-surface)] p-5 shadow-card sm:p-6">
       <h2 className="mb-1 flex items-center gap-2 text-lg font-bold text-ink">
         <Target className="h-4 w-4 text-blue-700" aria-hidden="true" />
         {title}

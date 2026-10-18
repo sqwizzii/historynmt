@@ -24,7 +24,7 @@ export default function FlipCard({ card }) {
         className="relative block h-64 w-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 sm:h-80"
       >
         <span className="flip-card absolute inset-0 block" data-flipped={flipped}>
-          <Face label="Термін / питання" text={card.termOrQuestion} image={card.imageUrl} className="border-slate-200 bg-white text-slate-900" />
+          <Face label="Термін / питання" text={card.termOrQuestion} image={card.imageUrl} className="border-slate-200 bg-[var(--color-surface)] text-slate-900" />
           <Face
             label="Відповідь / дата"
             text={card.answerOrDate}

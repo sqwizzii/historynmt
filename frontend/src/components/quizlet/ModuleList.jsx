@@ -27,7 +27,7 @@ export default function ModuleList() {
               <li key={module.id}>
                 <Link
                   to={`/quizlet/${module.id}`}
-                  className="group flex h-full flex-col rounded-xl border border-[var(--color-line)] bg-white p-5 shadow-card transition duration-200 hover:-translate-y-1 hover:border-indigo-200/80 hover:shadow-lift"
+                  className="group flex h-full flex-col rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-card transition duration-200 hover:-translate-y-1 hover:border-indigo-200/80 hover:shadow-lift"
                 >
                   <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white transition duration-200 group-hover:scale-105 group-hover:bg-indigo-600">
                     <Layers className="h-4 w-4" aria-hidden="true" />

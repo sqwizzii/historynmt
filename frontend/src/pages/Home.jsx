@@ -38,25 +38,25 @@ const DEMO_TESTS = [
 function ProductPreview() {
   return (
     <div className="landing-preview-frame hero-preview-enter">
-      <div className="landing-preview overflow-hidden rounded-xl border border-[var(--color-line)] bg-white">
+      <div className="landing-preview overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)]">
         <div className="flex items-center justify-between border-b border-[var(--color-line)] bg-[var(--color-surface-muted)] px-4 py-2.5">
           <div className="flex items-center gap-1.5" aria-hidden="true">
-            <span className="h-2 w-2 rounded-full bg-[#d0d3dc]" />
-            <span className="h-2 w-2 rounded-full bg-[#d0d3dc]" />
-            <span className="h-2 w-2 rounded-full bg-[#d0d3dc]" />
+            <span className="h-2 w-2 rounded-full bg-[var(--color-line-strong)]" />
+            <span className="h-2 w-2 rounded-full bg-[var(--color-line-strong)]" />
+            <span className="h-2 w-2 rounded-full bg-[var(--color-line-strong)]" />
           </div>
           <p className="text-[0.6875rem] font-medium text-[var(--color-mute)]">Кабінет вчителя · Тести</p>
           <span className="w-10" aria-hidden="true" />
         </div>
         <div className="grid md:grid-cols-[11.5rem_1fr]">
-          <aside className="hidden border-r border-[var(--color-line)] bg-[var(--color-ink)] p-3 md:block" aria-hidden="true">
+          <aside className="hidden border-r border-[var(--color-line)] bg-[var(--color-nav)] p-3 md:block" aria-hidden="true">
             <p className="mb-3 px-2.5 text-[0.625rem] font-semibold uppercase tracking-[0.1em] text-white/35">Робота</p>
             <ul className="space-y-0.5">
               {['Огляд', 'Тести', 'Картки', 'Учні'].map((item, i) => (
                 <li
                   key={item}
                   className={`rounded-lg px-2.5 py-2 text-[0.8125rem] ${
-                    i === 1 ? 'bg-white/10 font-medium text-white' : 'text-white/50'
+                    i === 1 ? 'bg-[var(--color-surface)]/10 font-medium text-white' : 'text-white/50'
                   }`}
                 >
                   {item}
@@ -81,7 +81,7 @@ function ProductPreview() {
                   tabIndex={0}
                   className="landing-demo-row flex cursor-default items-start gap-3 px-3.5 py-3.5 sm:items-center sm:px-4"
                 >
-                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white sm:mt-0">
+                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-nav)] text-white sm:mt-0">
                     <ClipboardList className="h-3.5 w-3.5" aria-hidden="true" />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -95,7 +95,7 @@ function ProductPreview() {
                     className={`shrink-0 rounded-md px-2 py-0.5 text-[0.6875rem] font-semibold ${
                       test.status === 'Чернетка'
                         ? 'bg-[var(--color-surface-muted)] text-[var(--color-mute)]'
-                        : 'bg-indigo-50 text-indigo-700'
+                        : 'bg-[var(--color-accent-soft)] text-[var(--color-accent-fg)]'
                     }`}
                   >
                     {test.status}
@@ -112,7 +112,7 @@ function ProductPreview() {
 
 function ResultSnippet() {
   return (
-    <div className="overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-[0_1px_0_rgb(11_12_16/0.04),0_16px_36px_-24px_rgb(11_12_16/0.22)]">
+    <div className="overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] shadow-[0_1px_0_rgb(11_12_16/0.04),0_16px_36px_-24px_rgb(11_12_16/0.22)]">
       <div className="border-b border-[var(--color-line)] px-5 py-4">
         <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-indigo-600">Результат спроби</p>
         <p className="mt-1.5 text-[1.0625rem] font-semibold tracking-tight text-[var(--color-ink)]">
@@ -183,7 +183,7 @@ function Landing() {
               Учень?{' '}
               <Link
                 to="/register"
-                className="font-semibold text-indigo-700 underline decoration-indigo-200 underline-offset-[3px] transition hover:decoration-indigo-500"
+                className="font-semibold text-[var(--color-accent-fg)] underline decoration-indigo-200/60 underline-offset-[3px] transition hover:decoration-indigo-500"
               >
                 Реєстрація за кодом запрошення
               </Link>
@@ -196,7 +196,7 @@ function Landing() {
         </div>
       </section>
 
-      <section className="border-b border-[var(--color-line)] bg-white py-16 sm:py-20" aria-labelledby="value-title">
+      <section className="border-b border-[var(--color-line)] bg-[var(--color-surface)] py-16 sm:py-20" aria-labelledby="value-title">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
             <Reveal>
@@ -259,7 +259,7 @@ function Landing() {
         </div>
       </section>
 
-      <section id="pricing" className="border-b border-[var(--color-line)] bg-white py-16 sm:py-20" aria-labelledby="pricing-title">
+      <section id="pricing" className="border-b border-[var(--color-line)] bg-[var(--color-surface)] py-16 sm:py-20" aria-labelledby="pricing-title">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <Reveal>
             <div className="max-w-xl">
@@ -300,7 +300,7 @@ function Landing() {
         </div>
       </section>
 
-      <footer className="bg-white">
+      <footer className="bg-[var(--color-surface)]">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:flex-row sm:items-end sm:justify-between sm:px-6">
           <div>
             <p className="font-display text-2xl font-semibold tracking-tight text-[var(--color-ink)]">{BRAND_NAME}</p>

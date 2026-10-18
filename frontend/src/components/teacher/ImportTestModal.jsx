@@ -25,7 +25,7 @@ function QuestionEditor({ q, index, onChange, onRemove }) {
   const setOption = (i, patch) => onChange({ ...q, options: q.options.map((o, j) => (j === i ? { ...o, ...patch } : o)) })
   const choose = (i) => onChange({ ...q, options: q.options.map((o, j) => ({ ...o, isCorrect: q.questionType === 'SINGLE_CHOICE' ? j === i : j === i ? !o.isCorrect : o.isCorrect })) })
   return (
-    <li className={`rounded-xl border p-4 ${problem ? 'border-amber-300 bg-amber-50/50' : 'border-slate-200 bg-white'}`}>
+    <li className={`rounded-xl border p-4 ${problem ? 'border-amber-300 bg-amber-50/50' : 'border-slate-200 bg-[var(--color-surface)]'}`}>
       <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
         <span className="font-semibold text-slate-500">№ {index + 1}</span>
         {q.questionType && <span className={badgeClass('indigo')}>{TYPE_LABELS[q.questionType]}</span>}
@@ -113,7 +113,7 @@ export default function ImportTestModal({ onClose, onImported }) {
           <>
             <div role="tablist" className="flex gap-1 rounded-lg bg-slate-100 p-1 text-sm font-medium">
               {[['TEXT', 'Вставити текст'], ['URL', 'За посиланням']].map(([id, label]) => (
-                <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`flex-1 rounded-md px-3 py-1.5 ${tab === id ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600'}`}>{label}</button>
+                <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`flex-1 rounded-md px-3 py-1.5 ${tab === id ? 'bg-[var(--color-surface)] text-indigo-700 shadow-sm' : 'text-slate-600'}`}>{label}</button>
               ))}
             </div>
             {tab === 'URL' ? (

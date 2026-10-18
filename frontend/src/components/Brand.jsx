@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import { BRAND_NAME } from '../config/brand.js'
+import { useTheme } from '../context/ThemeContext.jsx'
 
 export default function Brand({ to = '/', onClick, light = false, compact = false }) {
-  const src = compact ? '/masterly-icon.svg' : light ? '/masterly-logo-white.svg' : '/masterly-logo.svg'
+  const { isDark } = useTheme()
+  const useLightLogo = light || isDark
+  const src = compact ? '/masterly-icon.svg' : useLightLogo ? '/masterly-logo-white.svg' : '/masterly-logo.svg'
 
   return (
     <Link

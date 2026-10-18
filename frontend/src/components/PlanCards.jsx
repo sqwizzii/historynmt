@@ -23,7 +23,7 @@ export default function PlanCards({ plans, highlight }) {
               highlight === plan.plan
                 ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-[var(--color-canvas)]'
                 : featured
-                  ? 'border-indigo-200 bg-gradient-to-b from-indigo-50/40 to-white'
+                  ? 'border-indigo-200 bg-gradient-to-b from-[var(--color-accent-soft)] to-[var(--color-surface)]'
                   : ''
             }`}
           >
@@ -40,7 +40,7 @@ export default function PlanCards({ plans, highlight }) {
             <p className="mt-6 font-display text-3xl font-semibold tracking-tight text-[var(--color-ink)] transition duration-300 group-hover:text-indigo-700">
               Вартість уточнюється
             </p>
-            <ul className="mt-6 space-y-2.5 border-t border-[var(--color-line-soft)] pt-5 text-[0.9375rem] text-[#2f313c]">
+            <ul className="mt-6 space-y-2.5 border-t border-[var(--color-line-soft)] pt-5 text-[0.9375rem] text-[var(--color-ink-soft)]">
               {PLAN_FEATURES.map((feature) => (
                 <li key={feature} className="flex items-start gap-2.5">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600 transition group-hover:scale-110" aria-hidden="true" />

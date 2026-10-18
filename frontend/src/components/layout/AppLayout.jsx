@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import { subscriptionService } from '../../services/api.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import Brand from '../Brand.jsx'
+import ThemeToggle from '../ThemeToggle.jsx'
 import PageEnter from '../motion/PageEnter.jsx'
 import { ghostButtonClass, navActiveClass, navIdleClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 
@@ -96,7 +97,10 @@ function SubscriptionBanner() {
   const location = useLocation()
   if (!data || data.active || location.pathname === '/subscription') return null
   return (
-    <div role="status" className="border-b border-amber-200/80 bg-[#FFF8EB] px-4 py-2.5 text-[0.8125rem] text-amber-950 sm:px-6">
+    <div
+      role="status"
+      className="border-b border-[var(--color-warning-fg)]/25 bg-[var(--color-warning-soft)] px-4 py-2.5 text-[0.8125rem] text-[var(--color-warning-fg)] sm:px-6"
+    >
       <span className="font-semibold">Підписка не активна.</span>{' '}
       Перегляд доступний; створення й редагування — ні.{' '}
       <Link to="/subscription" className="font-semibold underline underline-offset-2">
@@ -109,9 +113,10 @@ function SubscriptionBanner() {
 function AccountMenu({ user, onLogout }) {
   return (
     <div className="flex items-center gap-1">
+      <ThemeToggle />
       <Link
         to="/account"
-        className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition hover:bg-black/[0.04]"
+        className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition hover:bg-[var(--color-surface-muted)]"
         aria-label="Мій акаунт"
       >
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-[0.6875rem] font-bold text-white">
@@ -142,7 +147,7 @@ function AppShell() {
         </div>
         <Sidebar user={user} />
         {user.role === 'ADMIN' && (
-          <p className="mx-3 mb-4 flex items-center gap-2 rounded-lg bg-white/5 px-2.5 py-2 text-[0.6875rem] text-white/50">
+          <p className="mx-3 mb-4 flex items-center gap-2 rounded-lg bg-[var(--color-surface)]/5 px-2.5 py-2 text-[0.6875rem] text-white/50">
             <ShieldCheck className="h-3.5 w-3.5 text-indigo-300" aria-hidden="true" /> Адміністратор
           </p>
         )}
@@ -154,7 +159,7 @@ function AppShell() {
           <div className="motion-drawer-panel nav-rail absolute inset-y-0 left-0 flex w-72 max-w-[88%] flex-col shadow-dock">
             <div className="flex h-15 items-center justify-between px-4">
               <Brand light onClick={() => setOpen(false)} />
-              <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-2 text-white/60 transition hover:bg-white/10 hover:text-white active:scale-95" aria-label="Закрити">
+              <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-2 text-white/60 transition hover:bg-[var(--color-surface)]/10 hover:text-white active:scale-95" aria-label="Закрити">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -163,7 +168,7 @@ function AppShell() {
         </div>
       )}
 
-      <header className="sticky top-0 z-20 flex h-15 items-center justify-between border-b border-[var(--color-line)] bg-[color-mix(in_srgb,var(--color-canvas)_88%,white)] px-4 backdrop-blur-md sm:px-6">
+      <header className="sticky top-0 z-20 flex h-15 items-center justify-between border-b border-[var(--color-line)] bg-[color-mix(in_srgb,var(--color-canvas)_88%,var(--color-surface))] px-4 backdrop-blur-md sm:px-6">
         <button type="button" onClick={() => setOpen(true)} className={`${ghostButtonClass} !p-2 lg:hidden`} aria-label="Відкрити меню">
           <Menu className="h-5 w-5" />
         </button>
@@ -200,11 +205,11 @@ function PublicLayout() {
     { to: '/subscription', label: 'Тарифи' },
   ]
   const navClass = ({ isActive }) =>
-    `rounded-lg px-3.5 py-2 text-[0.875rem] font-medium transition ${isActive ? 'text-indigo-700' : 'text-[var(--color-mute)] hover:text-[var(--color-ink)]'}`
+    `rounded-lg px-3.5 py-2 text-[0.875rem] font-medium transition ${isActive ? 'text-[var(--color-accent-fg)]' : 'text-[var(--color-mute)] hover:text-[var(--color-ink)]'}`
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-30 border-b border-[var(--color-line)]/70 bg-white/75 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-[var(--color-line)]/70 bg-[color-mix(in_srgb,var(--color-surface)_82%,transparent)] backdrop-blur-md">
         <div className="mx-auto flex h-15 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
           <Brand />
           <nav className="hidden items-center gap-1 md:flex" aria-label="Основна навігація">
@@ -214,7 +219,8 @@ function PublicLayout() {
               </NavLink>
             ))}
           </nav>
-          <div className="hidden items-center gap-2.5 md:flex">
+          <div className="hidden items-center gap-2 md:flex">
+            <ThemeToggle />
             <Link to="/login" className={`${secondaryButtonClass} !py-2`}>
               <LogIn className="h-4 w-4" aria-hidden="true" />
               Увійти
@@ -224,12 +230,15 @@ function PublicLayout() {
               Для вчителів
             </Link>
           </div>
-          <button type="button" onClick={() => setOpen((v) => !v)} className={`${ghostButtonClass} !p-2 md:hidden`} aria-expanded={open} aria-label="Меню">
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          <div className="flex items-center gap-1 md:hidden">
+            <ThemeToggle />
+            <button type="button" onClick={() => setOpen((v) => !v)} className={`${ghostButtonClass} !p-2`} aria-expanded={open} aria-label="Меню">
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
         {open && (
-          <div className="motion-alert space-y-1 border-t border-[var(--color-line)] bg-white px-4 py-3 md:hidden">
+          <div className="motion-alert space-y-1 border-t border-[var(--color-line)] bg-[var(--color-surface)] px-4 py-3 md:hidden">
             {links.map((l) => (
               <NavLink key={l.to} to={l.to} className={`${navClass({ isActive: false })} block`} onClick={() => setOpen(false)}>
                 {l.label}

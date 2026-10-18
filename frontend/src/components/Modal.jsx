@@ -25,7 +25,7 @@ export default function Modal({ title, onClose, children, labelledBy = 'modal-ti
         aria-modal="true"
         aria-labelledby={labelledBy}
         onMouseDown={(event) => event.stopPropagation()}
-        className={`motion-modal-panel relative max-h-[min(92vh,900px)] w-full ${wide ? 'max-w-3xl' : 'max-w-md'} overflow-y-auto rounded-2xl border border-[var(--color-line)] bg-white p-5 shadow-lift sm:p-6`}
+        className={`motion-modal-panel relative max-h-[min(92vh,900px)] w-full ${wide ? 'max-w-3xl' : 'max-w-md'} overflow-y-auto rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-lift sm:p-6`}
       >
         {onClose && (
           <button

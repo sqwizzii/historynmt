@@ -14,7 +14,7 @@ export default function FormField({ label, icon: Icon, type = 'text', hint, erro
       </label>
       <div className="relative">
         {Icon && (
-          <Icon className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-[#8B8E9C]" aria-hidden="true" />
+          <Icon className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-[var(--color-mute-soft)]" aria-hidden="true" />
         )}
         <input
           id={id}
@@ -29,7 +29,7 @@ export default function FormField({ label, icon: Icon, type = 'text', hint, erro
           <button
             type="button"
             onClick={() => setRevealed((value) => !value)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-[#8B8E9C] hover:bg-[#F0F1F5] hover:text-[#14151C]"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-[var(--color-mute-soft)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-ink)]"
             aria-label={revealed ? 'Сховати пароль' : 'Показати пароль'}
           >
             {revealed ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
@@ -39,7 +39,7 @@ export default function FormField({ label, icon: Icon, type = 'text', hint, erro
       {error ? (
         <p className="mt-1.5 text-[0.75rem] text-red-600">{error}</p>
       ) : hint ? (
-        <p className="mt-1.5 text-[0.75rem] text-[#6B6E7B]">{hint}</p>
+        <p className="mt-1.5 text-[0.75rem] text-[var(--color-mute)]">{hint}</p>
       ) : null}
     </div>
   )

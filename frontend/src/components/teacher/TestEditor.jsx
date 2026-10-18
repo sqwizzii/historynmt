@@ -23,7 +23,7 @@ function QuestionStats({ testId }) {
   if (!stats) return null
 
   return (
-    <section className="rounded-xl border border-[var(--color-line)] bg-white p-5 shadow-card sm:p-6">
+    <section className="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-card sm:p-6">
       <h2 className="mb-1 flex items-center gap-2 text-[0.9375rem] font-semibold text-[var(--color-ink)]">
         <BarChart3 className="h-4 w-4 text-indigo-600" aria-hidden="true" />
         Статистика по питаннях
@@ -97,7 +97,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
 
   return (
     <div className="space-y-5">
-      <section className="rounded-xl border border-[var(--color-line)] bg-white shadow-card">
+      <section className="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] shadow-card">
         <div className="flex flex-col gap-3 border-b border-[var(--color-line-soft)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <h2 className="text-[0.9375rem] font-semibold text-[var(--color-ink)]">Параметри тесту</h2>
           <div className="flex flex-wrap items-center gap-1">
@@ -136,7 +136,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
         )}
 
         {test.questions.length === 0 && editing !== 'new' && (
-          <p className="rounded-xl border border-dashed border-[#c9ced9] bg-white px-4 py-10 text-center text-[0.8125rem] text-[var(--color-mute)]">
+          <p className="rounded-xl border border-dashed border-[#c9ced9] bg-[var(--color-surface)] px-4 py-10 text-center text-[0.8125rem] text-[var(--color-mute)]">
             У цьому тесті ще немає питань. Натисніть «Додати питання».
           </p>
         )}
@@ -156,7 +156,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
                 />
               </li>
             ) : (
-              <li key={question.id} className="motion-alert flex flex-col gap-3 rounded-xl border border-[var(--color-line)] bg-white p-3.5 shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-lift sm:flex-row sm:items-start sm:p-4">
+              <li key={question.id} className="motion-alert flex flex-col gap-3 rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-3.5 shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-lift sm:flex-row sm:items-start sm:p-4">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--color-ink)] text-[0.6875rem] font-bold text-white">
                   {index + 1}
                 </span>

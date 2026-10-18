@@ -28,7 +28,7 @@ function AnswerBlock({ title, lines, emptyText, tone }) {
 export default function ReviewItem({ item, number, testId }) {
   const status = statusOf(item)
   return (
-              <li className="rounded-xl border border-slate-200 bg-white p-5 shadow-card">
+              <li className="rounded-xl border border-slate-200 bg-[var(--color-surface)] p-5 shadow-card">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <span className="text-sm font-semibold text-slate-500">Питання {number}</span>
                   <span className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-semibold ${status.className}`}>

@@ -23,7 +23,7 @@ export default function TestList() {
         <Stagger
           as="ul"
           immediate
-          className="divide-y divide-[var(--color-line)] overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-card"
+          className="divide-y divide-[var(--color-line)] overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] shadow-card"
           step={70}
         >
           {tests.map((test) => (

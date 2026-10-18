@@ -26,7 +26,7 @@ function StudentList({ selectedId, onSelect, version }) {
     }`
 
   return (
-    <div className="rounded-xl border border-[var(--color-line)] bg-white p-3 shadow-card sm:p-4">
+    <div className="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-3 shadow-card sm:p-4">
       <div className="relative mb-2.5">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-mute-soft)]" aria-hidden="true" />
         <input className={`${inputClass} !py-2 pl-9`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Пошук учня" aria-label="Пошук учня" />
@@ -95,7 +95,7 @@ function ResetPasswordModal({ student, onClose }) {
         <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
           <ErrorAlert message={error} />
           <div>
-            <label htmlFor="reset-password" className="mb-1.5 block text-sm font-medium text-[#2f313c]">
+            <label htmlFor="reset-password" className="mb-1.5 block text-sm font-medium text-[var(--color-ink-soft)]">
               Новий пароль
             </label>
             <input id="reset-password" className={inputClass} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="off" autoFocus />
@@ -178,7 +178,7 @@ function InviteCodeCard() {
             type="button"
             onClick={copy}
             disabled={!shown}
-            className="inline-flex items-center gap-2 rounded-lg bg-white/10 px-3.5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15 disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-lg bg-[var(--color-surface)]/10 px-3.5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--color-surface)]/15 disabled:opacity-40"
           >
             {copied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
             {copied ? 'Скопійовано' : 'Копіювати'}
@@ -229,7 +229,7 @@ export default function StudentsResults() {
         </div>
         <div className="space-y-4">
           {student && (
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--color-line)] bg-white p-4 shadow-card">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-4 shadow-card">
               <div className="min-w-0">
                 <div className="truncate font-semibold text-[var(--color-ink)]">{student.fullName}</div>
                 <div className="truncate text-xs text-[var(--color-mute)]">логін: {student.username}</div>

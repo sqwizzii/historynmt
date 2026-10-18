@@ -151,7 +151,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <header className="mb-5 overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-card">
+      <header className="mb-5 overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] shadow-card">
         <div className="flex items-start justify-between gap-4 px-4 py-4 sm:px-5">
           <h1 className="text-lg font-semibold tracking-tight text-[var(--color-ink)] sm:text-xl">{test.title}</h1>
           <span
@@ -204,7 +204,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
                   ? 'border-[var(--color-ink)] bg-[var(--color-ink)] text-white'
                   : done
                     ? 'border-indigo-200 bg-indigo-50 text-indigo-800 hover:bg-indigo-100'
-                    : 'border-[var(--color-line)] bg-white text-[var(--color-mute)] hover:bg-[var(--color-surface-muted)]'
+                    : 'border-[var(--color-line)] bg-[var(--color-surface)] text-[var(--color-mute)] hover:bg-[var(--color-surface-muted)]'
               }`}
             >
               {i + 1}
