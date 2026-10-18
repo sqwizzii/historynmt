@@ -37,67 +37,73 @@ const DEMO_TESTS = [
 
 function ProductPreview() {
   return (
-    <div className="landing-preview hero-preview-enter overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-lift">
-      <div className="flex items-center justify-between border-b border-[var(--color-line)] bg-[var(--color-surface-muted)] px-4 py-2.5">
-        <div className="flex items-center gap-1.5" aria-hidden="true">
-          <span className="h-2 w-2 rounded-full bg-[#d0d3dc]" />
-          <span className="h-2 w-2 rounded-full bg-[#d0d3dc]" />
-          <span className="h-2 w-2 rounded-full bg-[#d0d3dc]" />
-        </div>
-        <p className="text-[0.6875rem] font-medium text-[var(--color-mute)]">Кабінет вчителя · Тести</p>
-        <span className="w-10" aria-hidden="true" />
-      </div>
-      <div className="grid md:grid-cols-[11.5rem_1fr]">
-        <aside className="hidden border-r border-[var(--color-line)] bg-[var(--color-ink)] p-3 md:block" aria-hidden="true">
-          <p className="mb-3 px-2.5 text-[0.625rem] font-semibold uppercase tracking-[0.1em] text-white/35">Робота</p>
-          <ul className="space-y-0.5">
-            {['Огляд', 'Тести', 'Картки', 'Учні'].map((item, i) => (
-              <li
-                key={item}
-                className={`rounded-lg px-2.5 py-2 text-[0.8125rem] ${
-                  i === 1 ? 'bg-white/10 font-medium text-white' : 'text-white/50'
-                }`}
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-        </aside>
-        <div className="p-4 sm:p-5">
-          <div className="mb-4 flex items-end justify-between gap-3">
-            <div>
-              <h3 className="text-[1.125rem] font-semibold tracking-tight text-[var(--color-ink)]">Тести</h3>
-              <p className="mt-1 text-[0.8125rem] text-[var(--color-mute)]">Створення, призначення й перегляд результатів</p>
-            </div>
-            <span className="hidden rounded-lg bg-indigo-600 px-3 py-1.5 text-[0.75rem] font-semibold text-white sm:inline">
-              Новий тест
-            </span>
+    <div className="landing-preview-frame hero-preview-enter">
+      <div className="landing-preview overflow-hidden rounded-xl border border-[var(--color-line)] bg-white">
+        <div className="flex items-center justify-between border-b border-[var(--color-line)] bg-[var(--color-surface-muted)] px-4 py-2.5">
+          <div className="flex items-center gap-1.5" aria-hidden="true">
+            <span className="h-2 w-2 rounded-full bg-[#d0d3dc]" />
+            <span className="h-2 w-2 rounded-full bg-[#d0d3dc]" />
+            <span className="h-2 w-2 rounded-full bg-[#d0d3dc]" />
           </div>
-          <ul className="divide-y divide-[var(--color-line)] overflow-hidden rounded-lg border border-[var(--color-line)]">
-            {DEMO_TESTS.map((test) => (
-              <li key={test.title} className="flex items-start gap-3 px-3.5 py-3.5 sm:items-center sm:px-4">
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white sm:mt-0">
-                  <ClipboardList className="h-3.5 w-3.5" aria-hidden="true" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[0.875rem] font-semibold text-[var(--color-ink)]">{test.title}</p>
-                  <p className="mt-0.5 flex items-center gap-1.5 text-[0.75rem] text-[var(--color-mute)]">
-                    <Clock className="h-3 w-3 shrink-0" aria-hidden="true" />
-                    {test.meta}
-                  </p>
-                </div>
-                <span
-                  className={`shrink-0 rounded-md px-2 py-0.5 text-[0.6875rem] font-semibold ${
-                    test.status === 'Чернетка'
-                      ? 'bg-[var(--color-surface-muted)] text-[var(--color-mute)]'
-                      : 'bg-indigo-50 text-indigo-700'
+          <p className="text-[0.6875rem] font-medium text-[var(--color-mute)]">Кабінет вчителя · Тести</p>
+          <span className="w-10" aria-hidden="true" />
+        </div>
+        <div className="grid md:grid-cols-[11.5rem_1fr]">
+          <aside className="hidden border-r border-[var(--color-line)] bg-[var(--color-ink)] p-3 md:block" aria-hidden="true">
+            <p className="mb-3 px-2.5 text-[0.625rem] font-semibold uppercase tracking-[0.1em] text-white/35">Робота</p>
+            <ul className="space-y-0.5">
+              {['Огляд', 'Тести', 'Картки', 'Учні'].map((item, i) => (
+                <li
+                  key={item}
+                  className={`rounded-lg px-2.5 py-2 text-[0.8125rem] ${
+                    i === 1 ? 'bg-white/10 font-medium text-white' : 'text-white/50'
                   }`}
                 >
-                  {test.status}
-                </span>
-              </li>
-            ))}
-          </ul>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </aside>
+          <div className="p-4 sm:p-5">
+            <div className="mb-4 flex items-end justify-between gap-3">
+              <div>
+                <h3 className="text-[1.125rem] font-semibold tracking-tight text-[var(--color-ink)]">Тести</h3>
+                <p className="mt-1 text-[0.8125rem] text-[var(--color-mute)]">Створення, призначення й перегляд результатів</p>
+              </div>
+              <span className="hidden rounded-lg bg-indigo-600 px-3 py-1.5 text-[0.75rem] font-semibold text-white sm:inline">
+                Новий тест
+              </span>
+            </div>
+            <ul className="divide-y divide-[var(--color-line)] overflow-hidden rounded-lg border border-[var(--color-line)]">
+              {DEMO_TESTS.map((test) => (
+                <li
+                  key={test.title}
+                  tabIndex={0}
+                  className="landing-demo-row flex cursor-default items-start gap-3 px-3.5 py-3.5 sm:items-center sm:px-4"
+                >
+                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white sm:mt-0">
+                    <ClipboardList className="h-3.5 w-3.5" aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[0.875rem] font-semibold text-[var(--color-ink)]">{test.title}</p>
+                    <p className="mt-0.5 flex items-center gap-1.5 text-[0.75rem] text-[var(--color-mute)]">
+                      <Clock className="h-3 w-3 shrink-0" aria-hidden="true" />
+                      {test.meta}
+                    </p>
+                  </div>
+                  <span
+                    className={`shrink-0 rounded-md px-2 py-0.5 text-[0.6875rem] font-semibold ${
+                      test.status === 'Чернетка'
+                        ? 'bg-[var(--color-surface-muted)] text-[var(--color-mute)]'
+                        : 'bg-indigo-50 text-indigo-700'
+                    }`}
+                  >
+                    {test.status}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -106,7 +112,7 @@ function ProductPreview() {
 
 function ResultSnippet() {
   return (
-    <div className="overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-card">
+    <div className="overflow-hidden rounded-xl border border-[var(--color-line)] bg-white shadow-[0_1px_0_rgb(11_12_16/0.04),0_16px_36px_-24px_rgb(11_12_16/0.22)]">
       <div className="border-b border-[var(--color-line)] px-5 py-4">
         <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-indigo-600">Результат спроби</p>
         <p className="mt-1.5 text-[1.0625rem] font-semibold tracking-tight text-[var(--color-ink)]">
@@ -153,34 +159,38 @@ function Landing() {
       <section className="landing-hero border-b border-[var(--color-line)]">
         <div className="mx-auto max-w-6xl px-4 pt-14 sm:px-6 sm:pt-16 lg:pt-20">
           <div className="hero-enter max-w-3xl">
-            <p className="font-display text-[3rem] font-semibold leading-[0.92] tracking-tight text-[var(--color-ink)] sm:text-6xl lg:text-[4.5rem]">
+            <p className="landing-eyebrow">Кабінет вчителя</p>
+            <p className="mt-5 font-display text-[3.15rem] font-semibold leading-[0.9] tracking-tight text-[var(--color-ink)] sm:text-6xl lg:text-[4.65rem]">
               {BRAND_NAME}
             </p>
-            <h1 className="mt-6 max-w-2xl text-[1.5rem] font-semibold leading-snug tracking-tight text-[var(--color-ink)] sm:text-[1.85rem] sm:leading-[1.25]">
+            <h1 className="mt-5 max-w-2xl border-l-2 border-indigo-500/70 pl-4 text-[1.5rem] font-semibold leading-snug tracking-tight text-[var(--color-ink)] sm:mt-6 sm:pl-5 sm:text-[1.9rem] sm:leading-[1.22]">
               Кабінет для тестів, учнів і результатів — без ручної перевірки зошитів
             </h1>
-            <p className="mt-4 max-w-xl text-[0.9875rem] leading-relaxed text-[var(--color-mute)] sm:text-[1.0625rem]">
+            <p className="mt-5 max-w-xl text-[0.9875rem] leading-relaxed text-[var(--color-mute)] sm:text-[1.0625rem]">
               Для вчителів, репетиторів і освітніх команд. Створюйте тести, запрошуйте учнів за кодом і дивіться
               розбір відповідей в одному місці.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link to="/register/teacher" className={`${primaryButtonClass} px-5 py-3`}>
+              <Link to="/register/teacher" className={`${primaryButtonClass} group px-5 py-3`}>
                 Створити кабінет вчителя
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                <ArrowRight className="h-4 w-4 transition duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
               </Link>
               <Link to="/login" className={`${secondaryButtonClass} px-5 py-3`}>
                 Увійти
               </Link>
             </div>
-            <p className="mt-4 text-[0.8125rem] text-[var(--color-mute)]">
+            <p className="mt-5 text-[0.8125rem] text-[var(--color-mute)]">
               Учень?{' '}
-              <Link to="/register" className="font-semibold text-indigo-700 underline-offset-2 transition hover:underline">
+              <Link
+                to="/register"
+                className="font-semibold text-indigo-700 underline decoration-indigo-200 underline-offset-[3px] transition hover:decoration-indigo-500"
+              >
                 Реєстрація за кодом запрошення
               </Link>
             </p>
           </div>
 
-          <div className="mt-12 sm:mt-14 lg:mt-16">
+          <div className="mt-12 pb-2 sm:mt-14 lg:mt-16 lg:pb-3">
             <ProductPreview />
           </div>
         </div>
@@ -200,11 +210,14 @@ function Landing() {
             </Reveal>
             <Stagger as="ol" className="space-y-0 border-t border-[var(--color-line)]" step={90}>
               {WORKFLOWS.map((item, index) => (
-                <li key={item.title} className="grid gap-2 border-b border-[var(--color-line)] py-6 sm:grid-cols-[6.5rem_1fr] sm:gap-6">
-                  <span className="font-display text-2xl font-semibold text-indigo-600/80">
+                <li
+                  key={item.title}
+                  className="grid gap-2 border-b border-[var(--color-line)] py-6 sm:grid-cols-[6.5rem_1fr] sm:gap-6"
+                >
+                  <span className="font-display text-2xl font-semibold tabular-nums text-indigo-600/75">
                     {String(index + 1).padStart(2, '0')}
                   </span>
-                  <div>
+                  <div className="min-w-0">
                     <h3 className="text-[1.0625rem] font-semibold tracking-tight text-[var(--color-ink)]">{item.title}</h3>
                     <p className="mt-2 text-[0.9375rem] leading-relaxed text-[var(--color-mute)]">{item.text}</p>
                   </div>
