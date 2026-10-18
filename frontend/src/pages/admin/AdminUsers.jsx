@@ -34,8 +34,14 @@ function UserRow({ item, self, onChanged, onRemove, onError }) {
   return (
     <li className="grid gap-3 px-4 py-4 md:grid-cols-[minmax(0,2fr)_9rem_minmax(0,2fr)_auto] md:items-center">
       <div className="min-w-0">
-        <p className="truncate font-medium text-slate-900">{item.fullName}{self && <span className="ml-2 text-xs text-slate-500">(ви)</span>}</p>
-        <p className="truncate text-sm text-slate-500">{item.username}{item.email ? ` · ${item.email}` : ''}</p>
+        <p className="truncate font-medium text-[var(--color-ink)]">
+          {item.fullName}
+          {self && <span className="ml-2 text-xs text-[var(--color-mute)]">(ви)</span>}
+        </p>
+        <p className="truncate text-sm text-[var(--color-mute)]">
+          {item.username}
+          {item.email ? ` · ${item.email}` : ''}
+        </p>
       </div>
       <div>
         <label className="sr-only" htmlFor={`role-${item.id}`}>Роль користувача {item.username}</label>
@@ -58,13 +64,28 @@ function UserRow({ item, self, onChanged, onRemove, onError }) {
                 {sub?.active ? 'Продовжити' : 'Активувати'}
               </button>
               {sub?.expiresAt && sub.active && (
-                <button type="button" disabled={busy} onClick={() => run(() => adminService.cancel(item.id))} className="rounded-lg px-3 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50">Скасувати</button>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => run(() => adminService.cancel(item.id))}
+                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-[var(--color-warning-fg)] hover:bg-[var(--color-warning-soft)]"
+                >
+                  Скасувати
+                </button>
               )}
             </div>
           </div>
-        ) : <span className="text-slate-400">—</span>}
+        ) : (
+          <span className="text-[var(--color-mute-soft)]">—</span>
+        )}
       </div>
-      <button type="button" disabled={busy || self} onClick={() => onRemove(item)} className="justify-self-start rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-40 md:justify-self-end" aria-label={`Видалити ${item.username}`}>
+      <button
+        type="button"
+        disabled={busy || self}
+        onClick={() => onRemove(item)}
+        className="justify-self-start rounded-lg p-2 text-[var(--color-mute-soft)] hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger-fg)] disabled:opacity-40 md:justify-self-end"
+        aria-label={`Видалити ${item.username}`}
+      >
         <Trash2 className="h-4 w-4" />
       </button>
     </li>
@@ -113,7 +134,7 @@ export default function AdminUsers() {
       <PageHeader title="Користувачі" description="Пошук, ролі та підписки вчителів. Себе змінити чи видалити не можна, останнього адміністратора також." />
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-mute-soft)]" aria-hidden="true" />
           <input type="search" aria-label="Пошук користувачів" placeholder="Пошук за логіном, іменем чи прізвищем" value={query} onChange={(e) => setQuery(e.target.value)} className={`${inputClass} pl-9`} />
         </div>
         <select aria-label="Фільтр за роллю" value={role} onChange={(e) => { setRole(e.target.value); setPage(0) }} className={`${inputClass} sm:w-48`}>
@@ -127,12 +148,12 @@ export default function AdminUsers() {
         : data.items.length === 0 ? <EmptyState title="Нікого не знайдено" text="Змініть пошуковий запит або фільтр." />
         : (
           <section className={`${cardClass} mt-2 overflow-hidden`}>
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-[var(--color-line-soft)]">
               {data.items.map((item) => (
                 <UserRow key={item.id} item={item} self={item.username === user.username} onChanged={reload} onRemove={setToRemove} onError={setActionError} />
               ))}
             </ul>
-            <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm text-slate-600">
+            <div className="flex items-center justify-between border-t border-[var(--color-line-soft)] px-4 py-3 text-sm text-[var(--color-mute)]">
               <span>Усього: {data.total}</span>
               <div className="flex items-center gap-2">
                 <button type="button" onClick={() => setPage((p) => p - 1)} disabled={page === 0} className={`${secondaryButtonClass} px-2.5 py-1.5`} aria-label="Попередня сторінка"><ChevronLeft className="h-4 w-4" /></button>
