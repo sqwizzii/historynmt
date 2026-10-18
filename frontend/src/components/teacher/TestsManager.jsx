@@ -1,30 +1,83 @@
-import { Download, FileUp, Plus, Search } from 'lucide-react'
-import { useState } from 'react'
+import { Copy, Download, FileSpreadsheet, FileUp, Plus, Search } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import { EmptyState, ErrorState, LoadingState } from '../PageState.jsx'
 import Stagger from '../motion/Stagger.jsx'
 import { inputClass, listRowActiveClass, listRowIdleClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
-import { getErrorMessage, testService } from '../../services/api.js'
+import { getErrorMessage, subjectService, testService } from '../../services/api.js'
 import ImportFormModal from './ImportFormModal.jsx'
+import ImportSpreadsheetModal from './ImportSpreadsheetModal.jsx'
 import ImportTestModal from './ImportTestModal.jsx'
 import TestEditor from './TestEditor.jsx'
 import TestForm from './TestForm.jsx'
 
+const TYPE_FILTERS = [
+  { value: '', label: 'Усі типи' },
+  { value: 'SINGLE_CHOICE', label: 'Одна відповідь' },
+  { value: 'MULTIPLE_CHOICE', label: 'Кілька відповідей' },
+  { value: 'MATCHING', label: 'Відповідність' },
+  { value: 'CHRONOLOGY', label: 'Хронологія' },
+  { value: 'FILL_BLANK', label: 'Пропуски' },
+  { value: 'OPEN', label: 'Відкрита відповідь' },
+]
+
 export default function TestsManager() {
-  const { data: allTests, error, reload } = useAsyncData(testService.getAll, null, { keepPrevious: true })
+  const [filters, setFilters] = useState({ q: '', subjectId: '', grade: '', topic: '', type: '' })
+  const [queryDraft, setQueryDraft] = useState('')
+  const [topicDraft, setTopicDraft] = useState('')
+  const filterKey = useMemo(
+    () => `${filters.q}|${filters.subjectId}|${filters.grade}|${filters.topic}|${filters.type}`,
+    [filters],
+  )
+  const params = useMemo(() => {
+    const next = {}
+    if (filters.q.trim()) next.q = filters.q.trim()
+    if (filters.subjectId) next.subjectId = Number(filters.subjectId)
+    if (filters.grade) next.grade = Number(filters.grade)
+    if (filters.topic.trim()) next.topic = filters.topic.trim()
+    if (filters.type) next.type = filters.type
+    return next
+  }, [filters])
+
+  const { data: allTests, error, reload } = useAsyncData(() => testService.getAll(params), filterKey, { keepPrevious: true })
+  const subjects = useAsyncData(subjectService.getAll).data ?? []
   const [selectedId, setSelectedId] = useState(null)
   const [creating, setCreating] = useState(false)
   const [importing, setImporting] = useState(false)
   const [importingTest, setImportingTest] = useState(false)
-  const [query, setQuery] = useState('')
+  const [spreadsheetOpen, setSpreadsheetOpen] = useState(false)
+  const [editorTick, setEditorTick] = useState(0)
+  const [copying, setCopying] = useState(false)
+  const [actionError, setActionError] = useState('')
 
   const tests = allTests ? allTests.filter((test) => test.editable) : null
 
   if (error && !tests) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
   if (!tests) return <LoadingState />
 
-  const shown = tests.filter((t) => t.title.toLowerCase().includes(query.trim().toLowerCase()))
   const activeId = creating ? null : (selectedId ?? tests[0]?.id ?? null)
+  const activeTest = tests.find((t) => t.id === activeId)
+
+  function applyTextFilters(event) {
+    event?.preventDefault()
+    setFilters((prev) => ({ ...prev, q: queryDraft, topic: topicDraft }))
+  }
+
+  async function copyActive() {
+    if (!activeId || copying) return
+    setCopying(true)
+    setActionError('')
+    try {
+      const copied = await testService.copy(activeId)
+      setCreating(false)
+      setSelectedId(copied.id)
+      reload()
+    } catch (err) {
+      setActionError(getErrorMessage(err))
+    } finally {
+      setCopying(false)
+    }
+  }
 
   return (
     <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,16.5rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,17.5rem)_minmax(0,1fr)]">
@@ -43,24 +96,91 @@ export default function TestsManager() {
             Forms
           </button>
         </div>
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-mute-soft)]" aria-hidden="true" />
+
+        <form onSubmit={applyTextFilters} className="space-y-2 rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-2.5 shadow-card">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-mute-soft)]" aria-hidden="true" />
+            <input
+              type="search"
+              aria-label="Пошук тестів"
+              placeholder="Пошук…"
+              value={queryDraft}
+              onChange={(e) => setQueryDraft(e.target.value)}
+              className={`${inputClass} !py-2 pl-9`}
+            />
+          </div>
+          <select
+            aria-label="Предмет"
+            className={`${inputClass} !py-2`}
+            value={filters.subjectId}
+            onChange={(e) => setFilters((prev) => ({ ...prev, subjectId: e.target.value }))}
+          >
+            <option value="">Усі предмети</option>
+            {subjects.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label="Клас"
+            className={`${inputClass} !py-2`}
+            value={filters.grade}
+            onChange={(e) => setFilters((prev) => ({ ...prev, grade: e.target.value }))}
+          >
+            <option value="">Усі класи</option>
+            {Array.from({ length: 11 }, (_, i) => i + 1).map((g) => (
+              <option key={g} value={g}>
+                {g} клас
+              </option>
+            ))}
+          </select>
           <input
             type="search"
-            aria-label="Пошук тестів"
-            placeholder="Пошук…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className={`${inputClass} !py-2 pl-9`}
+            aria-label="Тема"
+            placeholder="Тема…"
+            value={topicDraft}
+            onChange={(e) => setTopicDraft(e.target.value)}
+            className={`${inputClass} !py-2`}
           />
-        </div>
+          <select
+            aria-label="Тип питання"
+            className={`${inputClass} !py-2`}
+            value={filters.type}
+            onChange={(e) => setFilters((prev) => ({ ...prev, type: e.target.value }))}
+          >
+            {TYPE_FILTERS.map((opt) => (
+              <option key={opt.value || 'all'} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <button type="submit" className={`${secondaryButtonClass} w-full !py-2 text-xs`}>
+            Застосувати
+          </button>
+        </form>
+
+        {activeId && !creating && (
+          <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
+            <button type="button" onClick={copyActive} disabled={copying} className={`${secondaryButtonClass} w-full !px-3`}>
+              <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+              {copying ? 'Копіюємо…' : 'Копіювати тест'}
+            </button>
+            <button type="button" onClick={() => setSpreadsheetOpen(true)} className={`${secondaryButtonClass} w-full !px-3`}>
+              <FileSpreadsheet className="h-3.5 w-3.5" aria-hidden="true" />
+              Таблиця
+            </button>
+          </div>
+        )}
+        {actionError && <p className="text-xs text-red-700">{actionError}</p>}
+
         <Stagger
           as="ul"
           immediate
           step={45}
           className="max-h-[min(55vh,26rem)] space-y-0.5 overflow-y-auto rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-1.5 shadow-card lg:max-h-[calc(100vh-15rem)]"
         >
-          {shown.map((test) => {
+          {tests.map((test) => {
             const active = test.id === activeId
             return (
               <li key={test.id}>
@@ -69,6 +189,7 @@ export default function TestsManager() {
                   onClick={() => {
                     setCreating(false)
                     setSelectedId(test.id)
+                    setActionError('')
                   }}
                   aria-current={active ? 'true' : undefined}
                   className={`w-full rounded-lg px-2.5 py-2.5 text-left transition duration-200 ${active ? listRowActiveClass : listRowIdleClass}`}
@@ -81,9 +202,9 @@ export default function TestsManager() {
               </li>
             )
           })}
-          {shown.length === 0 && (
+          {tests.length === 0 && (
             <li className="px-2 py-6 text-center text-[0.8125rem] text-[var(--color-mute)]">
-              {tests.length === 0 ? 'Тестів ще немає' : 'Нічого не знайдено'}
+              {allTests?.length === 0 ? 'Тестів ще немає' : 'Нічого не знайдено'}
             </li>
           )}
         </Stagger>
@@ -107,7 +228,7 @@ export default function TestsManager() {
           </section>
         ) : activeId ? (
           <TestEditor
-            key={activeId}
+            key={`${activeId}-${editorTick}`}
             testId={activeId}
             onChanged={reload}
             onDeleted={() => {
@@ -143,6 +264,18 @@ export default function TestsManager() {
             setImporting(false)
             setCreating(false)
             setSelectedId(testId)
+            reload()
+          }}
+        />
+      )}
+      {spreadsheetOpen && activeTest && (
+        <ImportSpreadsheetModal
+          testId={activeTest.id}
+          testTitle={activeTest.title}
+          onClose={() => setSpreadsheetOpen(false)}
+          onImported={() => {
+            setSpreadsheetOpen(false)
+            setEditorTick((n) => n + 1)
             reload()
           }}
         />

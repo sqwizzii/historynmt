@@ -31,6 +31,11 @@ export default function ResultsTable({ results, showStudent = false }) {
               <td className="whitespace-nowrap px-4 py-3 text-[var(--color-mute)]">{formatDate(r.completedAt)}</td>
               <td className="px-4 py-3 text-xs">
                 <div className="flex flex-wrap gap-1">
+                  {(r.gradingStatus === 'PENDING_REVIEW' || (r.pendingManualCount ?? 0) > 0) && (
+                    <span className={badgeClass('amber')}>
+                      на перевірці{r.pendingManualCount ? `: ${r.pendingManualCount}` : ''}
+                    </span>
+                  )}
                   {r.leaveCount > 0 && <span className={badgeClass('amber')}>виходів: {r.leaveCount}</span>}
                   {r.endReason === 'LEFT_PAGE' && <span className={badgeClass('red')}>покинув сторінку</span>}
                   {r.endReason === 'TIMEOUT' && <span className={badgeClass('slate')}>час вичерпано</span>}

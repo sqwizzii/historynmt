@@ -16,6 +16,15 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+  // FormData: let the browser set multipart boundary (do not force JSON).
+  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+    if (config.headers && typeof config.headers.set === 'function') {
+      config.headers.set('Content-Type', undefined)
+    } else if (config.headers) {
+      delete config.headers['Content-Type']
+      delete config.headers['content-type']
+    }
+  }
   return config
 })
 
@@ -37,11 +46,38 @@ export function getErrorMessage(error, fallback = 'Сталася помилка
     return 'Не вдалося зв\u2019язатися із сервером. Перевірте, чи запущено бекенд.'
   }
   const data = error.response.data
+  if (data instanceof Blob) {
+    return fallback
+  }
   const fieldErrors = data?.fieldErrors && Object.values(data.fieldErrors)
   if (fieldErrors?.length) {
     return fieldErrors.join('. ')
   }
   return data?.message ?? fallback
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
+}
+
+async function downloadGet(path, params, filename) {
+  const response = await api.get(path, { params, responseType: 'blob' })
+  const disposition = response.headers?.['content-disposition']
+  const matched = disposition?.match(/filename="?([^";]+)"?/i)
+  downloadBlob(response.data, matched?.[1] ?? filename)
+}
+
+function multipartFile(file) {
+  const data = new FormData()
+  data.append('file', file)
+  return data
 }
 
 export const authService = {
@@ -51,18 +87,30 @@ export const authService = {
 }
 
 export const testService = {
-  getAll: () => api.get('/tests').then((r) => r.data),
+  getAll: (params) => api.get('/tests', { params }).then((r) => r.data),
   getById: (testId) => api.get(`/tests/${testId}`).then((r) => r.data),
   create: (payload) => api.post('/tests/create', payload).then((r) => r.data),
   createQuestion: (payload) => api.post('/tests/questions/create', payload).then((r) => r.data),
   update: (testId, payload) => api.put(`/tests/${testId}`, payload).then((r) => r.data),
   remove: (testId) => api.delete(`/tests/${testId}`),
+  copy: (testId) => api.post(`/tests/${testId}/copy`).then((r) => r.data),
+  copyQuestion: (testId, questionId) => api.post(`/tests/${testId}/questions/copy-from/${questionId}`).then((r) => r.data),
   getForEdit: (testId) => api.get(`/teacher/tests/${testId}`).then((r) => r.data),
   updateQuestion: (questionId, payload) => api.put(`/tests/questions/${questionId}`, payload).then((r) => r.data),
   removeQuestion: (questionId) => api.delete(`/tests/questions/${questionId}`),
   previewImport: (payload) => api.post('/teacher/import/preview', payload).then((r) => r.data),
   createImport: (payload) => api.post('/teacher/import/create', payload).then((r) => r.data),
   importGoogleForm: (payload) => api.post('/teacher/import/google-form', payload).then((r) => r.data),
+  previewSpreadsheet: (testId, file) =>
+    api.post(`/teacher/tests/${testId}/import/spreadsheet/preview`, multipartFile(file)).then((r) => r.data),
+  importSpreadsheet: (testId, file) =>
+    api.post(`/teacher/tests/${testId}/import/spreadsheet`, multipartFile(file)).then((r) => r.data),
+  downloadSpreadsheetTemplate: () => downloadGet('/teacher/import/spreadsheet/template', undefined, 'masterly-questions-template.csv'),
+  exportResults: (params = {}) =>
+    downloadGet('/teacher/export/results', params, `masterly-results.${params.format ?? 'csv'}`),
+  exportStats: (testId, format = 'csv') =>
+    downloadGet(`/teacher/tests/${testId}/export/stats`, { format }, `masterly-stats-${testId}.${format}`),
+  getAnalytics: (params) => api.get('/teacher/analytics', { params }).then((r) => r.data),
   getStats: (testId) => api.get(`/teacher/tests/${testId}/stats`).then((r) => r.data),
   start: (testId) => api.post(`/tests/${testId}/start`).then((r) => r.data),
   check: (testId, questionId, answer) => api.post(`/tests/${testId}/questions/${questionId}/check`, answer).then((r) => r.data),
@@ -115,8 +163,10 @@ export const resultService = {
   getStudentTopics: (studentId) => api.get(`/teacher/students/${studentId}/topics`).then((r) => r.data),
   getById: (resultId) => api.get(`/results/${resultId}`).then((r) => r.data),
   getAllForTeacher: () => api.get('/teacher/results').then((r) => r.data),
+  getPending: () => api.get('/teacher/results/pending').then((r) => r.data),
   getStudents: () => api.get('/teacher/students').then((r) => r.data),
   getStudentResults: (studentId) => api.get(`/teacher/students/${studentId}/results`).then((r) => r.data),
+  grade: (resultId, payload) => api.post(`/teacher/results/${resultId}/grade`, payload).then((r) => r.data),
 }
 
 export const practiceService = {

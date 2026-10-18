@@ -5,7 +5,14 @@ import Modal from '../Modal.jsx'
 import { badgeClass, inputClass, labelClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { getErrorMessage, testService } from '../../services/api.js'
 
-const TYPE_LABELS = { SINGLE_CHOICE: 'Одна відповідь', MULTIPLE_CHOICE: 'Кілька відповідей', MATCHING: 'Відповідність', CHRONOLOGY: 'Послідовність' }
+const TYPE_LABELS = {
+  SINGLE_CHOICE: 'Одна відповідь',
+  MULTIPLE_CHOICE: 'Кілька відповідей',
+  MATCHING: 'Відповідність',
+  CHRONOLOGY: 'Послідовність',
+  FILL_BLANK: 'Пропуски',
+  OPEN: 'Відкрита відповідь',
+}
 const EXAMPLE = '# Назва тесту\n1. Текст питання?\nА) Варіант +\nБ) Варіант\nПояснення: необов’язково\n2. Питання з кількома відповідями\nА) Перша правильна +\nБ) Друга правильна +\nВ) Хибна'
 
 function questionProblem(q) {

@@ -48,7 +48,9 @@ function Session({ questions, onFinish }) {
         </div>
         <ol className="mt-6 space-y-4">
           {result.review.map((item, i) => (
-            <ReviewItem key={item.questionId} item={item} number={i + 1} />
+            <li key={item.questionId}>
+              <ReviewItem item={item} number={i + 1} />
+            </li>
           ))}
         </ol>
       </div>

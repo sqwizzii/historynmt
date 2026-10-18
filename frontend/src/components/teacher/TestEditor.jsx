@@ -1,4 +1,4 @@
-import { BarChart3, ImageIcon, Pencil, Plus, Trash2, UserCheck } from 'lucide-react'
+import { BarChart3, Copy, FileDown, ImageIcon, Pencil, Plus, Trash2, UserCheck } from 'lucide-react'
 import { useState } from 'react'
 import ConfirmDialog from '../ConfirmDialog.jsx'
 import { ErrorState, LoadingState } from '../PageState.jsx'
@@ -14,20 +14,49 @@ const TYPE_LABELS = {
   MULTIPLE_CHOICE: 'Кілька відповідей',
   MATCHING: 'Відповідність',
   CHRONOLOGY: 'Хронологія',
+  FILL_BLANK: 'Пропуски',
+  OPEN: 'Відкрита відповідь',
 }
 
 function QuestionStats({ testId }) {
   const { data: stats, error } = useAsyncData(() => testService.getStats(testId), testId)
+  const [exportError, setExportError] = useState('')
+  const [exporting, setExporting] = useState(false)
+
+  async function exportStats(format) {
+    setExportError('')
+    setExporting(true)
+    try {
+      await testService.exportStats(testId, format)
+    } catch (err) {
+      setExportError(getErrorMessage(err, 'Не вдалося експортувати статистику.'))
+    } finally {
+      setExporting(false)
+    }
+  }
 
   if (error) return null
   if (!stats) return null
 
   return (
     <section className="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-card sm:p-6">
-      <h2 className="mb-1 flex items-center gap-2 text-[0.9375rem] font-semibold text-[var(--color-ink)]">
-        <BarChart3 className="h-4 w-4 text-indigo-600" aria-hidden="true" />
-        Статистика по питаннях
-      </h2>
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+        <h2 className="flex items-center gap-2 text-[0.9375rem] font-semibold text-[var(--color-ink)]">
+          <BarChart3 className="h-4 w-4 text-indigo-600" aria-hidden="true" />
+          Статистика по питаннях
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => exportStats('csv')} disabled={exporting} className={`${secondaryButtonClass} !px-3 !py-2 text-xs`}>
+            <FileDown className="h-3.5 w-3.5" aria-hidden="true" />
+            CSV
+          </button>
+          <button type="button" onClick={() => exportStats('xlsx')} disabled={exporting} className={`${secondaryButtonClass} !px-3 !py-2 text-xs`}>
+            <FileDown className="h-3.5 w-3.5" aria-hidden="true" />
+            XLSX
+          </button>
+        </div>
+      </div>
+      {exportError && <p className="mb-3 text-xs text-red-700">{exportError}</p>}
       {stats.questions.length === 0 ? (
         <p className="text-sm text-[var(--color-mute)]">Тест ще ніхто не проходив.</p>
       ) : (
@@ -112,7 +141,11 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
           </div>
         </div>
         <div className="p-5 sm:p-6">
-          <TestForm key={`${test.id}-${test.title}-${test.timeLimitMinutes}-${test.description}-${test.subjectId}-${test.grade}-${test.scoringScale}-${test.answerVisibilityMode}`} initial={test} onSaved={refreshQuestions} />
+          <TestForm
+            key={`${test.id}-${test.title}-${test.timeLimitMinutes}-${test.description}-${test.subjectId}-${test.grade}-${test.scoringScale}-${test.answerVisibilityMode}-${test.shuffleQuestions}-${test.shuffleOptions}-${test.maxAttempts}-${test.availableFrom}-${test.availableUntil}`}
+            initial={test}
+            onSaved={refreshQuestions}
+          />
         </div>
       </section>
 
@@ -163,8 +196,14 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
                 <div className="min-w-0 flex-1">
                   <p className="line-clamp-2 text-[0.8125rem] font-medium text-[var(--color-ink)]">{question.questionText}</p>
                   <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[0.6875rem] text-[var(--color-mute)]">
-                    <span className={badgeClass('slate')}>{TYPE_LABELS[question.questionType]}</span>
-                    <span>Варіантів: {question.options.length}</span>
+                    <span className={badgeClass('slate')}>{TYPE_LABELS[question.questionType] ?? question.questionType}</span>
+                    {question.questionType === 'FILL_BLANK' ? (
+                      <span>Пропусків: {new Set((question.options ?? []).map((o) => o.orderIndex ?? 0)).size}</span>
+                    ) : question.questionType === 'OPEN' ? (
+                      <span>Макс. {question.maxPoints ?? 1} б.</span>
+                    ) : (
+                      <span>Варіантів: {question.options.length}</span>
+                    )}
                     {question.imageUrl && (
                       <span className="inline-flex items-center gap-1">
                         <ImageIcon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -181,6 +220,22 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
                     aria-label={`Редагувати питання ${index + 1}`}
                   >
                     <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await testService.copyQuestion(testId, question.id)
+                        refreshQuestions()
+                      } catch (err) {
+                        setDeleteError(getErrorMessage(err))
+                      }
+                    }}
+                    className={`${secondaryButtonClass} !px-2.5 !py-2`}
+                    aria-label={`Копіювати питання ${index + 1}`}
+                    title="Копіювати питання"
+                  >
+                    <Copy className="h-4 w-4" />
                   </button>
                   <button
                     type="button"

@@ -7,18 +7,24 @@ const NMT_MAX = 200
 
 export default function ResultModal({ result, autoReason = null, onReview, onRetry, onClose }) {
   const percent = result.maxScore > 0 ? Math.round((result.score / result.maxScore) * 100) : 0
-  const nmtPosition = ((result.nmtScore - NMT_MIN) / (NMT_MAX - NMT_MIN)) * 100
+  const hasNmt = result.nmtScore != null
+  const nmtPosition = hasNmt ? ((result.nmtScore - NMT_MIN) / (NMT_MAX - NMT_MIN)) * 100 : 0
 
   return (
     <Modal title="Тест завершено" onClose={onClose}>
       <p className="mt-1 text-sm text-slate-600">{result.testTitle}</p>
       {autoReason === 'TIMEOUT' && <p className="mt-1 text-sm font-medium text-slate-900">Час вичерпано: відповіді надіслано автоматично.</p>}
       {autoReason === 'LEFT_PAGE' && <p className="mt-1 text-sm font-medium text-slate-900">Ви залишили сторінку: тест завершено автоматично.</p>}
+      {(result.gradingStatus === 'PENDING_REVIEW' || (result.pendingManualCount ?? 0) > 0) && (
+        <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          Частина відповідей очікує перевірки вчителя{result.pendingManualCount ? ` (${result.pendingManualCount})` : ''}. Бал може змінитись.
+        </p>
+      )}
 
       <div className="mt-6 flex flex-col items-center rounded-xl bg-indigo-600 px-4 py-6 text-white">
         <Award className="mb-2 h-7 w-7 text-white" aria-hidden="true" />
         <span className="text-xs font-semibold text-blue-100">Орієнтовний бал НМТ (лінійна шкала)</span>
-        <span className="mt-1 text-5xl font-extrabold tabular-nums">{result.nmtScore}</span>
+        <span className="mt-1 text-5xl font-extrabold tabular-nums">{hasNmt ? result.nmtScore : '—'}</span>
         <div className="mt-4 w-full">
           <div className="h-2 overflow-hidden rounded-xl bg-[var(--color-surface)]/20">
             <div className="h-full rounded-xl bg-[var(--color-surface)] transition-all" style={{ width: `${nmtPosition}%` }} />

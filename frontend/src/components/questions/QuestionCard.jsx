@@ -1,7 +1,9 @@
 import QuestionImages from '../QuestionImages.jsx'
 import Chronology from './Chronology.jsx'
+import FillBlank from './FillBlank.jsx'
 import Matching from './Matching.jsx'
 import MultipleChoice from './MultipleChoice.jsx'
+import OpenAnswer from './OpenAnswer.jsx'
 import SingleChoice from './SingleChoice.jsx'
 
 const QUESTION_TYPES = {
@@ -9,6 +11,8 @@ const QUESTION_TYPES = {
   MULTIPLE_CHOICE: { label: 'Кілька відповідей', Component: MultipleChoice },
   MATCHING: { label: 'Відповідність', Component: Matching },
   CHRONOLOGY: { label: 'Хронологія', Component: Chronology },
+  FILL_BLANK: { label: 'Пропуски', Component: FillBlank },
+  OPEN: { label: 'Відкрита відповідь', Component: OpenAnswer },
 }
 
 export default function QuestionCard({ question, number, total, value, onChange, locked = false, children }) {

@@ -1,4 +1,4 @@
-import { Check, Copy, KeyRound, RefreshCw, Search, Trash2, Users } from 'lucide-react'
+import { Check, Copy, FileDown, KeyRound, RefreshCw, Search, Trash2, Users } from 'lucide-react'
 import { useState } from 'react'
 import ConfirmDialog from '../ConfirmDialog.jsx'
 import ErrorAlert from '../ErrorAlert.jsx'
@@ -9,7 +9,7 @@ import TopicProgress from '../TopicProgress.jsx'
 import ResultsTable from '../ResultsTable.jsx'
 import { inputClass, listRowActiveClass, listRowIdleClass, primaryButtonClass, secondaryButtonClass } from '../styles.js'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
-import { getErrorMessage, resultService, userService } from '../../services/api.js'
+import { getErrorMessage, resultService, testService, userService } from '../../services/api.js'
 
 function StudentList({ selectedId, onSelect, version }) {
   const { data: students, error, reload } = useAsyncData(resultService.getStudents, version, { keepPrevious: true })
@@ -120,14 +120,50 @@ function ResultsPanel({ student, version }) {
     () => (studentId === null ? resultService.getAllForTeacher() : resultService.getStudentResults(studentId)),
     `${studentId ?? 'all'}:${version}`,
   )
+  const pending = useAsyncData(resultService.getPending, version)
+  const [exportError, setExportError] = useState('')
+  const [exporting, setExporting] = useState(false)
+
+  async function exportResults(format) {
+    setExportError('')
+    setExporting(true)
+    try {
+      await testService.exportResults({ format, studentId: studentId ?? undefined })
+    } catch (err) {
+      setExportError(getErrorMessage(err, 'Не вдалося експортувати результати.'))
+    } finally {
+      setExporting(false)
+    }
+  }
 
   if (error) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
   if (!results) return <LoadingState label="Завантажуємо результати…" />
   if (results.length === 0) {
     return <EmptyState title="Результатів ще немає" text={studentId === null ? "Тут з'являться спроби учнів." : 'Цей учень ще не проходив тестів.'} />
   }
+  const pendingCount = pending.data?.length ?? 0
   return (
     <>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="text-xs text-[var(--color-mute)]">
+          {pendingCount > 0 ? (
+            <span className="font-semibold text-amber-800">Очікують перевірки: {pendingCount}</span>
+          ) : (
+            <span>Експорт результатів</span>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => exportResults('csv')} disabled={exporting} className={`${secondaryButtonClass} !px-3 !py-2 text-xs`}>
+            <FileDown className="h-3.5 w-3.5" aria-hidden="true" />
+            CSV
+          </button>
+          <button type="button" onClick={() => exportResults('xlsx')} disabled={exporting} className={`${secondaryButtonClass} !px-3 !py-2 text-xs`}>
+            <FileDown className="h-3.5 w-3.5" aria-hidden="true" />
+            XLSX
+          </button>
+        </div>
+      </div>
+      {exportError && <p className="mb-3 text-xs text-red-700">{exportError}</p>}
       {studentId !== null && <TopicProgress fetcher={() => resultService.getStudentTopics(studentId)} dependency={`${studentId}:${version}`} />}
       <ResultsTable results={results} showStudent={studentId === null} />
     </>
