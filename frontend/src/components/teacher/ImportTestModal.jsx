@@ -21,7 +21,12 @@ function questionProblem(q) {
   const correct = q.options.filter((o) => o.isCorrect).length
   if (q.questionType === 'SINGLE_CHOICE' && correct !== 1) return 'Позначте одну правильну відповідь'
   if (q.questionType === 'MULTIPLE_CHOICE' && correct < 1) return 'Позначте правильні відповіді'
-  if (q.status === 'NEEDS_REVIEW' && (q.questionType === 'MATCHING' || q.questionType === 'CHRONOLOGY')) return 'Пари чи порядок не визначено надійно: видаліть питання або додайте його вручну'
+  if (q.status === 'NEEDS_REVIEW' && (q.questionType === 'MATCHING' || q.questionType === 'CHRONOLOGY')) {
+    return q.note || 'Пари чи порядок не визначено надійно: видаліть питання або додайте його вручну'
+  }
+  if (q.status === 'NEEDS_REVIEW') {
+    return q.note || 'Потребує перевірки: формули, зображення або структура могли імпортуватися неповно'
+  }
   if (q.options.some((o) => !o.optionText.trim())) return 'Є порожній варіант'
   if (q.extraMatchChoices?.some((c) => !c.trim())) return 'Є порожній зайвий варіант'
   return ''

@@ -10,19 +10,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.springframework.web.util.HtmlUtils;
 
 /**
  * Розбирає сторінку тесту zno.osvita.ua (структура перевірена на сторінках тестів НМТ). Не припускає однакової
  * структури: кожен тип завдання розпізнається за службовим полем q[tip], а все нерозпізнане позначається для
  * перевірки або як непідтримуване. Пояснення з сайту не імпортуються (це платні коментарі). Використовується лише
  * коли імпорт із цього джерела явно ввімкнено адміністратором платформи.
+ * <p>
+ * Підтримувані tip: 1 — одна відповідь, 7 — кілька, 4 і 13 — відповідність, 5 — хронологія,
+ * 8 і 9 — коротка відповідь (FILL_BLANK).
  */
 public final class ZnoOsvitaParser {
 
     private static final String BASE = "https://zno.osvita.ua";
     private static final Pattern TIP = Pattern.compile("name=\"q\\[tip\\]\"\\s+value=\"(\\d+)\"");
     private static final Pattern RESULT = Pattern.compile("name=\"result\"\\s+value=\"([^\"]*)\"");
+    private static final Pattern OTVET = Pattern.compile("(?is)<span\\s+class=\"otvet\"[^>]*>(.*?)</span>");
     private static final Pattern QUESTION = Pattern.compile("<div class=\"question\">(.*?)</div>", Pattern.DOTALL);
     private static final Pattern ANSWER = Pattern.compile("<div class=\"answer\"><span class=\"marker\">(.*?)</span>(.*?)</div>", Pattern.DOTALL);
     private static final Pattern IMG = Pattern.compile("<img[^>]+src=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
@@ -38,11 +41,22 @@ public final class ZnoOsvitaParser {
         List<String> warnings = new ArrayList<>();
         List<ImportedQuestion> questions = new ArrayList<>();
         String[] cards = html.split("<div class=\"task-card");
+        int sourceCount = Math.max(0, cards.length - 1);
         for (int i = 1; i < cards.length; i++) {
             questions.add(parseCard(i, cards[i], warnings));
         }
         if (questions.isEmpty()) {
             warnings.add("На сторінці не знайдено завдань у відомому форматі. Можливо, структуру сторінки змінено.");
+        } else {
+            long ok = questions.stream().filter(q -> ImportDtos.OK.equals(q.status())).count();
+            long review = questions.stream().filter(q -> ImportDtos.NEEDS_REVIEW.equals(q.status())).count();
+            long unsupported = questions.stream().filter(q -> ImportDtos.UNSUPPORTED.equals(q.status())).count();
+            warnings.add(0, "У джерелі завдань: " + sourceCount + ". Розпізнано: " + questions.size()
+                    + " (готових: " + ok + ", потребують перевірки: " + review
+                    + ", непідтримуваних: " + unsupported + ").");
+            if (unsupported > 0) {
+                warnings.add("Непідтримувані або нерозпізнані завдання не зберігайте «як є» — видаліть їх із імпорту або додайте вручну.");
+            }
         }
         return new Preview(title(html), "Джерело: " + url, "zno.osvita.ua",
                 "Тести zno.osvita.ua захищені авторським правом сайту. Імпортуйте лише ті матеріали, на використання яких маєте право.",
@@ -78,23 +92,42 @@ public final class ZnoOsvitaParser {
         }
         try {
             ImportedQuestion parsed = switch (tip) {
-                case "1" -> single(text, image, blocks, result, prefix, warnings);
-                case "7" -> multiple(text, image, blocks, result, prefix, warnings);
-                case "4" -> matching(text, image, blocks, result, prefix, warnings);
+                case "1" -> single(text, image, blocks, result, prefix);
+                case "7" -> multiple(text, image, blocks, result, prefix);
+                case "4", "13" -> matching(text, image, blocks, result, prefix);
                 case "5" -> chronology(text, image, blocks, result, prefix);
-                default -> unsupported("Тип завдання (код " + tip + ") не підтримується: додайте питання вручну", text, image);
+                case "8", "9" -> shortAnswer(text, image, card, result, prefix);
+                default -> unsupported(prefix + "тип завдання (код " + tip + ") не підтримується: додайте питання вручну",
+                        text, image);
             };
+            String note = parsed.note();
+            String status = parsed.status();
+            if (imagesLost && ImportDtos.OK.equals(status)) {
+                status = ImportDtos.NEEDS_REVIEW;
+                note = prefix + "частину зображень не вдалося імпортувати (недозволене джерело): перевірте завдання";
+            } else if (imagesLost && note == null) {
+                note = prefix + "частину зображень не вдалося імпортувати (недозволене джерело): перевірте завдання";
+                if (ImportDtos.OK.equals(status)) {
+                    status = ImportDtos.NEEDS_REVIEW;
+                }
+            }
+            if (LatexToPlainText.hasUnresolvedLatex(parsed.questionText())
+                    || parsed.options().stream().anyMatch(o -> LatexToPlainText.hasUnresolvedLatex(o.optionText())
+                    || LatexToPlainText.hasUnresolvedLatex(o.matchKey()))) {
+                if (ImportDtos.OK.equals(status)) {
+                    status = ImportDtos.NEEDS_REVIEW;
+                }
+                note = (note == null ? prefix : note + "; ")
+                        + "частину формул спрощено або не вдалося повністю розпізнати — перевірте текст";
+            }
             return new ImportedQuestion(parsed.questionText(), parsed.imageUrl(), parsed.questionType(), parsed.topic(),
-                    parsed.explanation(), parsed.options(), imagesLost && ImportDtos.OK.equals(parsed.status()) ? ImportDtos.NEEDS_REVIEW : parsed.status(),
-                    imagesLost && parsed.note() == null ? prefix + "частину зображень не вдалося імпортувати (недозволене джерело): перевірте завдання" : parsed.note(),
-                    extraImages, parsed.extraMatchChoices());
+                    parsed.explanation(), parsed.options(), status, note, extraImages, parsed.extraMatchChoices());
         } catch (RuntimeException e) {
-            return unsupported("Не вдалося розібрати завдання: додайте його вручну", text, image);
+            return unsupported(prefix + "не вдалося розібрати завдання: додайте його вручну", text, image);
         }
     }
 
-    private static ImportedQuestion single(String text, String image, List<List<Item>> blocks, String result, String prefix,
-                                            List<String> warnings) {
+    private static ImportedQuestion single(String text, String image, List<List<Item>> blocks, String result, String prefix) {
         List<Item> items = blocks.isEmpty() ? List.of() : blocks.get(0);
         List<ImportedOption> options = new ArrayList<>();
         int correct = result.length() == 1 ? result.charAt(0) - 'a' : -1;
@@ -106,8 +139,7 @@ public final class ZnoOsvitaParser {
                 reliable ? null : prefix + "правильну відповідь не вдалося визначити надійно");
     }
 
-    private static ImportedQuestion multiple(String text, String image, List<List<Item>> blocks, String result, String prefix,
-                                              List<String> warnings) {
+    private static ImportedQuestion multiple(String text, String image, List<List<Item>> blocks, String result, String prefix) {
         List<Item> items = blocks.isEmpty() ? List.of() : blocks.get(0);
         List<String> chosen = List.of(result.split(";"));
         List<ImportedOption> options = new ArrayList<>();
@@ -122,10 +154,9 @@ public final class ZnoOsvitaParser {
                 reliable ? null : prefix + "правильні відповіді не вдалося визначити надійно");
     }
 
-    private static ImportedQuestion matching(String text, String image, List<List<Item>> blocks, String result, String prefix,
-                                              List<String> warnings) {
+    private static ImportedQuestion matching(String text, String image, List<List<Item>> blocks, String result, String prefix) {
         if (blocks.size() < 2) {
-            return unsupported("Не вдалося розпізнати колонки завдання на відповідність", text, image);
+            return unsupported(prefix + "не вдалося розпізнати колонки завдання на відповідність", text, image);
         }
         List<Item> left = blocks.get(0);
         List<Item> right = blocks.get(1);
@@ -150,9 +181,9 @@ public final class ZnoOsvitaParser {
         List<String> distractors = new ArrayList<>();
         for (int i = 0; i < right.size(); i++) {
             if (!used.contains(i)) {
-                String label = label(right.get(i));
-                reliable &= keys.add(label);
-                distractors.add(label);
+                String choice = label(right.get(i));
+                reliable &= keys.add(choice);
+                distractors.add(choice);
             }
         }
         return new ImportedQuestion(text, image, QuestionType.MATCHING, null, null, options,
@@ -189,6 +220,32 @@ public final class ZnoOsvitaParser {
         return new ImportedQuestion(text, image, QuestionType.CHRONOLOGY, null, null, options,
                 reliable ? ImportDtos.OK : ImportDtos.NEEDS_REVIEW,
                 reliable ? null : prefix + "послідовність не вдалося визначити надійно");
+    }
+
+    /** Коротка відповідь (tip 8/9): поле вводу + прихований result / span.otvet. */
+    private static ImportedQuestion shortAnswer(String text, String image, String card, String result, String prefix) {
+        String answer = clean(result);
+        if (answer.isBlank()) {
+            Matcher otvet = OTVET.matcher(card);
+            if (otvet.find()) {
+                answer = clean(otvet.group(1));
+            }
+        }
+        if (answer.isBlank()) {
+            return new ImportedQuestion(text, image, QuestionType.FILL_BLANK, null, null, List.of(),
+                    ImportDtos.NEEDS_REVIEW, prefix + "еталонну відповідь не знайдено — вкажіть її вручну",
+                    List.of(), List.of());
+        }
+        // Альтернативи через ; якщо їх кілька в result
+        List<ImportedOption> options = new ArrayList<>();
+        String[] alts = answer.split("\\s*;\\s*");
+        for (String alt : alts) {
+            if (!alt.isBlank()) {
+                options.add(new ImportedOption(alt.trim(), true, null, 0, null));
+            }
+        }
+        return new ImportedQuestion(text, image, QuestionType.FILL_BLANK, null, null, options,
+                ImportDtos.OK, null, List.of(), List.of());
     }
 
     private static Map<String, String> pairs(String result) {
@@ -262,9 +319,8 @@ public final class ZnoOsvitaParser {
         return result;
     }
 
+    /** Публічно для тестів. */
     static String clean(String html) {
-        String text = html.replaceAll("(?i)<br\\s*/?>", "\n").replaceAll("(?i)</p>", "\n").replaceAll("<[^>]+>", "");
-        text = HtmlUtils.htmlUnescape(text).replace('\u00a0', ' ');
-        return text.replaceAll("[ \\t]+", " ").replaceAll("\\s*\\n\\s*", "\n").trim();
+        return ZnoHtmlCleaner.clean(html);
     }
 }

@@ -1,6 +1,7 @@
 package com.nmt.history.imports;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,7 +34,7 @@ class ImportParsersTest {
             + card("4", "<p>Поєднайте.</p>", block("1", "Лівий 1", "2", "Лівий 2") + block("А", "Правий А", "Б", "Правий Б", "В", "Зайвий"), "1b;2a")
             + card("5", "<p>Упорядкуйте.</p>", block("А", "Подія А", "Б", "Подія Б", "В", "Подія В"), "1c;2a;3b")
             + card("1", "<p>Без ключа.</p>", block("А", "Так", "Б", "Ні"), "")
-            + card("9", "<p>Невідомий тип.</p>", block("А", "x"), "a")
+            + card("99", "<p>Невідомий тип.</p>", block("А", "x"), "a")
             + card("1", "<p>Чуже зображення.</p><p><img src=\"https://evil.example/x.png\"></p>", block("А", "Так", "Б", "Ні"), "a")
             + card("5", "<p>Дубль позиції.</p>", block("А", "A", "Б", "B"), "1a;2a");
 
@@ -64,7 +65,8 @@ class ImportParsersTest {
         assertEquals("Правий Б", matching.options().get(0).matchKey());
         assertEquals("Правий А", matching.options().get(1).matchKey());
         assertEquals(java.util.List.of("Зайвий"), matching.extraMatchChoices());
-        assertTrue(preview.warnings().isEmpty());
+        assertFalse(preview.warnings().isEmpty());
+        assertTrue(preview.warnings().get(0).contains("Розпізнано: 8"));
 
         ImportedQuestion chronology = preview.questions().get(3);
         assertEquals(QuestionType.CHRONOLOGY, chronology.questionType());
