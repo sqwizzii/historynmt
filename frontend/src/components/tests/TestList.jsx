@@ -6,6 +6,7 @@ import Stagger from '../motion/Stagger.jsx'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, testService } from '../../services/api.js'
 import { formatDate, pluralize } from '../../utils/format.js'
+import { inverseIconTileClass } from '../styles.js'
 
 export default function TestList() {
   const { data: tests, error, reload } = useAsyncData(testService.getAll)
@@ -33,7 +34,7 @@ export default function TestList() {
                 className="group flex flex-col gap-3 px-4 py-4 transition duration-200 hover:bg-[var(--color-surface-muted)] sm:flex-row sm:items-center sm:justify-between sm:px-5"
               >
                 <div className="flex min-w-0 items-start gap-3.5">
-                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white transition duration-200 group-hover:scale-105 group-hover:bg-indigo-600">
+                  <span className={`mt-0.5 ${inverseIconTileClass}`}>
                     <ClipboardList className="h-4 w-4" aria-hidden="true" />
                   </span>
                   <div className="min-w-0">
@@ -56,7 +57,7 @@ export default function TestList() {
                     </p>
                   </div>
                 </div>
-                <span className="inline-flex items-center gap-1 self-start text-[0.8125rem] font-semibold text-indigo-700 sm:self-center">
+                <span className="inline-flex items-center gap-1 self-start text-[0.8125rem] font-semibold text-[var(--color-accent-fg)] sm:self-center">
                   Розпочати
                   <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden="true" />
                 </span>

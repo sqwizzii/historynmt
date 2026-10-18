@@ -5,7 +5,7 @@ import { primaryButtonClass } from '../components/styles.js'
 export default function ComingSoon({ title = 'Сторінку не знайдено', message = 'Перевірте адресу або поверніться на головну.' }) {
   return (
     <div className="page-header-enter mx-auto flex max-w-md flex-col items-center py-24 text-center">
-      <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-ink)] text-white">
+      <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-inverse)] text-[var(--color-on-inverse)]">
         <Construction className="h-5 w-5" aria-hidden="true" />
       </span>
       <h1 className="text-xl font-semibold tracking-tight text-[var(--color-ink)]">{title}</h1>

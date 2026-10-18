@@ -147,7 +147,7 @@ function AppShell() {
         </div>
         <Sidebar user={user} />
         {user.role === 'ADMIN' && (
-          <p className="mx-3 mb-4 flex items-center gap-2 rounded-lg bg-[var(--color-surface)]/5 px-2.5 py-2 text-[0.6875rem] text-white/50">
+          <p className="mx-3 mb-4 flex items-center gap-2 rounded-lg bg-white/5 px-2.5 py-2 text-[0.6875rem] text-white/50">
             <ShieldCheck className="h-3.5 w-3.5 text-indigo-300" aria-hidden="true" /> Адміністратор
           </p>
         )}
@@ -159,7 +159,7 @@ function AppShell() {
           <div className="motion-drawer-panel nav-rail absolute inset-y-0 left-0 flex w-72 max-w-[88%] flex-col shadow-dock">
             <div className="flex h-15 items-center justify-between px-4">
               <Brand light onClick={() => setOpen(false)} />
-              <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-2 text-white/60 transition hover:bg-[var(--color-surface)]/10 hover:text-white active:scale-95" aria-label="Закрити">
+              <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-2 text-white/60 transition hover:bg-white/10 hover:text-white active:scale-95" aria-label="Закрити">
                 <X className="h-5 w-5" />
               </button>
             </div>

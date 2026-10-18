@@ -50,7 +50,11 @@ export const badgeClass = (tone = 'slate') =>
 export const iconTileClass =
   'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent-soft)] text-indigo-600 transition duration-200 group-hover:scale-105 group-hover:brightness-110'
 
-export const navActiveClass = 'bg-[var(--color-surface)]/10 text-white'
+/** Dark solid tile with light glyph — safe in both themes (unlike bg-ink + text-white). */
+export const inverseIconTileClass =
+  'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-inverse)] text-[var(--color-on-inverse)] transition duration-200 group-hover:scale-105 group-hover:bg-indigo-600'
+
+export const navActiveClass = 'bg-white/10 text-white'
 export const navIdleClass = 'text-white/55 hover:bg-white/[0.06] hover:text-white'
 
 export const tableWrapClass =

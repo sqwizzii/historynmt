@@ -158,15 +158,17 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
             role="timer"
             aria-label="Залишилось часу"
             className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold tabular-nums ${
-              lowTime ? 'bg-red-50 text-red-700 ring-1 ring-red-200' : 'bg-[var(--color-ink)] text-white'
+              lowTime
+                ? 'bg-[var(--color-danger-soft)] text-[var(--color-danger-fg)] ring-1 ring-[var(--color-danger-fg)]/25'
+                : 'bg-[var(--color-inverse)] text-[var(--color-on-inverse)]'
             }`}
           >
             <Clock className="h-3.5 w-3.5" aria-hidden="true" />
             {formatRemaining(remainingMs)}
           </span>
         </div>
-        <p className="mx-4 mb-4 flex items-start gap-2 rounded-lg bg-[#FFF8EB] px-3 py-2.5 text-[0.75rem] leading-relaxed text-amber-950 sm:mx-5">
-          <ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-700" aria-hidden="true" />
+        <p className="mx-4 mb-4 flex items-start gap-2 rounded-lg bg-[var(--color-warning-soft)] px-3 py-2.5 text-[0.75rem] leading-relaxed text-[var(--color-warning-fg)] sm:mx-5">
+          <ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           <span>
             Не залишайте сторінку: виходи фіксуються ({leaves}), відсутність понад {AWAY_LIMIT_SECONDS} с завершить тест.
             {notice && <strong className="mt-1 block">{notice}</strong>}
@@ -201,7 +203,7 @@ function ActiveTest({ testId, test, attempt, onRetry }) {
               aria-label={`Питання ${i + 1}${done ? ', є відповідь' : ''}`}
               className={`h-8 min-w-8 rounded-md border px-2 text-[0.75rem] font-semibold transition-colors ${
                 current
-                  ? 'border-[var(--color-ink)] bg-[var(--color-ink)] text-white'
+                  ? 'border-[var(--color-inverse)] bg-[var(--color-inverse)] text-[var(--color-on-inverse)]'
                   : done
                     ? 'border-indigo-200 bg-indigo-50 text-indigo-800 hover:bg-indigo-100'
                     : 'border-[var(--color-line)] bg-[var(--color-surface)] text-[var(--color-mute)] hover:bg-[var(--color-surface-muted)]'

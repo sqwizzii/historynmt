@@ -6,6 +6,7 @@ import Stagger from '../motion/Stagger.jsx'
 import { useAsyncData } from '../../hooks/useAsyncData.js'
 import { getErrorMessage, quizletService } from '../../services/api.js'
 import { pluralize } from '../../utils/format.js'
+import { inverseIconTileClass } from '../styles.js'
 
 export default function ModuleList() {
   const { data: modules, error, reload } = useAsyncData(quizletService.getModules)
@@ -29,7 +30,7 @@ export default function ModuleList() {
                   to={`/quizlet/${module.id}`}
                   className="group flex h-full flex-col rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-card transition duration-200 hover:-translate-y-1 hover:border-indigo-200/80 hover:shadow-lift"
                 >
-                  <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white transition duration-200 group-hover:scale-105 group-hover:bg-indigo-600">
+                  <span className={`mb-3 ${inverseIconTileClass}`}>
                     <Layers className="h-4 w-4" aria-hidden="true" />
                   </span>
                   <h2 className="text-[0.9375rem] font-semibold text-[var(--color-ink)]">{module.title}</h2>
@@ -40,7 +41,7 @@ export default function ModuleList() {
                     <span className="text-[0.6875rem] font-medium text-[var(--color-mute)]">
                       {count} {pluralize(count, 'картка', 'картки', 'карток')}
                     </span>
-                    <span className="inline-flex items-center gap-1 font-semibold text-indigo-700">
+                    <span className="inline-flex items-center gap-1 font-semibold text-[var(--color-accent-fg)]">
                       Вчити
                       <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden="true" />
                     </span>

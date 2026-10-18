@@ -163,7 +163,7 @@ function InviteCodeCard() {
   if (error) return <ErrorState message={getErrorMessage(error)} onRetry={reload} />
 
   return (
-    <div className="mb-6 overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-ink)] p-5 text-white shadow-card sm:p-6">
+    <div className="mb-6 overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-inverse)] p-5 text-[var(--color-on-inverse)] shadow-card sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-white/45">Код запрошення</p>
@@ -178,7 +178,7 @@ function InviteCodeCard() {
             type="button"
             onClick={copy}
             disabled={!shown}
-            className="inline-flex items-center gap-2 rounded-lg bg-[var(--color-surface)]/10 px-3.5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--color-surface)]/15 disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-lg bg-white/10 px-3.5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15 disabled:opacity-40"
           >
             {copied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
             {copied ? 'Скопійовано' : 'Копіювати'}

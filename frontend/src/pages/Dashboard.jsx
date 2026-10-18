@@ -13,7 +13,7 @@ import { formatDate } from '../utils/format.js'
 function QuickLink({ to, title, text, Icon }) {
   return (
     <Link to={to} className={`${cardInteractiveClass} group flex items-start gap-3.5 p-4`}>
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-ink)] text-white transition duration-200 group-hover:scale-105 group-hover:bg-indigo-600">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-inverse)] text-[var(--color-on-inverse)] transition duration-200 group-hover:scale-105 group-hover:bg-indigo-600 group-hover:text-white">
         <Icon className="h-4 w-4" aria-hidden="true" />
       </span>
       <span className="min-w-0 flex-1">

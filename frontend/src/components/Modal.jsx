@@ -17,7 +17,7 @@ export default function Modal({ title, onClose, children, labelledBy = 'modal-ti
 
   return (
     <div
-      className="motion-modal-backdrop fixed inset-0 z-50 flex items-end justify-center bg-[var(--color-ink)]/50 p-3 backdrop-blur-[3px] sm:items-center sm:p-4"
+      className="motion-modal-backdrop fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-3 backdrop-blur-[3px] sm:items-center sm:p-4"
       onMouseDown={onClose}
     >
       <div

@@ -27,7 +27,7 @@ export default function MultipleChoice({ question, value, onChange }) {
               <input type="checkbox" checked={checked} onChange={() => toggle(option.id)} className="sr-only" />
               <span
                 className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border text-[0.6875rem] font-bold ${
-                  checked ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-[#c5cad6] text-[var(--color-mute)]'
+                  checked ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-[var(--color-line-strong)] text-[var(--color-mute)]'
                 }`}
               >
                 {checked ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : index + 1}

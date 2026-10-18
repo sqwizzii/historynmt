@@ -157,7 +157,7 @@ export default function TestEditor({ testId, onChanged, onDeleted }) {
               </li>
             ) : (
               <li key={question.id} className="motion-alert flex flex-col gap-3 rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-3.5 shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-lift sm:flex-row sm:items-start sm:p-4">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--color-ink)] text-[0.6875rem] font-bold text-white">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--color-inverse)] text-[0.6875rem] font-bold text-[var(--color-on-inverse)]">
                   {index + 1}
                 </span>
                 <div className="min-w-0 flex-1">

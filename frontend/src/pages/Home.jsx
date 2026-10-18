@@ -56,7 +56,7 @@ function ProductPreview() {
                 <li
                   key={item}
                   className={`rounded-lg px-2.5 py-2 text-[0.8125rem] ${
-                    i === 1 ? 'bg-[var(--color-surface)]/10 font-medium text-white' : 'text-white/50'
+                    i === 1 ? 'bg-white/10 font-medium text-white' : 'text-white/50'
                   }`}
                 >
                   {item}

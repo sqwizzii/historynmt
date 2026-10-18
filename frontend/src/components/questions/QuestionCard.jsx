@@ -18,7 +18,7 @@ export default function QuestionCard({ question, number, total, value, onChange,
   return (
     <article className="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-card sm:p-6">
       <div className="mb-4 flex flex-wrap items-center gap-1.5 text-[0.6875rem] font-semibold">
-        <span className="rounded-md bg-[var(--color-ink)] px-2 py-0.5 text-white">
+        <span className="rounded-md bg-[var(--color-inverse)] px-2 py-0.5 text-[var(--color-on-inverse)]">
           {number} / {total}
         </span>
         {type && <span className="rounded-md bg-[var(--color-surface-muted)] px-2 py-0.5 text-[var(--color-ink-soft)]">{type.label}</span>}

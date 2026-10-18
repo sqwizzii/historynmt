@@ -43,7 +43,7 @@ export default function Account() {
       <PageHeader title="Профіль" description="Обліковий запис і зміна пароля." />
       <Reveal>
         <section className={`${cardClass} mb-5 flex items-center gap-4 p-5`}>
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-ink)] text-sm font-bold text-white">
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-inverse)] text-sm font-bold text-[var(--color-on-inverse)]">
             {user.username.slice(0, 2).toUpperCase()}
           </span>
           <div className="min-w-0">
